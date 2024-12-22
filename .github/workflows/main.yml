@@ -1,0 +1,43 @@
+name: 3dcid/cd
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build
+      run: npm run build
+
+    - name: Deploy (Method 1 - xcopy with full paths)
+      run: |
+        echo "Copying files with xcopy (full paths)..."
+        sudo rm -rf /var/www/3dviewer/*
+        sudo cp -r ${{ github.workspace }}/dist/* /var/www/3dviewer/
+
+    - name: Set permissions
+      run: |
+        sudo chown -R www-data:www-data /var/www/3dviewer
+        sudo chmod -R 755 /var/www/3dviewer
+
+    - name: Remove .git folder
+      run: |
+        echo Removing .git folder...
+        sudo rm -rf /var/www/3dviewer/.git
+        sudo rm -rf /var/www/3dviewer/dist/.git
+  
