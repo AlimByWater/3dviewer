@@ -13,13 +13,16 @@ function Overlay() {
       <a href={obj3d.channel} >
         <img alt={obj3d.name} src={obj3d.logo} style={{ position: 'absolute', bottom: 40, left: 40, width: 30 }} />
       </a>
-      <a href={obj3d.channel} style={{ position: 'absolute', bottom: 40, left: 90, fontSize: '13px' }}>
-        {obj3d.name}
-      </a>
+      <div style={{ position: 'absolute', bottom: 40, left: 90, fontSize: '13px' }}>
+        <a href={obj3d.channel}>
+          {obj3d.name}
+        </a>
+        <br />
+        <a href={obj3d.channel} >
+          by {obj3d.author}
+        </a>
+      </div>
       <br />
-      <a href={obj3d.channel} style={{ position: 'absolute', bottom: 40, left: 90, fontSize: '13px' }}>
-        by {obj3d.author}
-      </a>
       {/*<div style={{ position: 'absolute', top: 40, left: 40 }}>ok —</div>*/}
       <div style={{ position: 'absolute', bottom: 40, right: 40, fontSize: '13px' }}>{obj3d.createdAt}</div>
     </div>
