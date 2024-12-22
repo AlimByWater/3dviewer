@@ -28,7 +28,7 @@ jobs:
       run: |
         echo "Copying files with xcopy (full paths)..."
         sudo rm -rf /var/www/3dviewer/*
-        sudo cp -r ${{ github.workspace }}/dist/* /var/www/3dviewer/
+        sudo cp -r ${{ github.workspace }}/build/* /var/www/3dviewer/
 
     - name: Set permissions
       run: |
