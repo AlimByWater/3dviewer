@@ -1,12 +1,11 @@
 import { createRoot } from 'react-dom/client'
 import './styles.css'
 import App from './App'
-import { Logo } from '@pmndrs/branding'
-import { init as initSDK, useLaunchParams } from '@telegram-apps/sdk-react'
+import { init as initSDK, useLaunchParams, postEvent } from '@telegram-apps/sdk-react'
 import { get3DObject } from './data'
 
 function Overlay() {
-  const lp = useLaunchParams();
+  const lp = useLaunchParams()
   const obj3d = get3DObject(lp.startParam)
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
@@ -23,7 +22,11 @@ function Overlay() {
   )
 }
 
-initSDK();
+try {
+  initSDK()
+} catch (e) {
+  console.error(e)
+}
 
 createRoot(document.getElementById('root')).render(
   <>

@@ -1,6 +1,6 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { useMask, useGLTF, Float, Instances, CameraControls, useProgress } from '@react-three/drei'
+import { useMask, useGLTF, Float, Instances, CameraControls } from '@react-three/drei'
 import { Lightformer, Environment, RandomizedLight, AccumulativeShadows, MeshTransmissionMaterial } from '@react-three/drei'
 import { useLaunchParams } from '@telegram-apps/sdk-react'
 import { get3DObject } from './data'
@@ -10,6 +10,12 @@ import ProgressIndicator from './components/ProgressIndicator'
 export default function App() {
   const lp = useLaunchParams()
   const obj3d = get3DObject(lp.startParam)
+
+  useEffect(() => {
+    if (!['macos, tdesktop'].includes(lp.platform)) {
+      postEvent('web_app_request_fullscreen')
+    }
+  }, [])
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
