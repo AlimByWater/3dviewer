@@ -11,8 +11,8 @@ function Overlay() {
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
       {/*<Logo style={{ position: 'absolute', bottom: 40, left: 40, width: 30 }} />*/}
-      <img alt={obj3d.name} src={obj3d.logo} style={{ position: 'absolute', bottom: 40, left: 40, width: 30, height: 30 }} />
-      <a href={obj3d.channel} target="_blank" style={{ position: 'absolute', bottom: 40, right: 40, fontSize: '13px' }}>
+      <img alt={obj3d.name} src={obj3d.logo} style={{ position: 'absolute', bottom: 40, left: 40, width: 30 }} />
+      <a href={obj3d.channel} style={{ position: 'absolute', bottom: 40, left: 90, fontSize: '13px' }}>
         {obj3d.name}
         <br />
         by {obj3d.author}
