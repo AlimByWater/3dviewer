@@ -1,6 +1,6 @@
-import { useLayoutEffect, useEffect, useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { useMask, useGLTF, useAnimations, Float, Instance, Instances, CameraControls } from '@react-three/drei'
+import { useLayoutEffect, useRef } from 'react'
+import { Canvas } from '@react-three/fiber'
+import { useMask, useGLTF, Float, Instance, Instances, CameraControls } from '@react-three/drei'
 import { Lightformer, Environment, RandomizedLight, AccumulativeShadows, MeshTransmissionMaterial } from '@react-three/drei'
 import { useLaunchParams } from '@telegram-apps/sdk-react'
 import { get3DObject } from './data'
@@ -12,7 +12,7 @@ export default function App() {
   
   return (
     <Canvas shadows camera={{ position: [30, 0, -3], fov: 35, near: 1, far: 50 }}>
-      <color attach="background" args={['#c6e5db']} />
+      <color attach="background" args={[obj3d.backgroundColor]} />
       {/** Glass aquarium */}
       <Aquarium position={[0, 0.25, 0]}>
         <Float rotationIntensity={2} floatIntensity={10} speed={2}>

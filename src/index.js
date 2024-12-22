@@ -2,8 +2,7 @@ import { createRoot } from 'react-dom/client'
 import './styles.css'
 import App from './App'
 import { Logo } from '@pmndrs/branding'
-import { init as initSDK, useLaunchParams } from '@telegram-apps/sdk-react';
-import { get3DObject, objects } from './data';
+import { init as initSDK } from '@telegram-apps/sdk-react';
 
 function Overlay() {
   return (
