@@ -13,7 +13,12 @@ export default function App() {
 
   useEffect(() => {
     if (['android', 'android_x', 'ios'].includes(lp.platform)) {
-      postEvent('web_app_request_fullscreen')
+      try {
+        postEvent('web_app_request_fullscreen')
+        postEvent('web_app_setup_swipe_behavior', { allow_vertical_swipe: false })
+      } catch (e) {
+        console.warn(e)
+      }
     }
   }, [])
 
