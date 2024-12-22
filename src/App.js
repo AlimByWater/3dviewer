@@ -2,8 +2,11 @@ import { useLayoutEffect, useEffect, useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { useMask, useGLTF, useAnimations, Float, Instance, Instances, CameraControls } from '@react-three/drei'
 import { Lightformer, Environment, RandomizedLight, AccumulativeShadows, MeshTransmissionMaterial } from '@react-three/drei'
+import { useLaunchParams } from '@telegram-apps/sdk-react'
 
-export default function App({ spheres }) {
+export default function App() {
+  const lp = useLaunchParams();
+  
   return (
     <Canvas shadows camera={{ position: [30, 0, -3], fov: 35, near: 1, far: 50 }}>
       <color attach="background" args={['#c6e5db']} />

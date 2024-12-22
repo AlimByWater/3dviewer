@@ -5,6 +5,7 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
+    "@telegram-apps/sdk-react": "^2.0.5",
     "@pmndrs/branding": "0.0.8",
     "@react-three/drei": "9.56.10",
     "@react-three/fiber": "8.10.1",
