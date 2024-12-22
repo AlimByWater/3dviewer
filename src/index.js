@@ -13,7 +13,7 @@ function Overlay() {
       <a href={obj3d.channel} >
         <img alt={obj3d.name} src={obj3d.logo} style={{ position: 'absolute', bottom: 40, left: 40, width: 30 }} />
       </a>
-      <div style={{ position: 'absolute', bottom: 40, left: 90, fontSize: '13px' }}>
+      <div style={{ position: 'absolute', bottom: 40, left: 75, fontSize: '13px' }}>
         <a href={obj3d.channel}>
           {obj3d.name}
         </a>
