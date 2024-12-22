@@ -3,9 +3,12 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { useMask, useGLTF, useAnimations, Float, Instance, Instances, CameraControls } from '@react-three/drei'
 import { Lightformer, Environment, RandomizedLight, AccumulativeShadows, MeshTransmissionMaterial } from '@react-three/drei'
 import { useLaunchParams } from '@telegram-apps/sdk-react'
+import { get3DObject } from './data'
+import ObjectView from './components/ObjectView'
 
 export default function App() {
   const lp = useLaunchParams();
+  const obj3d = get3DObject(lp.startParam)
   
   return (
     <Canvas shadows camera={{ position: [30, 0, -3], fov: 35, near: 1, far: 50 }}>
@@ -13,14 +16,11 @@ export default function App() {
       {/** Glass aquarium */}
       <Aquarium position={[0, 0.25, 0]}>
         <Float rotationIntensity={2} floatIntensity={10} speed={2}>
-          <Turtle position={[0, -0.5, -1]} rotation={[0, Math.PI, 0]} scale={23} />
+          <ObjectView modelProps={obj3d} position={[0, -0.5, -1]} rotation={[0, Math.PI, 0]} scale={2} />
         </Float>
         <Instances renderOrder={-1000}>
           <sphereGeometry args={[1, 64, 64]} />
           <meshBasicMaterial depthTest={false} />
-          {spheres.map(([scale, color, speed, position], index) => (
-            <Sphere key={index} scale={scale} color={color} speed={speed} position={position} />
-          ))}
         </Instances>
       </Aquarium>
       {/** Soft shadows */}
@@ -45,7 +45,7 @@ export default function App() {
 
 function Aquarium({ children, ...props }) {
   const ref = useRef()
-  const { nodes } = useGLTF('/shapes-transformed.glb')
+  const { nodes } = useGLTF('/driptech/shapes-transformed.glb')
   const stencil = useMask(1, false)
   useLayoutEffect(() => {
     // Apply stencil to all contents
@@ -79,21 +79,4 @@ function Sphere({ position, scale = 1, speed = 0.1, color = 'white' }) {
       <Instance position={position} scale={scale} color={color} />
     </Float>
   )
-}
-
-/*
-Author: DigitalLife3D (https://sketchfab.com/DigitalLife3D)
-License: CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
-Source: https://sketchfab.com/3d-models/model-52a-kemps-ridley-sea-turtle-no-id-7aba937dfbce480fb3aca47be3a9740b
-Title: Model 52A - Kemps Ridley Sea Turtle (no ID)
-*/
-function Turtle(props) {
-  const { scene, animations } = useGLTF('/model_52a_-_kemps_ridley_sea_turtle_no_id-transformed.glb')
-  const { actions, mixer } = useAnimations(animations, scene)
-  useEffect(() => {
-    mixer.timeScale = 0.5
-    actions['Swim Cycle'].play()
-  }, [])
-  useFrame((state) => (scene.rotation.z = Math.sin(state.clock.elapsedTime / 4) / 2))
-  return <primitive object={scene} {...props} />
 }

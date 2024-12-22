@@ -6,8 +6,6 @@ import { init as initSDK, useLaunchParams } from '@telegram-apps/sdk-react';
 import { get3DObject, objects } from './data';
 
 function Overlay() {
-  const lp = useLaunchParams();
-
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
       <Logo style={{ position: 'absolute', bottom: 40, left: 40, width: 30 }} />
