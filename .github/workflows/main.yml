@@ -26,18 +26,5 @@ jobs:
 
     - name: Deploy (Method 1 - xcopy with full paths)
       run: |
-        echo "Copying files with xcopy (full paths)..."
-        sudo rm -rf /var/www/3dviewer/*
-        sudo cp -r ${{ github.workspace }}/build/* /var/www/3dviewer/
-
-    - name: Set permissions
-      run: |
-        sudo chown -R www-data:www-data /var/www/3dviewer
-        sudo chmod -R 755 /var/www/3dviewer
-
-    - name: Remove .git folder
-      run: |
-        echo Removing .git folder...
-        sudo rm -rf /var/www/3dviewer/.git
-        sudo rm -rf /var/www/3dviewer/dist/.git
+        npm run start
   
