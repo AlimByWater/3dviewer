@@ -20,9 +20,7 @@ function Overlay() {
       <a href={obj3d.channel} style={{ position: 'absolute', bottom: 40, left: 90, fontSize: '13px' }}>
         by {obj3d.author}
       </a>
-      <a href="https://t.me/drip_tech">
-        <div style={{ position: 'absolute', top: 40, left: 40 }}>⁂</div>
-      </a>
+      {/*<div style={{ position: 'absolute', top: 40, left: 40 }}>ok —</div>*/}
       <div style={{ position: 'absolute', bottom: 40, right: 40, fontSize: '13px' }}>{obj3d.createdAt}</div>
     </div>
   )
