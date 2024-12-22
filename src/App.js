@@ -27,7 +27,7 @@ export default function App() {
             </Instances>
           </Aquarium>
         ) : (
-          <ObjectView swimming={false} modelProps={obj3d} position={[0, -0.5, -1]} rotation={[0, Math.PI, 0]} scale={2} />
+          <ObjectView swimming={false} modelProps={obj3d} position={obj3d.position} rotation={[0, Math.PI, 0]} scale={2} />
         )}
         {/** Мягкие тени */}
         <AccumulativeShadows temporal frames={100} color="lightblue" colorBlend={2} opacity={0.7} scale={60} position={[0, -5, 0]}>

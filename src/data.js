@@ -13,6 +13,7 @@ const objects = [
     model: 'https://efc1ea83-8d42-4e62-ae0e-e88e8e890ca8.selstorage.ru/models/compressed_sleeptable.glb',
     logo: 'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/svoloch_logo.png',
     backgroundColor: 'red',
-    aquarium: false
+    aquarium: false,
+    position: [-2, -2, 0]
   }
 ]
