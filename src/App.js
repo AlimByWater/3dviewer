@@ -8,39 +8,43 @@ import ObjectView from './components/ObjectView'
 import ProgressIndicator from './components/ProgressIndicator'
 
 export default function App() {
-  const lp = useLaunchParams();
+  const lp = useLaunchParams()
   const obj3d = get3DObject(lp.startParam)
-  
+
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      <Canvas style={{backgroundColor: obj3d.backgroundColor}} shadows camera={{ position: [30, 0, -3], fov: 35, near: 1, far: 300 }}>
+      <Canvas style={{ backgroundColor: obj3d.backgroundColor }} shadows camera={{ position: [30, 0, -3], fov: 35, near: 1, far: 300 }}>
         <color attach="background" args={[obj3d.backgroundColor]} />
-          {/** Стакан аквариума */}
+        {/** Стакан аквариума */}
+        {obj3d.aquarium ? (
           <Aquarium position={[0, 0.25, 0]}>
             <Float rotationIntensity={2} floatIntensity={10} speed={2}>
-              <ObjectView modelProps={obj3d} position={[0, -0.5, -1]} rotation={[0, Math.PI, 0]} scale={2} />
+              <ObjectView swimming={true} modelProps={obj3d} position={[0, -0.5, -1]} rotation={[0, Math.PI, 0]} scale={2} />
             </Float>
             <Instances renderOrder={-1000}>
               <sphereGeometry args={[1, 64, 64]} />
               <meshBasicMaterial depthTest={false} />
             </Instances>
           </Aquarium>
-          {/** Мягкие тени */}
-          <AccumulativeShadows temporal frames={100} color="lightblue" colorBlend={2} opacity={0.7} scale={60} position={[0, -5, 0]}>
-            <RandomizedLight amount={8} radius={15} ambient={0.5} intensity={1} position={[-5, 10, -5]} size={20} />
-          </AccumulativeShadows>
-          {/** Пользовательская среда */}
-          <Environment resolution={1024}>
-            <group rotation={[-Math.PI / 3, 0, 0]}>
-              <Lightformer intensity={4} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
-              {[2, 0, 2, 0, 2, 0, 2, 0].map((x, i) => (
-                <Lightformer key={i} form="circle" intensity={4} rotation={[Math.PI / 2, 0, 0]} position={[x, 4, i * 4]} scale={[4, 1, 1]} />
-              ))}
-              <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, -1]} scale={[50, 2, 1]} />
-              <Lightformer intensity={2} rotation-y={-Math.PI / 2} position={[10, 1, 0]} scale={[50, 2, 1]} />
-            </group>
-          </Environment>
-          <CameraControls truckSpeed={0} dollySpeed={1} minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
+        ) : (
+          <ObjectView swimming={false} modelProps={obj3d} position={[0, -0.5, -1]} rotation={[0, Math.PI, 0]} scale={2} />
+        )}
+        {/** Мягкие тени */}
+        <AccumulativeShadows temporal frames={100} color="lightblue" colorBlend={2} opacity={0.7} scale={60} position={[0, -5, 0]}>
+          <RandomizedLight amount={8} radius={15} ambient={0.5} intensity={1} position={[-5, 10, -5]} size={20} />
+        </AccumulativeShadows>
+        {/** Пользовательская среда */}
+        <Environment resolution={1024}>
+          <group rotation={[-Math.PI / 3, 0, 0]}>
+            <Lightformer intensity={4} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
+            {[2, 0, 2, 0, 2, 0, 2, 0].map((x, i) => (
+              <Lightformer key={i} form="circle" intensity={4} rotation={[Math.PI / 2, 0, 0]} position={[x, 4, i * 4]} scale={[4, 1, 1]} />
+            ))}
+            <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, -1]} scale={[50, 2, 1]} />
+            <Lightformer intensity={2} rotation-y={-Math.PI / 2} position={[10, 1, 0]} scale={[50, 2, 1]} />
+          </group>
+        </Environment>
+        <CameraControls truckSpeed={0} dollySpeed={1} minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
       </Canvas>
       <ProgressIndicator />
     </div>

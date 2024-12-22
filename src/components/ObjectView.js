@@ -9,12 +9,16 @@ Source: https://sketchfab.com/3d-models/model-52a-kemps-ridley-sea-turtle-no-id-
 Title: Model 52A - Kemps Ridley Sea Turtle (no ID)
 */
 export default function ObjectView(props) {
-    const { scene, animations } = useGLTF(props.modelProps.model)
-    const { actions, mixer } = useAnimations(animations, scene)
-    useEffect(() => {
-      mixer.timeScale = 0.5
-    }, [])
-    useFrame((state) => (scene.rotation.z = Math.sin(state.clock.elapsedTime / 4) / 2))
-    return <primitive object={scene} {...props} />
-  }
-  
+  const { scene, animations } = useGLTF(props.modelProps.model)
+  const { actions, mixer } = useAnimations(animations, scene)
+  useEffect(() => {
+    mixer.timeScale = 0.5
+  }, [])
+
+  // Плавание
+  useFrame((state) => {
+    if (props.swimming) scene.rotation.z = Math.sin(state.clock.elapsedTime / 4) / 2
+  })
+
+  return <primitive object={scene} {...props} />
+}
