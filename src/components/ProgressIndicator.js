@@ -19,9 +19,9 @@ export default function ProgressIndicator() {
       </div>
       <div className="overlay">
         <a href={obj3d.channel}>
-          <img alt={obj3d.name} src={obj3d.logo} style={{ position: 'absolute', bottom: 40, left: 40, width: 30 }} />
+          <img alt={obj3d.name} src={obj3d.logo} style={{ position: 'absolute', bottom: 40, left: 20, width: 30 }} />
         </a>
-        <div style={{ position: 'absolute', bottom: 40, left: 75, fontSize: '13px' }}>
+        <div style={{ position: 'absolute', bottom: 40, left: 55, fontSize: '13px' }}>
           <a href={obj3d.channel} style={{ color: obj3d.textColor }}>
             {obj3d.name}
           </a>
@@ -30,7 +30,7 @@ export default function ProgressIndicator() {
             by {obj3d.author}
           </a>
         </div>
-        <div style={{ position: 'absolute', bottom: 40, right: 40, fontSize: '13px' }}>{obj3d.createdAt}</div>
+        <div style={{ position: 'absolute', bottom: 40, right: 20, fontSize: '13px' }}>{obj3d.createdAt}</div>
       </div>
     </div>
   )

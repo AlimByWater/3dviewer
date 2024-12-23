@@ -25,7 +25,7 @@ export default function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <Canvas
-        dpr={appPixelRatio}
+        // dpr={appPixelRatio}
         style={{ backgroundColor: obj3d.backgroundColor }}
         shadows
         camera={{ position: [30, 0, -3], fov: 35, near: 1, far: 300 }}>
