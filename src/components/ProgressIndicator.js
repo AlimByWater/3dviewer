@@ -15,7 +15,7 @@ export default function ProgressIndicator() {
     <div className="loader-container" style={{ backgroundColor: obj3d.backgroundColor, color: obj3d.textColor }}>
       <div className="loader">
         <TriangleLoader />
-        <div className="progress-text">Loading...</div>
+        {/*<div className="progress-text">Loading...</div>*/}
       </div>
       <div className="overlay">
         <a href={obj3d.channel}>
