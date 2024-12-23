@@ -1,15 +1,20 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { useMask, useGLTF, Float, Instances, CameraControls } from '@react-three/drei'
+import { getPixelRatio } from './pixelRatio'
+import { useMask, useGLTF, Float, Instances, CameraControls, useProgress } from '@react-three/drei'
 import { Lightformer, Environment, RandomizedLight, AccumulativeShadows, MeshTransmissionMaterial } from '@react-three/drei'
 import { useLaunchParams, postEvent } from '@telegram-apps/sdk-react'
 import { get3DObject } from './data'
 import ObjectView from './components/ObjectView'
 import ProgressIndicator from './components/ProgressIndicator'
+import AuthorsPage from './components/AuthorsPage'
+import TriangleButton from './components/TriangleButton'
 
 export default function App() {
   const lp = useLaunchParams()
   const obj3d = get3DObject(lp.startParam)
+  const [isAuthorsPageOpen, setIsAuthorsPageOpen] = useState(false)
+  const { progress } = useProgress()
 
   useEffect(() => {
     if (['android', 'android_x', 'ios'].includes(lp.platform)) {
@@ -25,7 +30,7 @@ export default function App() {
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <Canvas
-        // dpr={appPixelRatio}
+        dpr={getPixelRatio(isAuthorsPageOpen)}
         style={{ backgroundColor: obj3d.backgroundColor }}
         shadows
         camera={{ position: [30, 0, -3], fov: 35, near: 1, far: 300 }}>
@@ -62,6 +67,8 @@ export default function App() {
         <CameraControls truckSpeed={0} dollySpeed={1} minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
       </Canvas>
       <ProgressIndicator />
+      {progress === 100 && <TriangleButton onClick={() => setIsAuthorsPageOpen(true)} />}
+      {isAuthorsPageOpen && <AuthorsPage onClose={() => setIsAuthorsPageOpen(false)} />}
     </div>
   )
 }
