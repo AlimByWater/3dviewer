@@ -1,0 +1,50 @@
+@keyframes fadeInOut {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.triangle-loader-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+}
+
+.triangle-loader {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.loader-point {
+  position: absolute;
+  font-size: 24px;
+  color: inherit;
+  opacity: 0.2;
+  animation: fadeInOut 0.9s infinite;
+}
+
+.loader-point.top {
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  animation-delay: 0s;
+}
+
+.loader-point.bottom-right {
+  bottom: 0;
+  right: 0;
+  animation-delay: 0.3s;
+}
+
+.loader-point.bottom-left {
+  bottom: 0;
+  left: 0;
+  animation-delay: 0.6s;
+}
