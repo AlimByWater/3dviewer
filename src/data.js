@@ -23,7 +23,7 @@ const objects = [
     logo: 'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/svoloch_logo.png',
     previewImage: 'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/preview_sleep_table.webp',
     backgroundColor: 'white',
-    textColor: 'black',
+    textColor: 'white',
     aquarium: true,
     position: [-2, -2, 0]
   },
