@@ -6,15 +6,13 @@ import { Lightformer, Environment, RandomizedLight, AccumulativeShadows, MeshTra
 import { useLaunchParams, postEvent } from '@telegram-apps/sdk-react'
 import { get3DObject } from './data'
 import ObjectView from './components/ObjectView'
-import ProgressIndicator from './components/ProgressIndicator'
-import AuthorsPage from './components/AuthorsPage'
-import TriangleButton from './components/TriangleButton'
+import Overlay from './components/Overlay'
 
 export default function App() {
   const lp = useLaunchParams()
-  const obj3d = get3DObject(lp.startParam)
-  const [isAuthorsPageOpen, setIsAuthorsPageOpen] = useState(false)
-  const { progress } = useProgress()
+  const [workId, setWorkId] = useState(lp.startParam)
+  const obj = useMemo(() => get3DObject(workId))
+  const [isAuthorsPageOpen] = useState(false)
 
   useEffect(() => {
     if (['android', 'android_x', 'ios'].includes(lp.platform)) {
@@ -27,19 +25,32 @@ export default function App() {
     }
   }, [])
 
+  const onSelectWork = (workId) => {
+    setWorkId(workId)
+  }
+
+  return (
+    <>
+      <View obj={obj} isAuthorsPageOpen={isAuthorsPageOpen} />
+      <Overlay onSelectWork={onSelectWork} />
+    </>
+  )
+}
+
+const View = ({ obj, isAuthorsPageOpen }) => {
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <Canvas
         dpr={getPixelRatio(isAuthorsPageOpen)}
-        style={{ backgroundColor: obj3d.backgroundColor }}
+        style={{ backgroundColor: obj.backgroundColor }}
         shadows
         camera={{ position: [30, 0, -3], fov: 35, near: 1, far: 300 }}>
-        <color attach="background" args={[obj3d.backgroundColor]} />
+        <color attach="background" args={[obj.backgroundColor]} />
         {/** Стакан аквариума */}
-        {obj3d.aquarium ? (
+        {obj.aquarium ? (
           <Aquarium position={[0, 0.25, 0]}>
             <Float rotationIntensity={isLowPerformanceDevice() ? 1 : 2} floatIntensity={isLowPerformanceDevice() ? 5 : 10} speed={2}>
-              <ObjectView swimming={true} modelProps={obj3d} position={[0, -0.5, -1]} rotation={[0, Math.PI, 0]} scale={2} />
+              <ObjectView swimming={true} modelProps={obj} position={[0, -0.5, -1]} rotation={[0, Math.PI, 0]} scale={1} />
             </Float>
             <Instances renderOrder={-1000}>
               <sphereGeometry args={[1, isLowPerformanceDevice() ? 32 : 64, isLowPerformanceDevice() ? 32 : 64]} />
@@ -47,7 +58,7 @@ export default function App() {
             </Instances>
           </Aquarium>
         ) : (
-          <ObjectView swimming={false} modelProps={obj3d} position={obj3d.position} rotation={[0, Math.PI, 0]} scale={2} />
+          <ObjectView swimming={false} modelProps={obj} position={obj.position} rotation={[0, Math.PI, 0]} scale={2} />
         )}
         {/** Мягкие тени */}
         <AccumulativeShadows
@@ -80,9 +91,6 @@ export default function App() {
         </Environment>
         <CameraControls truckSpeed={0} dollySpeed={1} minPolarAngle={0} maxPolarAngle={Math.PI / 2} />
       </Canvas>
-      <ProgressIndicator />
-      {progress === 100 && <TriangleButton onClick={() => setIsAuthorsPageOpen(true)} />}
-      {isAuthorsPageOpen && <AuthorsPage onClose={() => setIsAuthorsPageOpen(false)} />}
     </div>
   )
 }
@@ -97,7 +105,7 @@ function Aquarium({ children, ...props }) {
   }, [])
   return (
     <group {...props} dispose={null}>
-      <mesh castShadow scale={[0.61 * 6, 0.8 * 6, 1 * 6]} geometry={nodes.Cube.geometry}>
+      <mesh castShadow scale={[0.5 * 6, 0.5 * 6, 0.5 * 6]} geometry={nodes.Cube.geometry}>
         <MeshTransmissionMaterial
           backside
           samples={isLowPerformanceDevice() ? 2 : 4}

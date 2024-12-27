@@ -92,7 +92,7 @@ const AuthorsPage = ({ onClose }) => {
         </div>
         <div className="works-grid">
           {works.map((work) => (
-            <div key={work.id} className="work-card">
+            <div key={work.id} className="work-card" onClick={() => onClose(work.id)}>
               <img src={work.previewImage} alt={work.name} className="work-preview" />
               <div className="work-info">
                 <h3 className="work-name">{work.name}</h3>

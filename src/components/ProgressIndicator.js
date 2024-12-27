@@ -3,12 +3,16 @@ import { useProgress } from '@react-three/drei'
 import { useLaunchParams } from '@telegram-apps/sdk-react'
 import { get3DObject } from '../data'
 import TriangleLoader from './TriangleLoader'
+import { useEffect } from 'react'
 
 export default function ProgressIndicator() {
   const { progress } = useProgress()
   const lp = useLaunchParams()
   const obj3d = get3DObject(lp.startParam)
 
+  useEffect(() => {
+    console.log(progress)
+  })
   if (progress === 100) return null
 
   return (
