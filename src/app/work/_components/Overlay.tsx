@@ -1,21 +1,22 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useLaunchParams } from "@telegram-apps/sdk-react";
 import { useProgress } from "@react-three/drei";
 
 import TriangleButton from "../../../components/TriangleButton";
 import AuthorsPage from "../../../components/AuthorsPage";
 import ProgressIndicator from "../../../components/ProgressIndicator";
-import { get3DObject } from "@/types/work";
+import { Work } from "@/types/work";
 
 const Overlay = ({
+  work,
   onSelectWork,
 }: {
+  work: Work;
   onSelectWork: (workId: string) => void;
 }) => {
   const [showAuthors, setShowAuthors] = useState(false);
   const { progress } = useProgress();
   const lp = useLaunchParams();
-  const obj3d = get3DObject(lp.startParam);
   const isLoading = progress !== 100;
 
   const onCloseAuthorsPage = (workId?: string) => {
@@ -40,38 +41,49 @@ const Overlay = ({
         <div style={{ pointerEvents: "auto" }}>
           <TriangleButton
             onClick={() => setShowAuthors(true)}
-            color={obj3d.textColor}
+            color={work.foregroundColor}
           />
           {showAuthors && <AuthorsPage onClose={onCloseAuthorsPage} />}
         </div>
       )}
-      {/*<Logo style={{ position: 'absolute', bottom: 40, left: 40, width: 30 }} />*/}
+
       <div style={{ pointerEvents: "auto" }}>
-        <a href={obj3d.channel}>
+        {work.authors.map((author) => (
           <img
-            alt={obj3d.name}
-            src={obj3d.logo}
+            key={author.telegramUserId}
+            alt={author.name}
+            src={author.logo}
             style={{ position: "absolute", bottom: 40, left: 20, width: 30 }}
           />
-        </a>
+        ))}
         <div
           style={{
             position: "absolute",
             bottom: 40,
             left: 55,
             fontSize: "13px",
-            color: obj3d.textColor,
+            color: work.foregroundColor,
           }}
         >
-          <a href={obj3d.channel} style={{ color: obj3d.textColor }}>
-            {obj3d.name}
-          </a>
+          <a style={{ color: work.foregroundColor }}>{work.name}</a>
           <br />
-          <a href={obj3d.channel} style={{ color: obj3d.textColor }}>
-            by {obj3d.author}
-          </a>
+          <div>
+            {"by "}
+            {work.authors.map((author, index) => (
+              <Fragment key={author.telegramUserId}>
+                <a
+                  href={author.channel}
+                  style={{ color: work.foregroundColor }}
+                >
+                  {author.name}
+                </a>
+                {index < work.authors.length - 1 ? " & " : ""}
+              </Fragment>
+            ))}
+          </div>
         </div>
       </div>
+
       <br />
       {/*<div style={{ position: 'absolute', top: 40, left: 40 }}>ok —</div>*/}
       <div
@@ -81,10 +93,10 @@ const Overlay = ({
           right: 20,
           fontSize: "13px",
           pointerEvents: "auto",
-          color: obj3d.textColor,
+          color: work.foregroundColor,
         }}
       >
-        {obj3d.createdAt}
+        {work.createdAt}
       </div>
       <ProgressIndicator />
     </div>

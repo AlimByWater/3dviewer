@@ -1,24 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, CSSProperties } from "react";
 import "./AuthorsPage.css";
 import { postEvent, on, useLaunchParams } from "@telegram-apps/sdk-react";
-import { Author, objects } from "@/types/work";
+import { Author, Work } from "@/types/work";
 
-const getUniqueAuthors = () => {
-  const uniqueAuthors = objects.reduce<Author[]>((acc, obj) => {
-    if (!acc.find((item) => item.name === obj.author)) {
-      acc.push({
-        name: obj.author,
-        logo: obj.logo,
-        channel: obj.channel,
-      });
-    }
-    return acc;
-  }, []);
-  return uniqueAuthors;
+const getAuthors = async (): Promise<Author[]> => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/authors`);
+  if (!res.ok) {
+    throw Error("Failed to fetch authors");
+  }
+  return res.json();
 };
 
-const getAuthorWorks = (authorName: string) => {
-  return objects.filter((obj) => obj.author === authorName);
+const getAuthorWorks = async (telegramUserId: number): Promise<Work[]> => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/works?telegramUserId=${telegramUserId}`
+  );
+  if (!res.ok) {
+    throw Error(`Failed to fetch works author ${telegramUserId}`);
+  }
+  return res.json();
 };
 
 const AuthorsPage = ({ onClose }: { onClose: (workId?: string) => void }) => {
@@ -29,10 +29,15 @@ const AuthorsPage = ({ onClose }: { onClose: (workId?: string) => void }) => {
     right: 0,
     bottom: 0,
   });
-  const authors = getUniqueAuthors();
+  const [authors, setAuthors] = useState<Author[] | null>(null);
   const lp = useLaunchParams();
 
   useEffect(() => {
+    // Get authors
+    getAuthors().then((authors) => {
+      setAuthors(authors);
+    });
+
     // Request initial safe area values
     postEvent("web_app_request_content_safe_area");
 
@@ -79,58 +84,16 @@ const AuthorsPage = ({ onClose }: { onClose: (workId?: string) => void }) => {
   };
 
   if (selectedAuthor) {
-    const works = getAuthorWorks(selectedAuthor.name);
     return (
-      <div className="authors-page" style={pageStyle}>
-        <button
-          className="close-button"
-          onClick={() => onClose()}
-          style={closeButtonStyle}
-        >
-          ×
-        </button>
-        <button
-          className="back-button"
-          onClick={handleBack}
-          style={backButtonStyle}
-        >
-          ←
-        </button>
-        <div className="author-header">
-          <img
-            src={selectedAuthor.logo}
-            alt={selectedAuthor.name}
-            className="author-header-logo"
-          />
-          <h2 className="author-header-name">{selectedAuthor.name}</h2>
-          <a
-            href={selectedAuthor.channel}
-            className="author-channel-link"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Channel →
-          </a>
-        </div>
-        <div className="works-grid">
-          {works.map((work) => (
-            <div
-              key={work.id}
-              className="work-card"
-              onClick={() => onClose(work.id)}
-            >
-              <img
-                src={work.previewImage}
-                alt={work.name}
-                className="work-preview"
-              />
-              <div className="work-info">
-                <h3 className="work-name">{work.name}</h3>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <WorksPage
+        author={selectedAuthor}
+        onSelect={onClose}
+        onBack={handleBack}
+        onClose={onClose}
+        pageStyle={pageStyle}
+        backButtonStyle={backButtonStyle}
+        closeButtonStyle={closeButtonStyle}
+      />
     );
   }
 
@@ -144,24 +107,100 @@ const AuthorsPage = ({ onClose }: { onClose: (workId?: string) => void }) => {
         ×
       </button>
       <div className="authors-list">
-        {authors.map((author, index) => (
-          <div
-            key={index}
-            className="author-list-item"
-            onClick={() => handleAuthorClick(author)}
-          >
-            <img
-              src={author.logo}
-              alt={author.name}
-              className="author-list-logo"
-            />
-            <div className="author-list-name">{author.name}</div>
-          </div>
-        ))}
+        {authors &&
+          authors.map((author, index) => (
+            <div
+              key={index}
+              className="author-list-item"
+              onClick={() => handleAuthorClick(author)}
+            >
+              <img
+                src={author.logo}
+                alt={author.name}
+                className="author-list-logo"
+              />
+              <div className="author-list-name">{author.name}</div>
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+};
+
+const WorksPage = ({
+  author,
+  onSelect,
+  onBack,
+  onClose,
+  pageStyle,
+  closeButtonStyle,
+  backButtonStyle,
+}: {
+  author: Author;
+  onSelect: (workId: string) => void;
+  onBack: () => void;
+  onClose: () => void;
+  pageStyle?: CSSProperties | undefined;
+  closeButtonStyle?: CSSProperties | undefined;
+  backButtonStyle?: CSSProperties | undefined;
+}) => {
+  const [works, setWorks] = useState<Work[] | null>(null);
+
+  useEffect(() => {
+    getAuthorWorks(author.telegramUserId).then((fetchedWorks) => {
+      setWorks(fetchedWorks);
+    });
+  });
+
+  return (
+    <div className="authors-page" style={pageStyle}>
+      <button
+        className="close-button"
+        onClick={() => onClose()}
+        style={closeButtonStyle}
+      >
+        ×
+      </button>
+      <button className="back-button" onClick={onBack} style={backButtonStyle}>
+        ←
+      </button>
+      <div className="author-header">
+        <img
+          src={author.logo}
+          alt={author.name}
+          className="author-header-logo"
+        />
+        <h2 className="author-header-name">{author.name}</h2>
+        <a
+          href={author.channel}
+          className="author-channel-link"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Channel →
+        </a>
+      </div>
+      <div className="works-grid">
+        {works &&
+          works.map((work) => (
+            <div
+              key={work.id}
+              className="work-card"
+              onClick={() => onSelect(work.id)}
+            >
+              <img
+                src={work.previewUrl}
+                alt={work.name}
+                className="work-preview"
+              />
+              <div className="work-info">
+                <h3 className="work-name">{work.name}</h3>
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );
 };
 
 export default AuthorsPage;
-export { getUniqueAuthors };

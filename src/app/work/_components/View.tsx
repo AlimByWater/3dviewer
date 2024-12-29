@@ -18,29 +18,27 @@ import WorkInAquariumView from "./WorkInAquariumView";
 import { Work } from "@/types/work";
 
 const View = ({
-  obj,
+  work,
   isAuthorsPageOpen,
 }: {
-  obj: Work;
+  work: Work;
   isAuthorsPageOpen: boolean;
 }) => {
-  // TODO: Use useMemo
-  const { scene } = useGLTF(obj.model);
-
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
       <Canvas
         dpr={getPixelRatio(isAuthorsPageOpen)}
-        style={{ backgroundColor: obj.backgroundColor }}
+        style={{ backgroundColor: work.backgroundColor }}
         shadows
         camera={{ position: [30, 0, -3], fov: 35, near: 1, far: 300 }}
+        gl={{ stencil: true }}
       >
-        <color attach="background" args={[obj.backgroundColor]} />
+        <color attach="background" args={[work.backgroundColor]} />
         {/** Стакан аквариума */}
-        {obj.aquarium ? (
-          <WorkInAquariumView scene={scene} />
+        {work.inAquarium ? (
+          <WorkInAquariumView work={work} />
         ) : (
-          <WorkView object={scene} />
+          <WorkView work={work} />
         )}
         {/** Мягкие тени */}
         <AccumulativeShadows

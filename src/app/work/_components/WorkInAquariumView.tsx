@@ -6,35 +6,25 @@ import {
   Float,
   Instances,
   MeshTransmissionMaterial,
+  useAnimations,
 } from "@react-three/drei";
-import { Group, Object3DEventMap, Vector3 } from "three";
-import WorkView from "./WorkView";
 import { isLowPerformanceDevice } from "../../../utils/pixelRatio";
-import { PropsWithChildren, useLayoutEffect, useRef } from "react";
+import { PropsWithChildren, useEffect, useLayoutEffect, useRef } from "react";
+import { Work } from "@/types/work";
 
 interface WorkInAquariumViewProps {
-  scene: Group<Object3DEventMap>;
+  work: Work;
 }
 
-const WorkInAquariumView = ({ scene }: WorkInAquariumViewProps) => {
-  // Плавание
-  useFrame((state) => {
-    scene.rotation.z = Math.sin(state.clock.elapsedTime / 4) / 2;
-  });
-
+const WorkInAquariumView = ({ work }: WorkInAquariumViewProps) => {
   return (
-    <Aquarium position={new Vector3(0, 0.25, 0)}>
+    <Aquarium position={new THREE.Vector3(0, 0.25, 0)}>
       <Float
         rotationIntensity={isLowPerformanceDevice() ? 1 : 2}
         floatIntensity={isLowPerformanceDevice() ? 5 : 10}
         speed={2}
       >
-        <WorkView
-          object={scene}
-          position={[0, -0.5, -1]}
-          rotation={[0, Math.PI, 0]}
-          scale={1}
-        />
+        <WorkView work={work} />
       </Float>
       <Instances renderOrder={-1000}>
         <sphereGeometry
@@ -52,21 +42,44 @@ const WorkInAquariumView = ({ scene }: WorkInAquariumViewProps) => {
 
 export default WorkInAquariumView;
 
+const WorkView = (props: { work: Work }) => {
+  const { scene, animations } = useGLTF(props.work.object.objectUrl);
+  const { actions, mixer } = useAnimations(animations, scene);
+  useEffect(() => {
+    mixer.timeScale = 0.5;
+    // Проигрываем все анимации на сцене
+    animations.forEach((item) => {
+      actions[item.name]?.play();
+    });
+  }, []);
+  useFrame(
+    (state) => (scene.rotation.z = Math.sin(state.clock.elapsedTime / 4) / 2)
+  );
+  return (
+    <primitive
+      object={scene}
+      position={[0, -0.5, -1]}
+      rotation={[0, Math.PI, 0]}
+      scale={props.work.object.scale}
+    />
+  );
+};
+
 const Aquarium = ({
   children,
   ...props
-}: PropsWithChildren<{ position?: Vector3 | undefined }>) => {
-  const ref = useRef<Group<Object3DEventMap>>(null);
+}: PropsWithChildren<{ position?: THREE.Vector3 | undefined }>) => {
+  const ref = useRef<any>(null);
   const { nodes } = useGLTF("/driptech/shapes-transformed.glb");
   const stencil = useMask(1, false);
 
   useLayoutEffect(() => {
     // Применяем маску ко всем дочерним объектам
-    ref.current?.traverse((child) => {
-      const mesh = child as THREE.Mesh;
-      return mesh.material && Object.assign(mesh.material, { ...stencil });
+    // (Обрезаем все, что выходит за рамки аквариума)
+    ref.current?.traverse((child: any) => {
+      return child.material && Object.assign(child.material, { ...stencil });
     });
-  }, [stencil]);
+  }, []);
   return (
     <group {...props} dispose={null}>
       <mesh

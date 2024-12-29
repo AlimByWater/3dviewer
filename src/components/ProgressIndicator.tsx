@@ -15,20 +15,25 @@ export default function ProgressIndicator() {
   });
   if (progress === 100) return null;
 
+  const mainAuthor = obj3d.authors[0];
+
   return (
     <div
       className="loader-container"
-      style={{ backgroundColor: obj3d.backgroundColor, color: obj3d.textColor }}
+      style={{
+        backgroundColor: obj3d.backgroundColor,
+        color: obj3d.foregroundColor,
+      }}
     >
       <div className="loader">
         <TriangleLoader />
         {/*<div className="progress-text">Loading...</div>*/}
       </div>
       <div className="overlay">
-        <a href={obj3d.channel}>
+        <a href={mainAuthor.channel}>
           <img
-            alt={obj3d.name}
-            src={obj3d.logo}
+            alt={mainAuthor.name}
+            src={mainAuthor.logo}
             style={{ position: "absolute", bottom: 40, left: 20, width: 30 }}
           />
         </a>
@@ -40,12 +45,12 @@ export default function ProgressIndicator() {
             fontSize: "13px",
           }}
         >
-          <a href={obj3d.channel} style={{ color: obj3d.textColor }}>
+          <a href={mainAuthor.channel} style={{ color: obj3d.foregroundColor }}>
             {obj3d.name}
           </a>
           <br />
-          <a href={obj3d.channel} style={{ color: obj3d.textColor }}>
-            by {obj3d.author}
+          <a href={mainAuthor.channel} style={{ color: obj3d.foregroundColor }}>
+            by {mainAuthor.name}
           </a>
         </div>
         <div

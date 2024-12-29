@@ -32,8 +32,8 @@ const WorkPage = () => {
 
   return (
     <Page back={false}>
-      <View obj={obj} isAuthorsPageOpen={isAuthorsPageOpen} />
-      <Overlay onSelectWork={onSelectWork} />
+      <View work={obj} isAuthorsPageOpen={isAuthorsPageOpen} />
+      <Overlay work={obj} onSelectWork={onSelectWork} />
     </Page>
   );
 };
