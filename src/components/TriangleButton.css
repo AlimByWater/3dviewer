@@ -1,0 +1,45 @@
+.triangle-button {
+  position: absolute;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+  padding: 0;
+  font-family: "Inter";
+}
+
+.triangle {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.point {
+  position: absolute;
+  font-size: 13px;
+  transition: opacity 0.2s;
+  color: inherit;
+  font-family: "Inter";
+  font-weight: normal;
+  line-height: 1;
+}
+
+.point.top {
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.point.bottom-right {
+  bottom: 0;
+  right: 0;
+}
+
+.point.bottom-left {
+  bottom: 0;
+  left: 0;
+}
+
+.triangle-button:hover .point {
+  opacity: 0.7;
+}

@@ -1,12 +1,17 @@
 import {
-  backButton,
-  viewport,
-  themeParams,
-  miniApp,
-  initData,
   $debug,
+  backButton,
+  enableClosingConfirmation,
   init as initSDK,
-} from '@telegram-apps/sdk-react';
+  initData,
+  isClosingBehaviorMounted,
+  miniApp,
+  mountClosingBehavior,
+  mainButton,
+  swipeBehavior,
+  themeParams,
+  viewport,
+} from "@telegram-apps/sdk-react";
 
 /**
  * Initializes the application and configures its dependencies.
@@ -19,23 +24,37 @@ export function init(debug: boolean): void {
   // Also, configure the package.
   initSDK();
 
+  if (!isClosingBehaviorMounted()) {
+    mountClosingBehavior();
+  }
+  enableClosingConfirmation();
+
   // Mount all components used in the project.
+  if (swipeBehavior.isSupported()) {
+    swipeBehavior.mount();
+    swipeBehavior.disableVertical();
+  }
   backButton.isSupported() && backButton.mount();
+  mainButton.mount();
   miniApp.mount();
   themeParams.mount();
   initData.restore();
-  void viewport.mount().then(() => {
-    viewport.bindCssVars();
-  }).catch(e => {
-    console.error('Something went wrong mounting the viewport', e);
-  });
+  if (!viewport.isMounted() && !viewport.isMounting()) {
+    if (!viewport.isMounting()) {
+      viewport.mount().catch((e) => {
+        console.error("Something went wrong mounting the viewport", e);
+      });
+    }
+  }
 
   // Define components-related CSS variables.
-  miniApp.bindCssVars();
-  themeParams.bindCssVars();
-
-  // Add Eruda if needed.
-  debug && import('eruda')
-    .then((lib) => lib.default.init())
-    .catch(console.error);
+  if (viewport.isMounted() && !viewport.isCssVarsBound()) {
+    viewport.bindCssVars();
+  }
+  if (!miniApp.isCssVarsBound()) {
+    miniApp.bindCssVars();
+  }
+  if (!themeParams.isCssVarsBound()) {
+    themeParams.bindCssVars();
+  }
 }
