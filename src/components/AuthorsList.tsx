@@ -1,15 +1,7 @@
+import "./AuthorsList.css";
 import { useState, useEffect, CSSProperties } from "react";
-import "./AuthorsPage.css";
 import { postEvent, on, useLaunchParams } from "@telegram-apps/sdk-react";
 import { Author, Work } from "@/types/work";
-
-const getAuthors = async (): Promise<Author[]> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/authors`);
-  if (!res.ok) {
-    throw Error("Failed to fetch authors");
-  }
-  return res.json();
-};
 
 const getAuthorWorks = async (telegramUserId: number): Promise<Work[]> => {
   const res = await fetch(
@@ -21,23 +13,42 @@ const getAuthorWorks = async (telegramUserId: number): Promise<Work[]> => {
   return res.json();
 };
 
-const AuthorsPage = ({ onClose }: { onClose: (workId?: string) => void }) => {
+type WorksByAuthor = Map<number, Work[]>;
+
+const AuthorsList = ({
+  authors,
+  onClose,
+}: {
+  authors: Author[] | null;
+  onClose: (workId?: string) => void;
+}) => {
   const [selectedAuthor, setSelectedAuthor] = useState<Author | null>(null);
+  const [worksByAuthor, setWorksByAuthor] = useState<WorksByAuthor | null>(
+    null
+  );
   const [safeAreaInsets, setSafeAreaInsets] = useState({
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
   });
-  const [authors, setAuthors] = useState<Author[] | null>(null);
   const lp = useLaunchParams();
 
   useEffect(() => {
-    // Get authors
-    getAuthors().then((authors) => {
-      setAuthors(authors);
-    });
+    // Получаем работы всех авторов
+    if (authors) {
+      Promise.all(
+        authors.map(async (author) => {
+          const works = await getAuthorWorks(author.telegramUserId);
+          return [author.telegramUserId, works] as [number, Work[]];
+        })
+      ).then((res) => {
+        setWorksByAuthor(new Map(res));
+      });
+    }
+  }, [authors]);
 
+  useEffect(() => {
     // Request initial safe area values
     postEvent("web_app_request_content_safe_area");
 
@@ -85,8 +96,11 @@ const AuthorsPage = ({ onClose }: { onClose: (workId?: string) => void }) => {
 
   if (selectedAuthor) {
     return (
-      <WorksPage
+      <WorksList
         author={selectedAuthor}
+        initialWorks={
+          worksByAuthor && worksByAuthor.get(selectedAuthor.telegramUserId)!
+        }
         onSelect={onClose}
         onBack={handleBack}
         onClose={onClose}
@@ -127,8 +141,11 @@ const AuthorsPage = ({ onClose }: { onClose: (workId?: string) => void }) => {
   );
 };
 
-const WorksPage = ({
+export default AuthorsList;
+
+const WorksList = ({
   author,
+  initialWorks: works,
   onSelect,
   onBack,
   onClose,
@@ -137,6 +154,7 @@ const WorksPage = ({
   backButtonStyle,
 }: {
   author: Author;
+  initialWorks: Work[] | null;
   onSelect: (workId: string) => void;
   onBack: () => void;
   onClose: () => void;
@@ -144,14 +162,6 @@ const WorksPage = ({
   closeButtonStyle?: CSSProperties | undefined;
   backButtonStyle?: CSSProperties | undefined;
 }) => {
-  const [works, setWorks] = useState<Work[] | null>(null);
-
-  useEffect(() => {
-    getAuthorWorks(author.telegramUserId).then((fetchedWorks) => {
-      setWorks(fetchedWorks);
-    });
-  });
-
   return (
     <div className="authors-page" style={pageStyle}>
       <button
@@ -202,5 +212,3 @@ const WorksPage = ({
     </div>
   );
 };
-
-export default AuthorsPage;

@@ -1,11 +1,17 @@
-import { Fragment, useState } from "react";
-import { useLaunchParams } from "@telegram-apps/sdk-react";
+import AuthorsList from "@/components/AuthorsList";
+import ProgressIndicator from "@/components/ProgressIndicator";
+import TriangleButton from "@/components/TriangleButton";
+import { Author, Work } from "@/types/work";
 import { useProgress } from "@react-three/drei";
+import { Fragment, useEffect, useState } from "react";
 
-import TriangleButton from "../../../components/TriangleButton";
-import AuthorsPage from "../../../components/AuthorsPage";
-import ProgressIndicator from "../../../components/ProgressIndicator";
-import { Work } from "@/types/work";
+const fetchAuthors = async (): Promise<Author[]> => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/authors`);
+  if (!res.ok) {
+    throw Error("Failed to fetch elves");
+  }
+  return res.json();
+};
 
 const Overlay = ({
   work,
@@ -14,10 +20,16 @@ const Overlay = ({
   work: Work;
   onSelectWork: (workId: string) => void;
 }) => {
+  const [authors, setAuthors] = useState<Author[] | null>(null);
   const [showAuthors, setShowAuthors] = useState(false);
   const { progress } = useProgress();
-  const lp = useLaunchParams();
   const isLoading = progress !== 100;
+
+  useEffect(() => {
+    fetchAuthors().then((authors) => {
+      setAuthors(authors);
+    });
+  }, []);
 
   const onCloseAuthorsPage = (workId?: string) => {
     setShowAuthors(false);
@@ -43,7 +55,9 @@ const Overlay = ({
             onClick={() => setShowAuthors(true)}
             color={work.foregroundColor}
           />
-          {showAuthors && <AuthorsPage onClose={onCloseAuthorsPage} />}
+          {showAuthors && (
+            <AuthorsList authors={authors} onClose={onCloseAuthorsPage} />
+          )}
         </div>
       )}
 

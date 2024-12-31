@@ -2,7 +2,6 @@ import "./View.css";
 
 import { Canvas } from "@react-three/fiber";
 import {
-  useGLTF,
   CameraControls,
   Lightformer,
   Environment,
