@@ -1,8 +1,7 @@
+import ProgressIndicator from "./ProgressIndicator";
 import AuthorsList from "@/components/AuthorsList";
-import ProgressIndicator from "@/components/ProgressIndicator";
 import TriangleButton from "@/components/TriangleButton";
 import { Author, Work } from "@/types/work";
-import { useProgress } from "@react-three/drei";
 import { Fragment, useEffect, useState } from "react";
 
 const fetchAuthors = async (): Promise<Author[]> => {
@@ -22,8 +21,6 @@ const Overlay = ({
 }) => {
   const [authors, setAuthors] = useState<Author[] | null>(null);
   const [showAuthors, setShowAuthors] = useState(false);
-  const { progress } = useProgress();
-  const isLoading = progress !== 100;
 
   useEffect(() => {
     fetchAuthors().then((authors) => {
@@ -49,17 +46,15 @@ const Overlay = ({
         pointerEvents: "none",
       }}
     >
-      {!isLoading && (
-        <div style={{ pointerEvents: "auto" }}>
-          <TriangleButton
-            onClick={() => setShowAuthors(true)}
-            color={work.foregroundColor}
-          />
-          {showAuthors && (
-            <AuthorsList authors={authors} onClose={onCloseAuthorsPage} />
-          )}
-        </div>
-      )}
+      <div style={{ pointerEvents: "auto" }}>
+        <TriangleButton
+          onClick={() => setShowAuthors(true)}
+          color={work.foregroundColor}
+        />
+        {showAuthors && (
+          <AuthorsList authors={authors} onClose={onCloseAuthorsPage} />
+        )}
+      </div>
 
       <div style={{ pointerEvents: "auto" }}>
         {work.authors.map((author) => (
@@ -112,7 +107,10 @@ const Overlay = ({
       >
         {work.createdAt}
       </div>
-      <ProgressIndicator />
+      <ProgressIndicator
+        backgroundColor={work.backgroundColor}
+        color={work.foregroundColor}
+      />
     </div>
   );
 };

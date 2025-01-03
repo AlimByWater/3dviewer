@@ -7,7 +7,6 @@ import {
   useLaunchParams,
   useSignal,
 } from "@telegram-apps/sdk-react";
-import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -19,6 +18,7 @@ import { setLocale } from "@/core/i18n/locale";
 import { init } from "@/core/init";
 
 import "./styles.css";
+import TriangleLoader from "../TriangleLoader";
 
 function RootInner({ children }: PropsWithChildren) {
   const isDev = process.env.NODE_ENV === "development";
@@ -46,14 +46,12 @@ function RootInner({ children }: PropsWithChildren) {
   }, [initDataUser]);
 
   return (
-    <TonConnectUIProvider manifestUrl="/tonconnect-manifest.json">
-      <AppRoot
-        appearance={isDark ? "dark" : "light"}
-        platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
-      >
-        {children}
-      </AppRoot>
-    </TonConnectUIProvider>
+    <AppRoot
+      appearance={isDark ? "dark" : "light"}
+      platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
+    >
+      {children}
+    </AppRoot>
   );
 }
 
@@ -68,6 +66,8 @@ export function Root(props: PropsWithChildren) {
       <RootInner {...props} />
     </ErrorBoundary>
   ) : (
-    <div className="root__loading">Loading</div>
+    <div className="root__loading">
+      <TriangleLoader />
+    </div>
   );
 }

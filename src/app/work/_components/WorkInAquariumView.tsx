@@ -51,7 +51,7 @@ const WorkView = (props: { work: Work }) => {
     animations.forEach((item) => {
       actions[item.name]?.play();
     });
-  }, []);
+  }, [actions, animations, mixer]);
   useFrame(
     (state) => (scene.rotation.z = Math.sin(state.clock.elapsedTime / 4) / 2)
   );
@@ -79,7 +79,7 @@ const Aquarium = ({
     ref.current?.traverse((child: any) => {
       return child.material && Object.assign(child.material, { ...stencil });
     });
-  }, []);
+  }, [stencil]);
   return (
     <group {...props} dispose={null}>
       <mesh
