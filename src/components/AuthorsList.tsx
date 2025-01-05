@@ -1,11 +1,13 @@
-import "./AuthorsList.css";
-import { useState, useEffect, CSSProperties } from "react";
-import { postEvent, on, useLaunchParams } from "@telegram-apps/sdk-react";
-import { Author, Work } from "@/types/work";
+import './AuthorsListStyles.css';
+import { useState, useEffect, CSSProperties } from 'react';
+import { postEvent, on, useLaunchParams } from '@telegram-apps/sdk-react';
+import { Author, Work } from '@/types/work';
 
 const getAuthorWorks = async (telegramUserId: number): Promise<Work[]> => {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/works?telegramUserId=${telegramUserId}`
+    `${
+      import.meta.env.NEXT_PUBLIC_API_BASE_URL
+    }/works?telegramUserId=${telegramUserId}`
   );
   if (!res.ok) {
     throw Error(`Failed to fetch works author ${telegramUserId}`);
@@ -50,10 +52,10 @@ const AuthorsList = ({
 
   useEffect(() => {
     // Request initial safe area values
-    postEvent("web_app_request_content_safe_area");
+    postEvent('web_app_request_content_safe_area');
 
     // Listen for safe area changes
-    const removeListener = on("content_safe_area_changed", (payload) => {
+    const removeListener = on('content_safe_area_changed', (payload) => {
       setSafeAreaInsets({
         top: payload.top || 0,
         left: payload.left || 0,
@@ -80,7 +82,7 @@ const AuthorsList = ({
     left: `calc(${safeAreaInsets.left}px + 20px)`,
   };
 
-  if (["android", "android_x", "ios"].includes(lp.platform)) {
+  if (['android', 'android_x', 'ios'].includes(lp.platform)) {
     // pageStyle.top = `calc(${safeAreaInsets.top}px + 60px)`
     closeButtonStyle.top = `calc(${safeAreaInsets.top}px + 40px)`;
     backButtonStyle.top = `calc(${safeAreaInsets.top}px + 40px)`;

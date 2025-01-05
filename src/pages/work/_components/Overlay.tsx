@@ -5,7 +5,9 @@ import { Author, Work } from '@/types/work';
 import { Fragment, useEffect, useState } from 'react';
 
 const fetchAuthors = async (): Promise<Author[]> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/authors`);
+  const res = await fetch(
+    `${import.meta.env.NEXT_PUBLIC_API_BASE_URL}/authors`
+  );
   if (!res.ok) {
     throw Error('Failed to fetch elves');
   }
