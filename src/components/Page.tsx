@@ -1,17 +1,18 @@
-'use client';
-
 import { backButton } from '@telegram-apps/sdk-react';
 import { PropsWithChildren, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 
-export function Page({ children, back = true }: PropsWithChildren<{
+export function Page({
+  children,
+  back = true,
+}: PropsWithChildren<{
   /**
    * True if it is allowed to go back from this page.
    * @default true
    */
-  back?: boolean
+  back?: boolean;
 }>) {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (back) {
@@ -23,9 +24,9 @@ export function Page({ children, back = true }: PropsWithChildren<{
 
   useEffect(() => {
     return backButton.onClick(() => {
-      router.back();
+      navigate(-1);
     });
-  }, [router]);
+  }, [navigate]);
 
   return <>{children}</>;
 }

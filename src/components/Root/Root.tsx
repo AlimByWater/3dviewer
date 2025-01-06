@@ -1,27 +1,25 @@
-"use client";
-
-import { type PropsWithChildren, useEffect } from "react";
+import { type PropsWithChildren, useEffect } from 'react';
 import {
   initData,
   miniApp,
   useLaunchParams,
   useSignal,
-} from "@telegram-apps/sdk-react";
-import { AppRoot } from "@telegram-apps/telegram-ui";
+} from '@telegram-apps/sdk-react';
+import { AppRoot } from '@telegram-apps/telegram-ui';
 
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { ErrorPage } from "@/components/ErrorPage";
-import { useTelegramMock } from "@/hooks/useTelegramMock";
-import { useDidMount } from "@/hooks/useDidMount";
-import { useClientOnce } from "@/hooks/useClientOnce";
-import { setLocale } from "@/core/i18n/locale";
-import { init } from "@/core/init";
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorPage } from '@/components/ErrorPage';
+import { useTelegramMock } from '@/hooks/useTelegramMock';
+import { useDidMount } from '@/hooks/useDidMount';
+import { useClientOnce } from '@/hooks/useClientOnce';
+import { setLocale } from '@/core/i18n/locale';
+import { init } from '@/core/init';
 
-import "./styles.css";
-import TriangleLoader from "../TriangleLoader";
+import './styles.css';
+import TriangleLoader from '../TriangleLoader';
 
 function RootInner({ children }: PropsWithChildren) {
-  const isDev = process.env.NODE_ENV === "development";
+  const isDev = process.env.NODE_ENV === 'development';
 
   // Mock Telegram environment in development mode if needed.
   if (isDev) {
@@ -30,7 +28,7 @@ function RootInner({ children }: PropsWithChildren) {
   }
 
   const lp = useLaunchParams();
-  const debug = isDev || lp.startParam === "debug";
+  const debug = isDev || lp.startParam === 'debug';
 
   // Initialize the library.
   useClientOnce(() => {
@@ -47,8 +45,8 @@ function RootInner({ children }: PropsWithChildren) {
 
   return (
     <AppRoot
-      appearance={isDark ? "dark" : "light"}
-      platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
+      appearance={isDark ? 'dark' : 'light'}
+      platform={['macos', 'ios'].includes(lp.platform) ? 'ios' : 'base'}
     >
       {children}
     </AppRoot>
