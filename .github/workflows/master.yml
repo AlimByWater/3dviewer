@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -15,11 +15,4 @@ jobs:
       # Шаг 2: Сборка Docker образа
       - name: Build Docker image
         run: |
-          make build
-
-      # Шаг 3: Запуск контейнера в docker compose
-      - name: Stop and remove existing container
-        run: |
-          whoami
-          cd /home/alim/projects/tg-market
-          docker compose up -d --force-recreate tg-market-front
+          make update
