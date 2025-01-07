@@ -38,29 +38,30 @@ export const authorsMock = [
     channel: "https://t.me/sashasvoloch",
     logo: "https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/svoloch_logo.png",
     name: "Sasha Svoloch 3",
-    telegramUserId: 0,
+    telegramUserId: 1099649271,
   },
 ];
 
 export const objects: Work[] = [
   {
-    id: "demo",
+    id: "ss-instinctive",
     name: "SleepTable",
     createdAt: "22/12/2024",
     authors: [authorsMock[0]],
     object: {
-      objectUrl: "/driptech/turtle.glb",
-      scale: 23,
+      objectUrl: "https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/sasha-instinctive.glb",
+      scale: 2,
+      position: [0, -4, 0],
     },
     previewUrl:
       "https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/preview_sleep_table.webp",
     backgroundColor: "white",
     foregroundColor: "black",
-    inAquarium: true,
+    inAquarium: false,
   },
   {
     id: "demo2",
-    name: "SleepTable2",
+    name: "SleepTable",
     createdAt: "22/12/2024",
     authors: [authorsMock[0]],
     object: {
@@ -93,7 +94,7 @@ export const objects: Work[] = [
 ];
 
 export const get3DObject = (id?: string) => {
-  id ??= "demo";
+  id ??= "ss-instinctive";
   const obj = objects.find((e) => e.id == id);
   return obj ?? objects[0]; // Return first object as fallback
 };
