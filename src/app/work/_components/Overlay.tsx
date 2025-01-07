@@ -1,13 +1,13 @@
-import ProgressIndicator from "./ProgressIndicator";
-import AuthorsList from "@/components/AuthorsList";
-import TriangleButton from "@/components/TriangleButton";
-import { Author, Work } from "@/types/work";
-import { Fragment, useEffect, useState } from "react";
+import ProgressIndicator from './ProgressIndicator';
+import AuthorsList from '@/components/AuthorsList';
+import TriangleButton from '@/components/TriangleButton';
+import { Author, Work } from '@/types/work';
+import { Fragment, useEffect, useState } from 'react';
 
 const fetchAuthors = async (): Promise<Author[]> => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/authors`);
   if (!res.ok) {
-    throw Error("Failed to fetch elves");
+    throw Error('Failed to fetch elves');
   }
   return res.json();
 };
@@ -38,46 +38,47 @@ const Overlay = ({
   return (
     <div
       style={{
-        position: "absolute",
+        position: 'absolute',
         top: 0,
         left: 0,
-        width: "100%",
-        height: "100%",
-        pointerEvents: "none",
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
       }}
     >
-      <div style={{ pointerEvents: "auto" }}>
+      <div style={{ pointerEvents: 'auto' }}>
         <TriangleButton
           onClick={() => setShowAuthors(true)}
           color={work.foregroundColor}
         />
-        {showAuthors && (
+        {/* TODO: Temporary hide authors list */}
+        {/* {showAuthors && (
           <AuthorsList authors={authors} onClose={onCloseAuthorsPage} />
-        )}
+        )} */}
       </div>
 
-      <div style={{ pointerEvents: "auto" }}>
+      <div style={{ pointerEvents: 'auto' }}>
         {work.authors.map((author) => (
           <img
             key={author.telegramUserId}
             alt={author.name}
             src={author.logo}
-            style={{ position: "absolute", bottom: 40, left: 20, width: 30 }}
+            style={{ position: 'absolute', bottom: 40, left: 20, width: 30 }}
           />
         ))}
         <div
           style={{
-            position: "absolute",
+            position: 'absolute',
             bottom: 40,
             left: 55,
-            fontSize: "13px",
+            fontSize: '13px',
             color: work.foregroundColor,
           }}
         >
           <a style={{ color: work.foregroundColor }}>{work.name}</a>
           <br />
           <div>
-            {"by "}
+            {'by '}
             {work.authors.map((author, index) => (
               <Fragment key={author.telegramUserId}>
                 <a
@@ -86,7 +87,7 @@ const Overlay = ({
                 >
                   {author.name}
                 </a>
-                {index < work.authors.length - 1 ? " & " : ""}
+                {index < work.authors.length - 1 ? ' & ' : ''}
               </Fragment>
             ))}
           </div>
@@ -97,11 +98,11 @@ const Overlay = ({
       {/*<div style={{ position: 'absolute', top: 40, left: 40 }}>ok —</div>*/}
       <div
         style={{
-          position: "absolute",
+          position: 'absolute',
           bottom: 40,
           right: 20,
-          fontSize: "13px",
-          pointerEvents: "auto",
+          fontSize: '13px',
+          pointerEvents: 'auto',
           color: work.foregroundColor,
         }}
       >
