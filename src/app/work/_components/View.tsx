@@ -16,7 +16,7 @@ import { Work } from '@/types/work';
 import { Suspense, useEffect, useRef, useState } from 'react';
 
 import { Leva, LevaPanel, useControls, useCreateStore } from 'leva';
-import { postEvent } from '@telegram-apps/sdk-react';
+import { postEvent, useLaunchParams } from '@telegram-apps/sdk-react';
 import { on } from '@telegram-apps/sdk-react';
 
 const HDRIVariants = [
@@ -33,6 +33,7 @@ const View = ({
   work: Work;
   isAuthorsPageOpen: boolean;
 }) => {
+  const lp = useLaunchParams();
   const hdriStore = useCreateStore();
 
   const { hdri } = useControls(
@@ -49,9 +50,7 @@ const View = ({
 
   const [safeAreaInsets, setSafeAreaInsets] = useState({
     top: 0,
-    left: 0,
     right: 0,
-    bottom: 0,
   });
 
   useEffect(() => {
@@ -62,15 +61,22 @@ const View = ({
     const removeListener = on('content_safe_area_changed', (payload) => {
       setSafeAreaInsets({
         top: payload.top || 0,
-        left: payload.left || 0,
         right: payload.right || 0,
-        bottom: payload.bottom || 0,
       });
     });
 
     // Cleanup listener on unmount
     return () => removeListener();
   }, []);
+
+  const levaPanelStyles = {
+    top: `calc(${safeAreaInsets.top}px + 15px)`,
+    right: `calc(${safeAreaInsets.right}px + 15px)`,
+  };
+
+  if (['android', 'android_x', 'ios'].includes(lp.platform)) {
+    levaPanelStyles.top = `calc(${safeAreaInsets.top}px + 55px)`;
+  }
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
@@ -175,14 +181,13 @@ const View = ({
       <div
         style={{
           position: 'absolute',
-          top: `calc(${safeAreaInsets.top}px + 15px)`,
-          right: `calc(${safeAreaInsets.right}px + 15px)`,
           display: 'grid',
           width: 250,
           gap: 10,
           overflow: 'auto',
           background: '#181C20',
           borderRadius: '8px',
+          ...levaPanelStyles,
         }}
       >
         <LevaPanel fill flat titleBar={false} store={hdriStore} />
