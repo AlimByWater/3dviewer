@@ -18,6 +18,7 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 import { Leva, LevaPanel, useControls, useCreateStore } from 'leva';
 import { postEvent, useLaunchParams } from '@telegram-apps/sdk-react';
 import { on } from '@telegram-apps/sdk-react';
+import { useSafeArea } from '@/hooks/useSafeArea';
 
 const HDRIVariants = [
   '/driptech/hdri/env-1.jpg',
@@ -48,34 +49,15 @@ const View = ({
     { store: hdriStore }
   );
 
-  const [safeAreaInsets, setSafeAreaInsets] = useState({
-    top: 0,
-    right: 0,
-  });
-
-  useEffect(() => {
-    // Request initial safe area values
-    postEvent('web_app_request_content_safe_area');
-
-    // Listen for safe area changes
-    const removeListener = on('content_safe_area_changed', (payload) => {
-      setSafeAreaInsets({
-        top: payload.top || 0,
-        right: payload.right || 0,
-      });
-    });
-
-    // Cleanup listener on unmount
-    return () => removeListener();
-  }, []);
+  const { top, right } = useSafeArea();
 
   const levaPanelStyles = {
-    top: `calc(${safeAreaInsets.top}px + 15px)`,
-    right: `calc(${safeAreaInsets.right}px + 15px)`,
+    top: `calc(${top}px + 15px)`,
+    right: `calc(${right}px + 15px)`,
   };
 
   if (['android', 'android_x', 'ios'].includes(lp.platform)) {
-    levaPanelStyles.top = `calc(${safeAreaInsets.top}px + 55px)`;
+    levaPanelStyles.top = `calc(${top}px + 55px)`;
   }
 
   return (
