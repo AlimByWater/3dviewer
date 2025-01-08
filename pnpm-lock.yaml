@@ -20,9 +20,6 @@ dependencies:
   '@tonconnect/ui-react':
     specifier: ^2.0.5
     version: 2.0.9(react-dom@18.3.1)(react@18.3.1)
-  eruda:
-    specifier: ^3.0.1
-    version: 3.4.1
   normalize.css:
     specifier: ^8.0.1
     version: 8.0.1
@@ -32,6 +29,9 @@ dependencies:
   react-dom:
     specifier: ^18.2.0
     version: 18.3.1(react@18.3.1)
+  react-router:
+    specifier: ^7.1.1
+    version: 7.1.1(react-dom@18.3.1)(react@18.3.1)
   react-router-dom:
     specifier: ^7.1.1
     version: 7.1.1(react-dom@18.3.1)(react@18.3.1)
@@ -1846,10 +1846,6 @@ packages:
   /electron-to-chromium@1.5.76:
     resolution: {integrity: sha512-CjVQyG7n7Sr+eBXE86HIulnL5N8xZY1sgmOPGuq/F0Rr0FJq63lg0kEtOIDfZBk44FnDLf6FUJ+dsJcuiUDdDQ==}
     dev: true
-
-  /eruda@3.4.1:
-    resolution: {integrity: sha512-RmaO5yD97URY/9Q0lye3cmmNPoXNKreeePIw7c/zllbscR92CjGFZFuQ70+0fLIvLcKW3Xha8DS8NFhmeNbEBQ==}
-    dev: false
 
   /esbuild@0.21.5:
     resolution: {integrity: sha512-mg3OPMV4hXywwpoDxu3Qda5xCKQi+vCTZq8S9J/EpkhB2HzKXq4SNFZE3+NK93JYxc8VMSep+lOUSC/RVKaBqw==}

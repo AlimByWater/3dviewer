@@ -17,7 +17,7 @@ export default function Home() {
           header="Features"
           footer="You can use these pages to learn more about features, provided by Telegram Mini Apps and other useful projects"
         >
-          <Link href="/ton-connect">
+          <Link to="/ton-connect">
             <Cell
               before={
                 <Image src={tonSvg} style={{ backgroundColor: '#007AFF' }} />
@@ -32,17 +32,17 @@ export default function Home() {
           header="Application Launch Data"
           footer="These pages help developer to learn more about current launch information"
         >
-          <Link href="/init-data">
+          <Link to="/init-data">
             <Cell subtitle="User data, chat information, technical data">
               Init Data
             </Cell>
           </Link>
-          <Link href="/launch-params">
+          <Link to="/launch-params">
             <Cell subtitle="Platform identifier, Mini Apps version, etc.">
               Launch Parameters
             </Cell>
           </Link>
-          <Link href="/theme-params">
+          <Link to="/theme-params">
             <Cell subtitle="Telegram application palette information">
               Theme Parameters
             </Cell>

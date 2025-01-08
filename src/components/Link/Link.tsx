@@ -1,35 +1,28 @@
 import { openLink, classNames } from '@telegram-apps/sdk-react';
-import { type FC, type MouseEventHandler, type JSX, useCallback } from 'react';
-import {
-  type LinkProps as NextLinkProps,
-  default as NextLink,
-} from 'next/link';
-// TODO: next/link -> react-router-dom link component
+import { type FC, type MouseEventHandler, useCallback } from 'react';
+
+import { Link as LinkComponent, LinkProps } from 'react-router';
 // TODO: Add TailwindCSS if necessary
 
 import './styles.css';
 
-export interface LinkProps
-  extends NextLinkProps,
-    Omit<JSX.IntrinsicElements['a'], 'href'> {}
-
 export const Link: FC<LinkProps> = ({
   className,
   onClick: propsOnClick,
-  href,
+  to,
   ...rest
 }) => {
+  // Compute if target path is external. In this case we would like to open link using
+  // TMA method.
   const onClick = useCallback<MouseEventHandler<HTMLAnchorElement>>(
     (e) => {
       propsOnClick?.(e);
 
-      // Compute if target path is external. In this case we would like to open link using
-      // TMA method.
       let path: string;
-      if (typeof href === 'string') {
-        path = href;
+      if (typeof to === 'string') {
+        path = to;
       } else {
-        const { search = '', pathname = '', hash = '' } = href;
+        const { search = '', pathname = '', hash = '' } = to;
         path = `${pathname}?${search}#${hash}`;
       }
 
@@ -44,13 +37,13 @@ export const Link: FC<LinkProps> = ({
         openLink(targetUrl.toString());
       }
     },
-    [href, propsOnClick]
+    [to, propsOnClick]
   );
 
   return (
-    <NextLink
+    <LinkComponent
       {...rest}
-      href={href}
+      to={to}
       onClick={onClick}
       className={classNames(className, 'link')}
     />
