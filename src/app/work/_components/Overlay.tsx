@@ -52,9 +52,9 @@ const Overlay = ({
           color={work.foregroundColor}
         />
         {/* TODO: Temporary hide authors list */}
-        {/* {showAuthors && (
+          {showAuthors && (
           <AuthorsList authors={authors} onClose={onCloseAuthorsPage} />
-        )} */}
+        )} 
       </div>
 
       <div style={{ pointerEvents: 'auto' }}>
