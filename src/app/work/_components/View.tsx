@@ -125,7 +125,11 @@ const View = ({
               />
             </group>
           </Environment>
-          <Environment files={HDRIVariants[hdri]} background />
+          <Environment
+            backgroundIntensity={0}
+            files={HDRIVariants[hdri]}
+            background
+          />
           <CameraControls
             truckSpeed={1}
             dollySpeed={1}
