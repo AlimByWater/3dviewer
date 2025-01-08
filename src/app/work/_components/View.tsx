@@ -13,9 +13,11 @@ import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import WorkView from './WorkView';
 import WorkInAquariumView from './WorkInAquariumView';
 import { Work } from '@/types/work';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 
-import { useControls } from 'leva';
+import { Leva, LevaPanel, useControls, useCreateStore } from 'leva';
+import { postEvent } from '@telegram-apps/sdk-react';
+import { on } from '@telegram-apps/sdk-react';
 
 const HDRIVariants = [
   '/driptech/hdri/env-1.jpg',
@@ -31,14 +33,44 @@ const View = ({
   work: Work;
   isAuthorsPageOpen: boolean;
 }) => {
-  const { hdri } = useControls({
-    hdri: {
-      value: 0,
-      min: 0,
-      max: HDRIVariants.length - 1,
-      step: 1,
+  const hdriStore = useCreateStore();
+
+  const { hdri } = useControls(
+    {
+      hdri: {
+        value: 0,
+        min: 0,
+        max: HDRIVariants.length - 1,
+        step: 1,
+      },
     },
+    { store: hdriStore }
+  );
+
+  const [safeAreaInsets, setSafeAreaInsets] = useState({
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   });
+
+  useEffect(() => {
+    // Request initial safe area values
+    postEvent('web_app_request_content_safe_area');
+
+    // Listen for safe area changes
+    const removeListener = on('content_safe_area_changed', (payload) => {
+      setSafeAreaInsets({
+        top: payload.top || 0,
+        left: payload.left || 0,
+        right: payload.right || 0,
+        bottom: payload.bottom || 0,
+      });
+    });
+
+    // Cleanup listener on unmount
+    return () => removeListener();
+  }, []);
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
@@ -139,6 +171,22 @@ const View = ({
           />
         </Suspense>
       </Canvas>
+
+      <div
+        style={{
+          position: 'absolute',
+          top: `calc(${safeAreaInsets.top}px + 15px)`,
+          right: `calc(${safeAreaInsets.right}px + 15px)`,
+          display: 'grid',
+          width: 250,
+          gap: 10,
+          overflow: 'auto',
+          background: '#181C20',
+          borderRadius: '8px',
+        }}
+      >
+        <LevaPanel fill flat titleBar={false} store={hdriStore} />
+      </div>
     </div>
   );
 };
