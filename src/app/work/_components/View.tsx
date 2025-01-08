@@ -15,6 +15,15 @@ import WorkInAquariumView from './WorkInAquariumView';
 import { Work } from '@/types/work';
 import { Suspense } from 'react';
 
+import { useControls } from 'leva';
+
+const HDRIVariants = [
+  '/driptech/hdri/env-1.jpg',
+  '/driptech/hdri/env-2.jpg',
+  '/driptech/hdri/env-3.jpg',
+  '/driptech/hdri/env-4.jpg',
+];
+
 const View = ({
   work,
   isAuthorsPageOpen,
@@ -22,6 +31,15 @@ const View = ({
   work: Work;
   isAuthorsPageOpen: boolean;
 }) => {
+  const { hdri } = useControls({
+    hdri: {
+      value: 0,
+      min: 0,
+      max: HDRIVariants.length - 1,
+      step: 1,
+    },
+  });
+
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <Canvas
@@ -107,6 +125,7 @@ const View = ({
               />
             </group>
           </Environment>
+          <Environment files={HDRIVariants[hdri]} background />
           <CameraControls
             truckSpeed={1}
             dollySpeed={1}
