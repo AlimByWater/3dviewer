@@ -1,18 +1,19 @@
-import "./View.css";
+import './View.css';
 
-import { Canvas } from "@react-three/fiber";
+import { Canvas } from '@react-three/fiber';
 import {
   CameraControls,
   Lightformer,
   Environment,
   RandomizedLight,
   AccumulativeShadows,
-} from "@react-three/drei";
-import { getPixelRatio, isLowPerformanceDevice } from "@/utils/pixelRatio";
-import WorkView from "./WorkView";
-import WorkInAquariumView from "./WorkInAquariumView";
-import { Work } from "@/types/work";
-import { Suspense } from "react";
+  OrbitControls,
+} from '@react-three/drei';
+import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
+import WorkView from './WorkView';
+import WorkInAquariumView from './WorkInAquariumView';
+import { Work } from '@/types/work';
+import { Suspense } from 'react';
 
 const View = ({
   work,
@@ -22,7 +23,7 @@ const View = ({
   isAuthorsPageOpen: boolean;
 }) => {
   return (
-    <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <Canvas
         dpr={getPixelRatio(isAuthorsPageOpen)}
         style={{ backgroundColor: work.backgroundColor }}
@@ -67,9 +68,12 @@ const View = ({
                 position={[0, 5, -9]}
                 scale={[15, 15, 1]}
               />
-              
+
               {/* Круговые источники света */}
-              {(isLowPerformanceDevice() ? [3, -3, 3, -3] : [3, -3, 3, -3, 3, -3, 3, -3]).map((x, i) => (
+              {(isLowPerformanceDevice()
+                ? [3, -3, 3, -3]
+                : [3, -3, 3, -3, 3, -3, 3, -3]
+              ).map((x, i) => (
                 <Lightformer
                   key={i}
                   form="circle"
@@ -79,7 +83,7 @@ const View = ({
                   scale={[4, 1, 1]}
                 />
               ))}
-              
+
               {/* Боковое освещение */}
               <Lightformer
                 intensity={3}
@@ -93,7 +97,7 @@ const View = ({
                 position={[10, 2, 0]}
                 scale={[50, 3, 1]}
               />
-              
+
               {/* Добавляем фронтальный свет */}
               <Lightformer
                 intensity={2}
@@ -106,6 +110,7 @@ const View = ({
           <CameraControls
             truckSpeed={1}
             dollySpeed={1}
+            minDistance={6}
             minPolarAngle={0}
             maxPolarAngle={Math.PI / 2}
           />
