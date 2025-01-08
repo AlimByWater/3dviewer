@@ -23,6 +23,7 @@ const WorkView = ({ work }: WorkViewProps) => {
       position={work.object.position}
       scale={work.object.scale}
     />
+
   );
 };
 

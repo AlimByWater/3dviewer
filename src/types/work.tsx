@@ -34,33 +34,27 @@ export const authorsMock = [
     name: "Sasha Svoloch",
     telegramUserId: 1099649271,
   },
-  {
-    channel: "https://t.me/sashasvoloch",
-    logo: "https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/svoloch_logo.png",
-    name: "Sasha Svoloch 3",
-    telegramUserId: 1099649271,
-  },
 ];
 
 export const objects: Work[] = [
   {
     id: "ss-instinctive",
-    name: "SleepTable",
-    createdAt: "22/12/2024",
+    name: "instinctive",
+    createdAt: "09/01/2025",
     authors: [authorsMock[0]],
     object: {
       objectUrl: "https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/sasha-instinctive.glb",
-      scale: 2,
+      scale: 5,
       position: [0, -4, 0],
     },
     previewUrl:
       "https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/preview_sleep_table.webp",
-    backgroundColor: "white",
-    foregroundColor: "black",
+    backgroundColor: "black",
+    foregroundColor: "white",
     inAquarium: false,
   },
   {
-    id: "demo2",
+    id: "ss-sleep-table",
     name: "SleepTable",
     createdAt: "22/12/2024",
     authors: [authorsMock[0]],
@@ -74,22 +68,6 @@ export const objects: Work[] = [
     backgroundColor: "red",
     foregroundColor: "white",
     inAquarium: true,
-  },
-  {
-    id: "demo3",
-    name: "SleepTable3",
-    createdAt: "22/12/2024",
-    authors: [authorsMock[0], authorsMock[1]],
-    object: {
-      objectUrl:
-        "https://efc1ea83-8d42-4e62-ae0e-e88e8e890ca8.selstorage.ru/models/compressed_sleeptable.glb",
-      position: [-2, -2, 0],
-    },
-    previewUrl:
-      "https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/preview_sleep_table.webp",
-    backgroundColor: "white",
-    foregroundColor: "black",
-    inAquarium: false,
   },
 ];
 

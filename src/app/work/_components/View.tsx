@@ -39,24 +39,24 @@ const View = ({
             <WorkView work={work} />
           )}
           {/** Мягкие тени */}
-          <AccumulativeShadows
-            temporal
-            frames={isLowPerformanceDevice() ? 30 : 100}
-            color="lightblue"
-            colorBlend={2}
-            opacity={0.5}
-            scale={80}
-            position={[0, -5, 0]}
-          >
-            <RandomizedLight
-              amount={isLowPerformanceDevice() ? 4 : 8}
-              radius={20}
-              ambient={0.7}
-              intensity={1.5}
-              position={[0, 15, -5]}
-              size={25}
-            />
-          </AccumulativeShadows>
+          {/*<AccumulativeShadows*/}
+          {/*  temporal*/}
+          {/*  frames={isLowPerformanceDevice() ? 30 : 100}*/}
+          {/*  color="lightblue"*/}
+          {/*  colorBlend={2}*/}
+          {/*  opacity={0.5}*/}
+          {/*  scale={80}*/}
+          {/*  position={[0, -5, 0]}*/}
+          {/*>*/}
+          {/*  <RandomizedLight*/}
+          {/*    amount={isLowPerformanceDevice() ? 4 : 8}*/}
+          {/*    radius={20}*/}
+          {/*    ambient={0.7}*/}
+          {/*    intensity={1.5}*/}
+          {/*    position={[0, 15, -5]}*/}
+          {/*    size={25}*/}
+          {/*  />*/}
+          {/*</AccumulativeShadows>*/}
           {/** Пользовательская среда */}
           <Environment resolution={isLowPerformanceDevice() ? 256 : 1024}>
             <group rotation={[-Math.PI / 3, 0, 0]}>
