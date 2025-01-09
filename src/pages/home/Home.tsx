@@ -1,14 +1,14 @@
 import { Section, Cell, Image, List } from '@telegram-apps/telegram-ui';
-import { useTranslations } from 'next-intl';
+// import { useTranslations } from 'next-intl';
 
 import { Link } from '@/components/Link/Link';
-import { LocaleSwitcher } from '@/components/LocaleSwitcher/LocaleSwitcher';
+// import { LocaleSwitcher } from '@/components/LocaleSwitcher/LocaleSwitcher';
 import { Page } from '@/components/Page';
 
 import tonSvg from '../../_assets/ton.svg';
 
 export default function Home() {
-  const t = useTranslations('i18n');
+  // const t = useTranslations('i18n');
 
   return (
     <Page back={false}>
@@ -48,8 +48,12 @@ export default function Home() {
             </Cell>
           </Link>
         </Section>
-        <Section header={t('header')} footer={t('footer')}>
-          <LocaleSwitcher />
+        <Section
+          header={'Application supports i18n'}
+          footer={'You can select a different language from the dropdown menu.'}
+        >
+          {/* TODO: Turn on LocaleSwitcher after finding a good lib for localization */}
+          {/* <LocaleSwitcher /> */}
         </Section>
       </List>
     </Page>
