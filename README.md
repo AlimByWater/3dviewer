@@ -1,10 +1,10 @@
 # Запуск
 
 Для того, чтобы запустить приложение в режиме разработки, нужно:
-  -  Иметь инструмент для того, чтобы открыть доступ к локальной сети `http://localhost:3000`.
+  -  Иметь инструмент для того, чтобы открыть доступ к локальной сети `http://localhost:3000`, например, Tuna.
   -  Указать открытую ссылку как ссылку WebApp с путем `/driptech` (`https://openurl.com/driptech`)
   -  Указать в файле `.env.development` открытую ссылку, по которой доступно приложение с путем `/driptech/api` (`NEXT_PUBLIC_API_BASE_URL=https://openurl.com/driptech/api`). Это путь к апи, который расположен в папке `3dviewer/src/app/api` и сейчас используется для получения мокированных данных.
-  -  Запустить `pnpm run dev` и открыть WebApp;
+  -  Запустить `pnpm run dev` и открыть WebApp.
 
 # Telegram Mini Apps Next.js Template
 
