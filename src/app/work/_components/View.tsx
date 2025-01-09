@@ -1,23 +1,15 @@
 import './View.css';
 
 import { Canvas } from '@react-three/fiber';
-import {
-  CameraControls,
-  Lightformer,
-  Environment,
-  RandomizedLight,
-  AccumulativeShadows,
-  OrbitControls,
-} from '@react-three/drei';
+import { CameraControls, Lightformer, Environment } from '@react-three/drei';
 import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import WorkView from './WorkView';
 import WorkInAquariumView from './WorkInAquariumView';
 import { Work } from '@/types/work';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense } from 'react';
 
-import { Leva, LevaPanel, useControls, useCreateStore } from 'leva';
-import { postEvent, useLaunchParams } from '@telegram-apps/sdk-react';
-import { on } from '@telegram-apps/sdk-react';
+// import { Leva, LevaPanel, useControls, useCreateStore } from 'leva';
+import { useLaunchParams } from '@telegram-apps/sdk-react';
 import { useSafeArea } from '@/hooks/useSafeArea';
 
 const HDRIVariants = [
@@ -35,19 +27,19 @@ const View = ({
   isAuthorsPageOpen: boolean;
 }) => {
   const lp = useLaunchParams();
-  const hdriStore = useCreateStore();
+  // const hdriStore = useCreateStore();
 
-  const { hdri } = useControls(
-    {
-      hdri: {
-        value: 0,
-        min: 0,
-        max: HDRIVariants.length - 1,
-        step: 1,
-      },
-    },
-    { store: hdriStore }
-  );
+  // const { hdri } = useControls(
+  //   {
+  //     hdri: {
+  //       value: 0,
+  //       min: 0,
+  //       max: HDRIVariants.length - 1,
+  //       step: 1,
+  //     },
+  //   },
+  //   { store: hdriStore }
+  // );
 
   const { top, right } = useSafeArea();
 
@@ -147,7 +139,7 @@ const View = ({
           </Environment>
           <Environment
             backgroundIntensity={0}
-            files={HDRIVariants[hdri]}
+            files={HDRIVariants[1]}
             background
           />
           <CameraControls
@@ -160,7 +152,7 @@ const View = ({
         </Suspense>
       </Canvas>
 
-      <div
+      {/* <div
         style={{
           position: 'absolute',
           display: 'grid',
@@ -173,7 +165,7 @@ const View = ({
         }}
       >
         <LevaPanel fill flat titleBar={false} store={hdriStore} />
-      </div>
+      </div> */}
     </div>
   );
 };
