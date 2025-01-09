@@ -121,6 +121,34 @@ const AuthorsList = ({
 
 export default AuthorsList;
 
+const WorkPreview = ({ url, alt }: { url: string; alt: string }) => {
+  // Определяем расширение файла
+  const fileExtension = url.split('.').pop()?.toLowerCase();
+
+  if (fileExtension === 'webm') {
+    return (
+      <video 
+        className="work-preview" 
+        autoPlay 
+        loop 
+        muted 
+        playsInline
+      >
+        <source src={url} type="video/webm" />
+      </video>
+    );
+  }
+
+  // Для gif и всех остальных изображений используем img
+  return (
+    <img
+      src={url}
+      alt={alt}
+      className="work-preview"
+    />
+  );
+};
+
 const WorksList = ({
   author,
   initialWorks: works,
@@ -176,10 +204,9 @@ const WorksList = ({
               className="work-card"
               onClick={() => onSelect(work.id)}
             >
-              <img
-                src={work.previewUrl}
+              <WorkPreview 
+                url={work.previewUrl} 
                 alt={work.name}
-                className="work-preview"
               />
               <div className="work-info">
                 <h3 className="work-name">{work.name}</h3>
