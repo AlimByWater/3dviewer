@@ -48,14 +48,14 @@ export const objects: Work[] = [
       position: [0, -4, 0],
     },
     previewUrl:
-      "https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/preview_sleep_table.webp",
+      "https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/ss-instinctive-preview.webm",
     backgroundColor: "black",
     foregroundColor: "white",
     inAquarium: false,
   },
   {
     id: "ss-sleep-table",
-    name: "SleepTable",
+    name: "sleep table",
     createdAt: "22/12/2024",
     authors: [authorsMock[0]],
     object: {
@@ -64,7 +64,7 @@ export const objects: Work[] = [
       scale: 2,
     },
     previewUrl:
-      "https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/preview_sleep_table.webp",
+      "https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/ss-sleep-table-preview.webm",
     backgroundColor: "red",
     foregroundColor: "white",
     inAquarium: true,
