@@ -1,5 +1,5 @@
-import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
+import * as THREE from 'three';
+import { useFrame } from '@react-three/fiber';
 import {
   useMask,
   useGLTF,
@@ -7,10 +7,10 @@ import {
   Instances,
   MeshTransmissionMaterial,
   useAnimations,
-} from "@react-three/drei";
-import { isLowPerformanceDevice } from "../../../utils/pixelRatio";
-import { PropsWithChildren, useEffect, useLayoutEffect, useRef } from "react";
-import { Work } from "@/types/work";
+} from '@react-three/drei';
+import { isLowPerformanceDevice } from '../../../utils/pixelRatio';
+import { PropsWithChildren, useEffect, useLayoutEffect, useRef } from 'react';
+import { Work } from '@/types/work';
 
 interface WorkInAquariumViewProps {
   work: Work;
@@ -53,7 +53,7 @@ const WorkView = (props: { work: Work }) => {
     });
   }, [actions, animations, mixer]);
   useFrame(
-    (state) => (scene.rotation.z = Math.sin(state.clock.elapsedTime / 4) / 2)
+    (state) => (scene.rotation.z = Math.sin(state.clock.elapsedTime / 4) / 2),
   );
   return (
     <primitive
@@ -70,7 +70,7 @@ const Aquarium = ({
   ...props
 }: PropsWithChildren<{ position?: THREE.Vector3 | undefined }>) => {
   const ref = useRef<any>(null);
-  const { nodes } = useGLTF("/driptech/shapes-transformed.glb");
+  const { nodes } = useGLTF(`/${process.env.BASE_PATH}/shapes-transformed.glb`);
   const stencil = useMask(1, false);
 
   useLayoutEffect(() => {
