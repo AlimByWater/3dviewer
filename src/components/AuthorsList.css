@@ -49,13 +49,14 @@
 
 .author-list-name {
   font-size: 14px;
+  color: #000;
   font-weight: 500;
   position: relative;
   display: inline-block;
 }
 
 .author-list-name::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 100%;
   height: 1px;
@@ -90,6 +91,7 @@
 }
 
 .author-header-name {
+  color: #000;
   font-size: 12px;
   font-weight: 600;
   margin: 0;
@@ -181,7 +183,7 @@
 }
 
 .work-name::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 100%;
   height: 1px;

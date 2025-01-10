@@ -1,7 +1,7 @@
 import ProgressIndicator from './ProgressIndicator';
 import AuthorsList from '@/components/AuthorsList';
 import TriangleButton from '@/components/TriangleButton';
-import { Author, Work } from '@/types/work';
+import { Author, authorsMock, Work } from '@/types/work';
 import { Fragment, useEffect, useState } from 'react';
 
 const fetchAuthors = async (): Promise<Author[]> => {
@@ -19,14 +19,14 @@ const Overlay = ({
   work: Work;
   onSelectWork: (workId: string) => void;
 }) => {
-  const [authors, setAuthors] = useState<Author[] | null>(null);
+  const [authors, setAuthors] = useState<Author[] | null>(authorsMock);
   const [showAuthors, setShowAuthors] = useState(false);
 
-  useEffect(() => {
-    fetchAuthors().then((authors) => {
-      setAuthors(authors);
-    });
-  }, []);
+  // useEffect(() => {
+  //   fetchAuthors().then((authors) => {
+  //     setAuthors(authors);
+  //   });
+  // }, []);
 
   const onCloseAuthorsPage = (workId?: string) => {
     setShowAuthors(false);
@@ -52,9 +52,9 @@ const Overlay = ({
           color={work.foregroundColor}
         />
         {/* TODO: Temporary hide authors list */}
-          {showAuthors && (
+        {showAuthors && (
           <AuthorsList authors={authors} onClose={onCloseAuthorsPage} />
-        )} 
+        )}
       </div>
 
       <div style={{ pointerEvents: 'auto' }}>

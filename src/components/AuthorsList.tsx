@@ -1,7 +1,8 @@
-import "./AuthorsList.css";
-import { useState, useEffect, CSSProperties } from "react";
-import { postEvent, on, useLaunchParams } from "@telegram-apps/sdk-react";
-import { Author, Work } from "@/types/work";
+import './AuthorsList.css';
+import { useState, useEffect, CSSProperties } from 'react';
+import { postEvent, on, useLaunchParams } from '@telegram-apps/sdk-react';
+import { Author, Work } from '@/types/work';
+import { useSafeArea } from '@/hooks/useSafeArea';
 
 const getAuthorWorks = async (telegramUserId: number): Promise<Work[]> => {
   const res = await fetch(
@@ -26,12 +27,7 @@ const AuthorsList = ({
   const [worksByAuthor, setWorksByAuthor] = useState<WorksByAuthor | null>(
     null
   );
-  const [safeAreaInsets, setSafeAreaInsets] = useState({
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  });
+  const safeAreaInsets = useSafeArea();
   const lp = useLaunchParams();
 
   useEffect(() => {
@@ -48,24 +44,6 @@ const AuthorsList = ({
     }
   }, [authors]);
 
-  useEffect(() => {
-    // Request initial safe area values
-    postEvent("web_app_request_content_safe_area");
-
-    // Listen for safe area changes
-    const removeListener = on("content_safe_area_changed", (payload) => {
-      setSafeAreaInsets({
-        top: payload.top || 0,
-        left: payload.left || 0,
-        right: payload.right || 0,
-        bottom: payload.bottom || 0,
-      });
-    });
-
-    // Cleanup listener on unmount
-    return () => removeListener();
-  }, []);
-
   const pageStyle = {
     padding: `calc(${safeAreaInsets.top}px + 40px) calc(${safeAreaInsets.right}px + 40px) calc(${safeAreaInsets.bottom}px + 40px) calc(${safeAreaInsets.left}px + 40px)`,
   };
@@ -80,7 +58,7 @@ const AuthorsList = ({
     left: `calc(${safeAreaInsets.left}px + 20px)`,
   };
 
-  if (["android", "android_x", "ios"].includes(lp.platform)) {
+  if (['android', 'android_x', 'ios'].includes(lp.platform)) {
     // pageStyle.top = `calc(${safeAreaInsets.top}px + 60px)`
     closeButtonStyle.top = `calc(${safeAreaInsets.top}px + 40px)`;
     backButtonStyle.top = `calc(${safeAreaInsets.top}px + 40px)`;
@@ -143,6 +121,34 @@ const AuthorsList = ({
 
 export default AuthorsList;
 
+const WorkPreview = ({ url, alt }: { url: string; alt: string }) => {
+  // Определяем расширение файла
+  const fileExtension = url.split('.').pop()?.toLowerCase();
+
+  if (fileExtension === 'webm') {
+    return (
+      <video 
+        className="work-preview" 
+        autoPlay 
+        loop 
+        muted 
+        playsInline
+      >
+        <source src={url} type="video/webm" />
+      </video>
+    );
+  }
+
+  // Для gif и всех остальных изображений используем img
+  return (
+    <img
+      src={url}
+      alt={alt}
+      className="work-preview"
+    />
+  );
+};
+
 const WorksList = ({
   author,
   initialWorks: works,
@@ -198,10 +204,9 @@ const WorksList = ({
               className="work-card"
               onClick={() => onSelect(work.id)}
             >
-              <img
-                src={work.previewUrl}
+              <WorkPreview 
+                url={work.previewUrl} 
                 alt={work.name}
-                className="work-preview"
               />
               <div className="work-info">
                 <h3 className="work-name">{work.name}</h3>
