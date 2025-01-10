@@ -10,7 +10,11 @@ RUN=docker run -d -p 3338:3000 --name $(NAME_PROD) --log-opt max-size=10m --rest
 RUN-DEV=docker run -d -p 3339:3000 --name $(NAME_DEV) --log-opt max-size=10m --restart=always $(ARGS) $(NAME_DEV)
 
 RM=docker rm -f $(NAME_PROD)
+RM_DEV=docker rm -f $(NAME_DEV)
+
 RMI=docker rmi $(NAME_PROD)
+RMI_DEV=docker rmi $(NAME_DEV)
+
 PRUNE=docker image prune -f
 
 
@@ -35,6 +39,6 @@ update:
 
 update-dev:
 	$(BUILD_DEV)
-	$(RM)
+	$(RM_DEV)
 	$(RUN-DEV)
 	$(PRUNE)
