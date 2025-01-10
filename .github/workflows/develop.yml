@@ -1,0 +1,18 @@
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: self-hosted # Используем self-hosted runner
+
+    steps:
+      # Шаг 1: Проверка кода из репозитория
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Шаг 2: Сборка Docker образа
+      - name: Build Docker image
+        run: |
+          make update-dev

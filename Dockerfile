@@ -1,4 +1,5 @@
 # Base stage
+ARG ENV_FILE
 FROM node:20-alpine AS base
 
 # Установка pnpm
@@ -7,6 +8,7 @@ RUN npm install -g pnpm
 # Установка зависимостей
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
+COPY ${ENV_FILE} .env.production
 RUN pnpm install --frozen-lockfile
 
 # Сборка приложения
@@ -15,6 +17,7 @@ RUN pnpm run build
 
 # Production stage
 FROM node:20-alpine AS production
+ARG ENV_FILE
 WORKDIR /app
 
 # Установка pnpm
@@ -22,6 +25,7 @@ RUN npm install -g pnpm
 
 # Установка только продакшн-зависимостей
 COPY package.json pnpm-lock.yaml ./
+COPY ${ENV_FILE} .env.production
 RUN pnpm install --frozen-lockfile --prod
 
 # Копирование собранного приложения из base
