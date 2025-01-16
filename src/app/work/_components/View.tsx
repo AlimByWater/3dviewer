@@ -12,11 +12,13 @@ import { Suspense } from 'react';
 import { useLaunchParams } from '@telegram-apps/sdk-react';
 import { useSafeArea } from '@/hooks/useSafeArea';
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
+
 const HDRIVariants = [
-  '/driptech/hdri/env-1.jpg',
-  '/driptech/hdri/env-2.jpg',
-  '/driptech/hdri/env-3.jpg',
-  '/driptech/hdri/env-4.jpg',
+  `${basePath}/hdri/env-1.jpg`,
+  `${basePath}/hdri/env-2.jpg`,
+  `${basePath}/hdri/env-3.jpg`,
+  `${basePath}/hdri/env-4.jpg`,
 ];
 
 const View = ({
