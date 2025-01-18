@@ -11,6 +11,7 @@ import { Suspense } from 'react';
 
 import ParamsPanel from './ParamsPanel';
 import { useTweakpane } from '@/hooks/useTweakpane';
+import Color from 'color';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 
@@ -21,10 +22,6 @@ const HDRIVariants = [
   `${basePath}/hdri/env-4.jpg`,
 ];
 
-type PanelParams = {
-  hdri: number;
-};
-
 const View = ({
   work,
   isAuthorsPageOpen,
@@ -34,6 +31,8 @@ const View = ({
 }) => {
   const DEFAULT_PARAMS = {
     hdri: 0,
+    // TODO: Convert to HEX via library
+    bgColor: Color(work.backgroundColor).hex(),
   };
 
   const panelParams = useTweakpane(DEFAULT_PARAMS);
@@ -42,13 +41,13 @@ const View = ({
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <Canvas
         dpr={getPixelRatio(isAuthorsPageOpen)}
-        style={{ backgroundColor: work.backgroundColor }}
+        style={{ backgroundColor: panelParams.bgColor }}
         shadows
         camera={{ position: [-10, 0, 5], fov: 70, near: 1, far: 300 }}
         gl={{ stencil: true }}
       >
         <Suspense fallback={null}>
-          <color attach="background" args={[work.backgroundColor]} />
+          {/* <color attach="background" args={[work.backgroundColor]} /> */}
           {/** Стакан аквариума */}
           {work.inAquarium ? (
             <WorkInAquariumView work={work} />
