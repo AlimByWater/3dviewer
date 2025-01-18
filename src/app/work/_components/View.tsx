@@ -7,11 +7,11 @@ import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import WorkView from './WorkView';
 import WorkInAquariumView from './WorkInAquariumView';
 import { Work } from '@/types/work';
-import { Suspense } from 'react';
-
-import { useControls, useCreateStore } from 'leva';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 
 import ParamsPanel from './ParamsPanel';
+import { type Pane as TweakpaneT, Pane as Tweakpane } from 'tweakpane';
+import { BladeState } from '@tweakpane/core';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 
@@ -22,6 +22,10 @@ const HDRIVariants = [
   `${basePath}/hdri/env-4.jpg`,
 ];
 
+type PanelParams = {
+  hdri: number;
+};
+
 const View = ({
   work,
   isAuthorsPageOpen,
@@ -29,35 +33,58 @@ const View = ({
   work: Work;
   isAuthorsPageOpen: boolean;
 }) => {
-  const store = useCreateStore();
+  // const { hdri, initCameraPosition, backgroundColor } = useControls(
+  //   {
+  //     public: true,
+  //     // TODO: Figure out how to change properties reactively (intCameraPosition, backgroundColor)
+  //     initCameraPosition: [-10, 0, 5],
+  //     backgroundColor: work.backgroundColor,
+  //     hdri: {
+  //       value: 0,
+  //       min: 0,
+  //       max: HDRIVariants.length - 1,
+  //       step: 1,
+  //     },
+  //   },
+  //   { store },
+  // );
 
-  const { hdri, initCameraPosition, backgroundColor } = useControls(
-    {
-      public: true,
-      // TODO: Figure out how to change properties reactively (intCameraPosition, backgroundColor)
-      initCameraPosition: [-10, 0, 5],
-      backgroundColor: work.backgroundColor,
-      hdri: {
-        value: 0,
-        min: 0,
-        max: HDRIVariants.length - 1,
-        step: 1,
-      },
-    },
-    { store },
-  );
+  const DEFAULT_PARAMS = {
+    hdri: 0,
+  };
+
+  const [params, setParams] = useState<typeof DEFAULT_PARAMS>(DEFAULT_PARAMS);
+
+  useEffect(() => {
+    const pane = new Tweakpane({
+      title: 'Model parameters',
+      expanded: true,
+    });
+
+    const hdri = pane.addBinding(DEFAULT_PARAMS, 'hdri', {
+      min: 0,
+      max: 3,
+      step: 1,
+    });
+
+    hdri.on('change', (event) => setParams({ ...params, hdri: event.value }));
+
+    return () => {
+      pane.dispose();
+    };
+  }, []);
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <Canvas
         dpr={getPixelRatio(isAuthorsPageOpen)}
-        style={{ backgroundColor }}
+        style={{ backgroundColor: work.backgroundColor }}
         shadows
-        camera={{ position: initCameraPosition, fov: 70, near: 1, far: 300 }}
+        camera={{ position: [-10, 0, 5], fov: 70, near: 1, far: 300 }}
         gl={{ stencil: true }}
       >
         <Suspense fallback={null}>
-          <color attach="background" args={[backgroundColor]} />
+          <color attach="background" args={[work.backgroundColor]} />
           {/** Стакан аквариума */}
           {work.inAquarium ? (
             <WorkInAquariumView work={work} />
@@ -114,7 +141,10 @@ const View = ({
             </group>
           </Environment>
           {/* HDRI карта */}
-          <Environment backgroundIntensity={0} files={HDRIVariants[hdri]} />
+          <Environment
+            backgroundIntensity={0}
+            files={HDRIVariants[params.hdri]}
+          />
           <CameraControls
             truckSpeed={1}
             dollySpeed={1}
@@ -125,7 +155,7 @@ const View = ({
         </Suspense>
       </Canvas>
 
-      <ParamsPanel flat titleBar={true} store={store} />
+      <ParamsPanel />
     </div>
   );
 };
