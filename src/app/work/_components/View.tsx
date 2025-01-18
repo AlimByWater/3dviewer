@@ -7,11 +7,10 @@ import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import WorkView from './WorkView';
 import WorkInAquariumView from './WorkInAquariumView';
 import { Work } from '@/types/work';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense } from 'react';
 
 import ParamsPanel from './ParamsPanel';
-import { type Pane as TweakpaneT, Pane as Tweakpane } from 'tweakpane';
-import { BladeState } from '@tweakpane/core';
+import { useTweakpane } from '@/hooks/useTweakpane';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 
@@ -33,46 +32,11 @@ const View = ({
   work: Work;
   isAuthorsPageOpen: boolean;
 }) => {
-  // const { hdri, initCameraPosition, backgroundColor } = useControls(
-  //   {
-  //     public: true,
-  //     // TODO: Figure out how to change properties reactively (intCameraPosition, backgroundColor)
-  //     initCameraPosition: [-10, 0, 5],
-  //     backgroundColor: work.backgroundColor,
-  //     hdri: {
-  //       value: 0,
-  //       min: 0,
-  //       max: HDRIVariants.length - 1,
-  //       step: 1,
-  //     },
-  //   },
-  //   { store },
-  // );
-
   const DEFAULT_PARAMS = {
     hdri: 0,
   };
 
-  const [params, setParams] = useState<typeof DEFAULT_PARAMS>(DEFAULT_PARAMS);
-
-  useEffect(() => {
-    const pane = new Tweakpane({
-      title: 'Model parameters',
-      expanded: true,
-    });
-
-    const hdri = pane.addBinding(DEFAULT_PARAMS, 'hdri', {
-      min: 0,
-      max: 3,
-      step: 1,
-    });
-
-    hdri.on('change', (event) => setParams({ ...params, hdri: event.value }));
-
-    return () => {
-      pane.dispose();
-    };
-  }, []);
+  const panelParams = useTweakpane(DEFAULT_PARAMS);
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
@@ -143,7 +107,7 @@ const View = ({
           {/* HDRI карта */}
           <Environment
             backgroundIntensity={0}
-            files={HDRIVariants[params.hdri]}
+            files={HDRIVariants[panelParams.hdri]}
           />
           <CameraControls
             truckSpeed={1}
