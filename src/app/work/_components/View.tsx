@@ -1,3 +1,4 @@
+'use client';
 import './View.css';
 
 import { Canvas } from '@react-three/fiber';
@@ -8,9 +9,9 @@ import WorkInAquariumView from './WorkInAquariumView';
 import { Work } from '@/types/work';
 import { Suspense } from 'react';
 
-// import { Leva, LevaPanel, useControls, useCreateStore } from 'leva';
-import { useLaunchParams } from '@telegram-apps/sdk-react';
-import { useSafeArea } from '@/hooks/useSafeArea';
+import { useControls, useCreateStore } from 'leva';
+
+import ParamsPanel from './ParamsPanel';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 
@@ -28,68 +29,41 @@ const View = ({
   work: Work;
   isAuthorsPageOpen: boolean;
 }) => {
-  const lp = useLaunchParams();
-  // const hdriStore = useCreateStore();
+  const store = useCreateStore();
 
-  // const { hdri } = useControls(
-  //   {
-  //     hdri: {
-  //       value: 0,
-  //       min: 0,
-  //       max: HDRIVariants.length - 1,
-  //       step: 1,
-  //     },
-  //   },
-  //   { store: hdriStore }
-  // );
-
-  const { top, right } = useSafeArea();
-
-  const levaPanelStyles = {
-    top: `calc(${top}px + 15px)`,
-    right: `calc(${right}px + 15px)`,
-  };
-
-  if (['android', 'android_x', 'ios'].includes(lp.platform)) {
-    levaPanelStyles.top = `calc(${top}px + 55px)`;
-  }
+  const { hdri, initCameraPosition, backgroundColor } = useControls(
+    {
+      public: true,
+      // TODO: Figure out how to change properties reactively (intCameraPosition, backgroundColor)
+      initCameraPosition: [-10, 0, 5],
+      backgroundColor: work.backgroundColor,
+      hdri: {
+        value: 0,
+        min: 0,
+        max: HDRIVariants.length - 1,
+        step: 1,
+      },
+    },
+    { store },
+  );
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <Canvas
         dpr={getPixelRatio(isAuthorsPageOpen)}
-        style={{ backgroundColor: work.backgroundColor }}
+        style={{ backgroundColor }}
         shadows
-        camera={{ position: [-10, 0, 5], fov: 70, near: 1, far: 300 }}
+        camera={{ position: initCameraPosition, fov: 70, near: 1, far: 300 }}
         gl={{ stencil: true }}
       >
         <Suspense fallback={null}>
-          <color attach="background" args={[work.backgroundColor]} />
+          <color attach="background" args={[backgroundColor]} />
           {/** Стакан аквариума */}
           {work.inAquarium ? (
             <WorkInAquariumView work={work} />
           ) : (
             <WorkView work={work} />
           )}
-          {/** Мягкие тени */}
-          {/*<AccumulativeShadows*/}
-          {/*  temporal*/}
-          {/*  frames={isLowPerformanceDevice() ? 30 : 100}*/}
-          {/*  color="lightblue"*/}
-          {/*  colorBlend={2}*/}
-          {/*  opacity={0.5}*/}
-          {/*  scale={80}*/}
-          {/*  position={[0, -5, 0]}*/}
-          {/*>*/}
-          {/*  <RandomizedLight*/}
-          {/*    amount={isLowPerformanceDevice() ? 4 : 8}*/}
-          {/*    radius={20}*/}
-          {/*    ambient={0.7}*/}
-          {/*    intensity={1.5}*/}
-          {/*    position={[0, 15, -5]}*/}
-          {/*    size={25}*/}
-          {/*  />*/}
-          {/*</AccumulativeShadows>*/}
           {/** Пользовательская среда */}
           <Environment resolution={isLowPerformanceDevice() ? 256 : 1024}>
             <group rotation={[-Math.PI / 3, 0, 0]}>
@@ -130,7 +104,7 @@ const View = ({
                 scale={[50, 3, 1]}
               />
 
-              {/* Добавляем фронтальный свет */}
+              {/* Фронтальный свет */}
               <Lightformer
                 intensity={2}
                 rotation-z={0}
@@ -139,11 +113,8 @@ const View = ({
               />
             </group>
           </Environment>
-          <Environment
-            backgroundIntensity={0}
-            files={HDRIVariants[1]}
-            background
-          />
+          {/* HDRI карта */}
+          <Environment backgroundIntensity={0} files={HDRIVariants[hdri]} />
           <CameraControls
             truckSpeed={1}
             dollySpeed={1}
@@ -154,20 +125,7 @@ const View = ({
         </Suspense>
       </Canvas>
 
-      {/* <div
-        style={{
-          position: 'absolute',
-          display: 'grid',
-          width: 250,
-          gap: 10,
-          overflow: 'auto',
-          background: '#181C20',
-          borderRadius: '8px',
-          ...levaPanelStyles,
-        }}
-      >
-        <LevaPanel fill flat titleBar={false} store={hdriStore} />
-      </div> */}
+      <ParamsPanel flat titleBar={true} store={store} />
     </div>
   );
 };

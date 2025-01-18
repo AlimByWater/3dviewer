@@ -1,6 +1,6 @@
-import { Work } from "@/types/work";
-import { useAnimations, useGLTF } from "@react-three/drei";
-import { useEffect } from "react";
+import { Work } from '@/types/work';
+import { useAnimations, useGLTF } from '@react-three/drei';
+import { useEffect } from 'react';
 
 interface WorkViewProps {
   work: Work;
@@ -23,7 +23,6 @@ const WorkView = ({ work }: WorkViewProps) => {
       position={work.object.position}
       scale={work.object.scale}
     />
-
   );
 };
 
