@@ -51,7 +51,6 @@ const Overlay = ({
           onClick={() => setShowAuthors(true)}
           color={work.foregroundColor}
         />
-        {/* TODO: Temporary hide authors list */}
         {showAuthors && (
           <AuthorsList authors={authors} onClose={onCloseAuthorsPage} />
         )}

@@ -9,7 +9,6 @@ import WorkInAquariumView from './WorkInAquariumView';
 import { Work } from '@/types/work';
 import { Suspense } from 'react';
 
-import ParamsPanel from './ParamsPanel';
 import { useTweakpane } from '@/hooks/useTweakpane';
 import Color from 'color';
 
@@ -31,7 +30,6 @@ const View = ({
 }) => {
   const DEFAULT_PARAMS = {
     hdri: 0,
-    // TODO: Convert to HEX via library
     bgColor: Color(work.backgroundColor).hex(),
   };
 
@@ -117,8 +115,6 @@ const View = ({
           />
         </Suspense>
       </Canvas>
-
-      <ParamsPanel />
     </div>
   );
 };
