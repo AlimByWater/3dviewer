@@ -70,7 +70,9 @@ const Aquarium = ({
   ...props
 }: PropsWithChildren<{ position?: THREE.Vector3 | undefined }>) => {
   const ref = useRef<any>(null);
-  const { nodes } = useGLTF(`/${process.env.BASE_PATH}/shapes-transformed.glb`);
+  const { nodes } = useGLTF(
+    `${process.env.NEXT_PUBLIC_BASE_PATH}/shapes-transformed.glb`,
+  );
   const stencil = useMask(1, false);
 
   useLayoutEffect(() => {

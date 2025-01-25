@@ -1,5 +1,4 @@
 import { useLaunchParams } from '@telegram-apps/sdk-react';
-import { Color } from '@tweakpane/core';
 import { useEffect, useState } from 'react';
 
 import { Pane as Tweakpane } from 'tweakpane';
@@ -17,7 +16,6 @@ export function useTweakpane(defaultParams: PanelParams) {
   const [params, setParams] = useState<PanelParams>(defaultParams);
 
   useEffect(() => {
-    console.log('render');
     const pane = new Tweakpane({
       title: 'Model parameters',
       expanded: true,

@@ -4,13 +4,15 @@ import './View.css';
 import { Canvas } from '@react-three/fiber';
 import { CameraControls, Lightformer, Environment } from '@react-three/drei';
 import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
-import WorkView from './WorkView';
-import WorkInAquariumView from './WorkInAquariumView';
 import { Work } from '@/types/work';
 import { Suspense } from 'react';
 
 import { useTweakpane } from '@/hooks/useTweakpane';
 import Color from 'color';
+import dynamic from 'next/dynamic';
+
+const WorkInAquariumView = dynamic(() => import('./WorkInAquariumView'));
+const WorkView = dynamic(() => import('./WorkView'));
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 

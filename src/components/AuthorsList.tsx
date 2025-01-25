@@ -1,12 +1,13 @@
 import './AuthorsList.css';
 import { useState, useEffect, CSSProperties } from 'react';
-import { postEvent, on, useLaunchParams } from '@telegram-apps/sdk-react';
+import { useLaunchParams } from '@telegram-apps/sdk-react';
 import { Author, Work } from '@/types/work';
 import { useSafeArea } from '@/hooks/useSafeArea';
+import { useGLTF } from '@react-three/drei';
 
 const getAuthorWorks = async (telegramUserId: number): Promise<Work[]> => {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/works?telegramUserId=${telegramUserId}`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/works?telegramUserId=${telegramUserId}`,
   );
   if (!res.ok) {
     throw Error(`Failed to fetch works author ${telegramUserId}`);
@@ -25,7 +26,7 @@ const AuthorsList = ({
 }) => {
   const [selectedAuthor, setSelectedAuthor] = useState<Author | null>(null);
   const [worksByAuthor, setWorksByAuthor] = useState<WorksByAuthor | null>(
-    null
+    null,
   );
   const safeAreaInsets = useSafeArea();
   const lp = useLaunchParams();
@@ -37,7 +38,7 @@ const AuthorsList = ({
         authors.map(async (author) => {
           const works = await getAuthorWorks(author.telegramUserId);
           return [author.telegramUserId, works] as [number, Work[]];
-        })
+        }),
       ).then((res) => {
         setWorksByAuthor(new Map(res));
       });
@@ -127,26 +128,14 @@ const WorkPreview = ({ url, alt }: { url: string; alt: string }) => {
 
   if (fileExtension === 'webm') {
     return (
-      <video 
-        className="work-preview" 
-        autoPlay 
-        loop 
-        muted 
-        playsInline
-      >
+      <video className="work-preview" autoPlay loop muted playsInline>
         <source src={url} type="video/webm" />
       </video>
     );
   }
 
   // Для gif и всех остальных изображений используем img
-  return (
-    <img
-      src={url}
-      alt={alt}
-      className="work-preview"
-    />
-  );
+  return <img src={url} alt={alt} className="work-preview" />;
 };
 
 const WorksList = ({
@@ -168,6 +157,14 @@ const WorksList = ({
   closeButtonStyle?: CSSProperties | undefined;
   backButtonStyle?: CSSProperties | undefined;
 }) => {
+  useEffect(() => {
+    if (works) {
+      for (let i = 0; i < works.length; i++) {
+        useGLTF.preload(works[i].object.objectUrl);
+      }
+    }
+  }, [works]);
+
   return (
     <div className="authors-page" style={pageStyle}>
       <button
@@ -204,10 +201,7 @@ const WorksList = ({
               className="work-card"
               onClick={() => onSelect(work.id)}
             >
-              <WorkPreview 
-                url={work.previewUrl} 
-                alt={work.name}
-              />
+              <WorkPreview url={work.previewUrl} alt={work.name} />
               <div className="work-info">
                 <h3 className="work-name">{work.name}</h3>
               </div>

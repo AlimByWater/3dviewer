@@ -1,16 +1,9 @@
 import ProgressIndicator from './ProgressIndicator';
-import AuthorsList from '@/components/AuthorsList';
-import TriangleButton from '@/components/TriangleButton';
-import { Author, authorsMock, Work } from '@/types/work';
-import { Fragment, useEffect, useState } from 'react';
+import { Work } from '@/types/work';
+import dynamic from 'next/dynamic';
+import { Fragment } from 'react';
 
-const fetchAuthors = async (): Promise<Author[]> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/authors`);
-  if (!res.ok) {
-    throw Error('Failed to fetch elves');
-  }
-  return res.json();
-};
+const MenuButton = dynamic(() => import('./MenuButton'));
 
 const Overlay = ({
   work,
@@ -19,22 +12,6 @@ const Overlay = ({
   work: Work;
   onSelectWork: (workId: string) => void;
 }) => {
-  const [authors, setAuthors] = useState<Author[] | null>(authorsMock);
-  const [showAuthors, setShowAuthors] = useState(false);
-
-  // useEffect(() => {
-  //   fetchAuthors().then((authors) => {
-  //     setAuthors(authors);
-  //   });
-  // }, []);
-
-  const onCloseAuthorsPage = (workId?: string) => {
-    setShowAuthors(false);
-    if (workId) {
-      onSelectWork(workId);
-    }
-  };
-
   return (
     <div
       style={{
@@ -46,15 +23,7 @@ const Overlay = ({
         pointerEvents: 'none',
       }}
     >
-      <div style={{ pointerEvents: 'auto' }}>
-        <TriangleButton
-          onClick={() => setShowAuthors(true)}
-          color={work.foregroundColor}
-        />
-        {showAuthors && (
-          <AuthorsList authors={authors} onClose={onCloseAuthorsPage} />
-        )}
-      </div>
+      <MenuButton color={work.foregroundColor} onSelectWork={onSelectWork} />
 
       <div style={{ pointerEvents: 'auto' }}>
         {work.authors.map((author) => (
@@ -107,10 +76,7 @@ const Overlay = ({
       >
         {work.createdAt}
       </div>
-      <ProgressIndicator
-        backgroundColor={work.backgroundColor}
-        color={work.foregroundColor}
-      />
+      <ProgressIndicator color={work.foregroundColor} />
     </div>
   );
 };
