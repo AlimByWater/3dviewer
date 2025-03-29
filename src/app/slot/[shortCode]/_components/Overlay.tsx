@@ -1,16 +1,16 @@
 import ProgressIndicator from './ProgressIndicator';
-import { Work } from '@/types/work';
+import { Slot } from '@/types/types';
 import dynamic from 'next/dynamic';
 import { Fragment } from 'react';
 
 const MenuButton = dynamic(() => import('./MenuButton'));
 
 const Overlay = ({
-  work,
-  onSelectWork,
+  slot,
+  onSlotSelect,
 }: {
-  work: Work;
-  onSelectWork: (workId: string) => void;
+  slot: Slot;
+  onSlotSelect: (slot: Slot) => void;
 }) => {
   return (
     <div
@@ -23,10 +23,10 @@ const Overlay = ({
         pointerEvents: 'none',
       }}
     >
-      <MenuButton color={work.foregroundColor} onSelectWork={onSelectWork} />
+      <MenuButton currentSlot={slot} onSlotSelect={onSlotSelect} />
 
       <div style={{ pointerEvents: 'auto' }}>
-        {work.authors.map((author) => (
+        {slot.work.authors.map((author) => (
           <img
             key={author.telegramUserId}
             alt={author.name}
@@ -40,22 +40,22 @@ const Overlay = ({
             bottom: 40,
             left: 55,
             fontSize: '13px',
-            color: work.foregroundColor,
+            color: slot.work.foregroundColor,
           }}
         >
-          <a style={{ color: work.foregroundColor }}>{work.name}</a>
+          <a style={{ color: slot.work.foregroundColor }}>{slot.work.name}</a>
           <br />
           <div>
             {'by '}
-            {work.authors.map((author, index) => (
+            {slot.work.authors.map((author, index) => (
               <Fragment key={author.telegramUserId}>
                 <a
                   href={author.channel}
-                  style={{ color: work.foregroundColor }}
+                  style={{ color: slot.work.foregroundColor }}
                 >
                   {author.name}
                 </a>
-                {index < work.authors.length - 1 ? ' & ' : ''}
+                {index < slot.work.authors.length - 1 ? ' & ' : ''}
               </Fragment>
             ))}
           </div>
@@ -71,12 +71,12 @@ const Overlay = ({
           right: 20,
           fontSize: '13px',
           pointerEvents: 'auto',
-          color: work.foregroundColor,
+          color: slot.work.foregroundColor,
         }}
       >
-        {work.createdAt}
+        {new Date(slot.work.createdAt).toDateString()}
       </div>
-      <ProgressIndicator color={work.foregroundColor} />
+      <ProgressIndicator color={slot.work.foregroundColor} />
     </div>
   );
 };

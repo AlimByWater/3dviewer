@@ -1,15 +1,3 @@
-.authors-page {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  z-index: 2000;
-  box-sizing: border-box;
-  overflow-y: auto;
-}
-
 .close-button,
 .back-button {
   position: absolute;
@@ -122,7 +110,7 @@
 }
 
 @media (max-width: 480px) {
-  .authors-page {
+  .menu-layout {
     padding: 20px;
   }
 

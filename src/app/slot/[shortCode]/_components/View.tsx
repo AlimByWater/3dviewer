@@ -4,7 +4,7 @@ import './View.css';
 import { Canvas } from '@react-three/fiber';
 import { CameraControls, Lightformer, Environment } from '@react-three/drei';
 import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
-import { Work } from '@/types/work';
+import { Slot } from '@/types/types';
 import { Suspense } from 'react';
 
 import { useTweakpane } from '@/hooks/useTweakpane';
@@ -24,15 +24,15 @@ const HDRIVariants = [
 ];
 
 const View = ({
-  work,
+  slot,
   isAuthorsPageOpen,
 }: {
-  work: Work;
+  slot: Slot;
   isAuthorsPageOpen: boolean;
 }) => {
   const DEFAULT_PARAMS = {
     hdri: 0,
-    bgColor: Color(work.backgroundColor).hex(),
+    bgColor: Color(slot.work.backgroundColor).hex(),
   };
 
   const panelParams = useTweakpane(DEFAULT_PARAMS);
@@ -49,10 +49,10 @@ const View = ({
         <Suspense fallback={null}>
           {/* <color attach="background" args={[work.backgroundColor]} /> */}
           {/** Стакан аквариума */}
-          {work.inAquarium ? (
-            <WorkInAquariumView work={work} />
+          {slot.in_aquarium ? (
+            <WorkInAquariumView work={slot.work} />
           ) : (
-            <WorkView work={work} />
+            <WorkView work={slot.work} />
           )}
           {/** Пользовательская среда */}
           <Environment resolution={isLowPerformanceDevice() ? 256 : 1024}>

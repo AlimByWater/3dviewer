@@ -8,9 +8,9 @@ import {
   MeshTransmissionMaterial,
   useAnimations,
 } from '@react-three/drei';
-import { isLowPerformanceDevice } from '../../../utils/pixelRatio';
+import { isLowPerformanceDevice } from '../../../../utils/pixelRatio';
 import { PropsWithChildren, useEffect, useLayoutEffect, useRef } from 'react';
-import { Work } from '@/types/work';
+import { Work } from '@/types/types';
 
 interface WorkInAquariumViewProps {
   work: Work;
@@ -43,7 +43,7 @@ const WorkInAquariumView = ({ work }: WorkInAquariumViewProps) => {
 export default WorkInAquariumView;
 
 const WorkView = (props: { work: Work }) => {
-  const { scene, animations } = useGLTF(props.work.object.objectUrl);
+  const { scene, animations } = useGLTF(props.work.link);
   const { actions, mixer } = useAnimations(animations, scene);
   useEffect(() => {
     mixer.timeScale = 0.5;
