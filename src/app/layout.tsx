@@ -9,6 +9,8 @@ import { Inter } from 'next/font/google';
 import '@telegram-apps/telegram-ui/dist/styles.css';
 import 'normalize.css/normalize.css';
 import './_assets/globals.css';
+import '@mantine/core/styles.css';
+import { MantineProvider } from '@mantine/core';
 
 export const metadata: Metadata = {
   title: 'Your Application Title Goes Here',
@@ -23,9 +25,11 @@ export default async function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang={locale}>
       <body className={inter.className}>
-        <I18nProvider>
-          <Root>{children}</Root>
-        </I18nProvider>
+        <MantineProvider>
+          <I18nProvider>
+            <Root>{children}</Root>
+          </I18nProvider>
+        </MantineProvider>
       </body>
     </html>
   );

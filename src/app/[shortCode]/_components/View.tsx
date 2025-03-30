@@ -1,93 +1,60 @@
+'use client';
+
 import './View.css';
 
 import { Canvas } from '@react-three/fiber';
 import { CameraControls, Lightformer, Environment } from '@react-three/drei';
 import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
-import WorkView from './WorkView';
-import WorkInAquariumView from './WorkInAquariumView';
-import { Work } from '@/types/work';
+import { Slot } from '@/types/types';
 import { Suspense } from 'react';
 
-// import { Leva, LevaPanel, useControls, useCreateStore } from 'leva';
-import { useLaunchParams } from '@telegram-apps/sdk-react';
-import { useSafeArea } from '@/hooks/useSafeArea';
+import { useTweakpane } from '@/hooks/useTweakpane';
+import Color from 'color';
+import dynamic from 'next/dynamic';
+
+const WorkInAquariumView = dynamic(() => import('./WorkInAquariumView'));
+const WorkView = dynamic(() => import('./WorkView'));
+
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 
 const HDRIVariants = [
-  '/driptech/hdri/env-1.jpg',
-  '/driptech/hdri/env-2.jpg',
-  '/driptech/hdri/env-3.jpg',
-  '/driptech/hdri/env-4.jpg',
+  `${basePath}/hdri/env-1.jpg`,
+  `${basePath}/hdri/env-2.jpg`,
+  `${basePath}/hdri/env-3.jpg`,
+  `${basePath}/hdri/env-4.jpg`,
 ];
 
 const View = ({
-  work,
+  slot,
   isAuthorsPageOpen,
 }: {
-  work: Work;
+  slot: Slot;
   isAuthorsPageOpen: boolean;
 }) => {
-  const lp = useLaunchParams();
-  // const hdriStore = useCreateStore();
-
-  // const { hdri } = useControls(
-  //   {
-  //     hdri: {
-  //       value: 0,
-  //       min: 0,
-  //       max: HDRIVariants.length - 1,
-  //       step: 1,
-  //     },
-  //   },
-  //   { store: hdriStore }
-  // );
-
-  const { top, right } = useSafeArea();
-
-  const levaPanelStyles = {
-    top: `calc(${top}px + 15px)`,
-    right: `calc(${right}px + 15px)`,
+  const DEFAULT_PARAMS = {
+    hdri: 0,
+    bgColor: Color(slot.work.backgroundColor).hex(),
   };
 
-  if (['android', 'android_x', 'ios'].includes(lp.platform)) {
-    levaPanelStyles.top = `calc(${top}px + 55px)`;
-  }
+  const panelParams = useTweakpane(DEFAULT_PARAMS);
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <Canvas
         dpr={getPixelRatio(isAuthorsPageOpen)}
-        style={{ backgroundColor: work.backgroundColor }}
+        style={{ backgroundColor: panelParams.bgColor }}
         shadows
         camera={{ position: [-10, 0, 5], fov: 70, near: 1, far: 300 }}
         gl={{ stencil: true }}
       >
         <Suspense fallback={null}>
-          <color attach="background" args={[work.backgroundColor]} />
+          {/* <color attach="background" args={[work.backgroundColor]} /> */}
           {/** Стакан аквариума */}
-          {work.inAquarium ? (
-            <WorkInAquariumView work={work} />
+          {slot.in_aquarium ? (
+            <WorkInAquariumView work={slot.work} />
           ) : (
-            <WorkView work={work} />
+            <WorkView work={slot.work} />
           )}
-          {/** Мягкие тени */}
-          {/*<AccumulativeShadows*/}
-          {/*  temporal*/}
-          {/*  frames={isLowPerformanceDevice() ? 30 : 100}*/}
-          {/*  color="lightblue"*/}
-          {/*  colorBlend={2}*/}
-          {/*  opacity={0.5}*/}
-          {/*  scale={80}*/}
-          {/*  position={[0, -5, 0]}*/}
-          {/*>*/}
-          {/*  <RandomizedLight*/}
-          {/*    amount={isLowPerformanceDevice() ? 4 : 8}*/}
-          {/*    radius={20}*/}
-          {/*    ambient={0.7}*/}
-          {/*    intensity={1.5}*/}
-          {/*    position={[0, 15, -5]}*/}
-          {/*    size={25}*/}
-          {/*  />*/}
-          {/*</AccumulativeShadows>*/}
           {/** Пользовательская среда */}
           <Environment resolution={isLowPerformanceDevice() ? 256 : 1024}>
             <group rotation={[-Math.PI / 3, 0, 0]}>
@@ -128,7 +95,7 @@ const View = ({
                 scale={[50, 3, 1]}
               />
 
-              {/* Добавляем фронтальный свет */}
+              {/* Фронтальный свет */}
               <Lightformer
                 intensity={2}
                 rotation-z={0}
@@ -137,10 +104,10 @@ const View = ({
               />
             </group>
           </Environment>
+          {/* HDRI карта */}
           <Environment
             backgroundIntensity={0}
-            files={HDRIVariants[1]}
-            background
+            files={HDRIVariants[panelParams.hdri]}
           />
           <CameraControls
             truckSpeed={1}
@@ -151,21 +118,6 @@ const View = ({
           />
         </Suspense>
       </Canvas>
-
-      {/* <div
-        style={{
-          position: 'absolute',
-          display: 'grid',
-          width: 250,
-          gap: 10,
-          overflow: 'auto',
-          background: '#181C20',
-          borderRadius: '8px',
-          ...levaPanelStyles,
-        }}
-      >
-        <LevaPanel fill flat titleBar={false} store={hdriStore} />
-      </div> */}
     </div>
   );
 };

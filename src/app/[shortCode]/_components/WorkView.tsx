@@ -1,13 +1,13 @@
-import { Work } from "@/types/work";
-import { useAnimations, useGLTF } from "@react-three/drei";
-import { useEffect } from "react";
+import { Work } from '@/types/types';
+import { useAnimations, useGLTF } from '@react-three/drei';
+import { useEffect } from 'react';
 
 interface WorkViewProps {
   work: Work;
 }
 
 const WorkView = ({ work }: WorkViewProps) => {
-  const { scene, animations } = useGLTF(work.object.objectUrl);
+  const { scene, animations } = useGLTF(work.link);
   const { actions } = useAnimations(animations, scene);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ const WorkView = ({ work }: WorkViewProps) => {
     animations.forEach((item) => {
       actions[item.name]?.play();
     });
-  });
+  }, [actions, animations]);
 
   return (
     <primitive
@@ -23,7 +23,6 @@ const WorkView = ({ work }: WorkViewProps) => {
       position={work.object.position}
       scale={work.object.scale}
     />
-
   );
 };
 

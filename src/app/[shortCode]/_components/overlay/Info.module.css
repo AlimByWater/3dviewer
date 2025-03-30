@@ -1,0 +1,30 @@
+.footerBlock {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 12px;
+  z-index: 1000;
+}
+
+.footerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.authorLogo {
+  margin-right: 8px;
+}
+
+.workInfo {
+  flex-grow: 1;
+}
+
+.uploadDate {
+  white-space: nowrap;
+  margin-left: 12px;
+  align-self: flex-end;
+}

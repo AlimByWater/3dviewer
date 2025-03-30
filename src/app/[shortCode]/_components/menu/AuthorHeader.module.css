@@ -1,0 +1,14 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  margin: 12px auto;
+}
+
+.logo {
+  margin-right: 8px;
+}
+
+.name {
+  color: #000;
+  flex-grow: 1;
+}
