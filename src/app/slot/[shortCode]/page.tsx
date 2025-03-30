@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Overlay from './_components/Overlay';
+import Overlay from './_components/overlay/Overlay';
 import View from './_components/View';
 import { Page } from '@/components/Page';
 import { Slot } from '@/types/types';
@@ -33,9 +33,9 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
       <Overlay slot={slot} onSlotSelect={setSlot} />
     </Page>
   ) : (
-    <center>
+    <div className="root__loading">
       <TriangleLoader />
-    </center>
+    </div>
   );
 };
 

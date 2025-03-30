@@ -7,7 +7,9 @@ export const GET = (
 ) => {
   const telegramUserId = parseInt(params.telegramId);
 
-  const slots = slotsMock.filter((slot) => slot.author_id == telegramUserId);
+  const slots = slotsMock.filter(
+    (slot) => slot.work.authors[0].telegramUserId == telegramUserId,
+  );
 
   return NextResponse.json(slots);
 };

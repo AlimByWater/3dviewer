@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Author, Slot } from '@/types/types';
 import MenuModalLayout from './MenuModalLayout';
 import SlotsGrid from './SlotsGrid';
 import AuthorsList from './AuthorsList';
+import { backButton } from '@telegram-apps/sdk-react';
 
 export type MenuMode = 'slots' | 'otherAuthors' | 'otherAuthorSlots';
 
@@ -17,6 +18,22 @@ const MenuModal = ({
 }) => {
   const [mode, setMode] = useState<MenuMode>('slots');
   const [otherAuthor, setOtherAuthor] = useState<Author | null>(null);
+
+  useEffect(() => {
+    const handleBack = () => {
+      onCloseClick();
+    };
+
+    backButton.show();
+    backButton.onClick(handleBack);
+    window.addEventListener('popstate', handleBack);
+
+    return () => {
+      backButton.hide();
+      backButton.offClick(handleBack);
+      window.removeEventListener('popstate', handleBack);
+    };
+  }, []);
 
   switch (mode) {
     case 'slots':

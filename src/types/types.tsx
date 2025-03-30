@@ -10,6 +10,7 @@ export interface Slot {
   public: boolean;
   in_aquarium: boolean;
   link: SlotLink;
+  previewUrl: string;
   work: Work;
 }
 
@@ -21,7 +22,6 @@ export interface Work {
   id: string;
   name: string;
   object: WorkObject;
-  previewUrl: string;
   link: string;
 }
 
@@ -62,8 +62,8 @@ export const worksMock: Work[] = [
   {
     id: 'ss-instinctive',
     name: 'instinctive',
-    createdAt: '0001-01-01T00:00:00Z',
-    authors: [authorsMock[0]],
+    createdAt: '2025-03-30T01:33:31.320Z',
+    authors: [authorsMock[0], authorsMock[1]],
     link: 'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/sasha-instinctive.glb',
     object: {
       objectUrl:
@@ -71,15 +71,13 @@ export const worksMock: Work[] = [
       scale: 5,
       position: [0, -4, 0],
     },
-    previewUrl:
-      'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/ss-instinctive-preview.webm',
     backgroundColor: 'black',
     foregroundColor: 'white',
   },
   {
     id: 'ss-sleep-table',
     name: 'sleep table',
-    createdAt: '0001-01-01T00:00:00Z',
+    createdAt: '2025-03-30T01:33:31.320Z',
     authors: [authorsMock[0]],
     link: 'https://efc1ea83-8d42-4e62-ae0e-e88e8e890ca8.selstorage.ru/models/compressed_sleeptable.glb',
     object: {
@@ -87,8 +85,6 @@ export const worksMock: Work[] = [
         'https://efc1ea83-8d42-4e62-ae0e-e88e8e890ca8.selstorage.ru/models/compressed_sleeptable.glb',
       scale: 2,
     },
-    previewUrl:
-      'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/ss-sleep-table-preview.webm',
     backgroundColor: 'red',
     foregroundColor: 'white',
   },
@@ -103,16 +99,20 @@ export const slotsMock: Slot[] = [
     link: {
       short_code: 'slot_0',
     },
+    previewUrl:
+      'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/ss-instinctive-preview.webm',
     work: worksMock[0],
   },
   {
-    id: '0',
+    id: '1',
     author_id: authorsMock[0].id,
     in_aquarium: true,
     public: true,
     link: {
       short_code: 'slot_1',
     },
+    previewUrl:
+      'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/ss-sleep-table-preview.webm',
     work: worksMock[1],
   },
 ];

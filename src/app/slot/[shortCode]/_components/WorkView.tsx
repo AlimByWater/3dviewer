@@ -15,13 +15,13 @@ const WorkView = ({ work }: WorkViewProps) => {
     animations.forEach((item) => {
       actions[item.name]?.play();
     });
-  }, []);
+  }, [actions, animations]);
 
   return (
     <primitive
       object={scene}
       position={work.object.position}
-      scale={[2, 2, 2]}
+      scale={work.object.scale}
     />
   );
 };

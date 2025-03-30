@@ -16,7 +16,7 @@ const MenuModalLayout = ({
   const lp = useLaunchParams();
 
   const pageStyle = {
-    padding: `calc(${safeAreaInsets.top}px + 40px) calc(${safeAreaInsets.right}px + 40px) calc(${safeAreaInsets.bottom}px + 40px) calc(${safeAreaInsets.left}px + 40px)`,
+    padding: `calc(${safeAreaInsets.top}px + 12px) calc(${safeAreaInsets.right}px + 12px) calc(${safeAreaInsets.bottom}px + 12px) calc(${safeAreaInsets.left}px + 12px)`,
   };
 
   const closeButtonStyle = {
@@ -36,8 +36,8 @@ const MenuModalLayout = ({
   }
 
   return (
-    <div className="wrapper" style={pageStyle}>
-      <button
+    <div className="menu-modal-layout" style={pageStyle}>
+      {/* <button
         className="close-button"
         onClick={onCloseClick}
         style={closeButtonStyle}
@@ -52,7 +52,7 @@ const MenuModalLayout = ({
         >
           ←
         </button>
-      )}
+      )} */}
       {children}
     </div>
   );
