@@ -8,7 +8,7 @@ import {
   MeshTransmissionMaterial,
   useAnimations,
 } from '@react-three/drei';
-import { isLowPerformanceDevice } from '../../../../utils/pixelRatio';
+import { isLowPerformanceDevice } from '@/utils/pixelRatio';
 import { PropsWithChildren, useEffect, useLayoutEffect, useRef } from 'react';
 import { Work } from '@/types/types';
 

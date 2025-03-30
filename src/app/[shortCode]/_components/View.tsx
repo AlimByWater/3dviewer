@@ -1,4 +1,5 @@
 'use client';
+
 import './View.css';
 
 import { Canvas } from '@react-three/fiber';
