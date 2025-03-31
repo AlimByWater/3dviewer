@@ -17,7 +17,6 @@ const AuthorHeader = ({
   onOtherAuthorsClick: (() => void) | null;
 }) => {
   const buttonColor = useSignal(themeParams.buttonColor);
-  const buttonTextColor = useSignal(themeParams.buttonTextColor);
 
   return (
     <div className={styles.wrapper}>
@@ -28,17 +27,6 @@ const AuthorHeader = ({
       <ChannelButton
         href={author.channel}
         color="black"
-        size="compact-sm"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Канал
-      </ChannelButton>
-      <ChannelButton
-        style={{ marginLeft: '8px', color: buttonTextColor }}
-        href={author.channel}
-        color={buttonColor}
-        variant="filled"
         size="compact-sm"
         target="_blank"
         rel="noopener noreferrer"
