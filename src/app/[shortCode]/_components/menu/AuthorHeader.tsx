@@ -1,6 +1,7 @@
 import { Author } from '@/types/types';
 import styles from './AuthorHeader.module.css';
 import { Avatar, Button, ButtonProps, Text } from '@mantine/core';
+import { themeParams, useSignal } from '@telegram-apps/sdk-react';
 
 const ChannelButton = (
   props: ButtonProps & React.ComponentPropsWithoutRef<'a'>,
@@ -15,6 +16,9 @@ const AuthorHeader = ({
   author: Author;
   onOtherAuthorsClick: (() => void) | null;
 }) => {
+  const buttonColor = useSignal(themeParams.buttonColor);
+  const buttonTextColor = useSignal(themeParams.buttonTextColor);
+
   return (
     <div className={styles.wrapper}>
       <Avatar src={author.logo} size="sm" className={styles.logo} />
@@ -22,8 +26,20 @@ const AuthorHeader = ({
         {author.name}
       </Text>
       <ChannelButton
-        size="compact-sm"
         href={author.channel}
+        color="black"
+        size="compact-sm"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Канал
+      </ChannelButton>
+      <ChannelButton
+        style={{ marginLeft: '8px', color: buttonTextColor }}
+        href={author.channel}
+        color={buttonColor}
+        variant="filled"
+        size="compact-sm"
         target="_blank"
         rel="noopener noreferrer"
       >
