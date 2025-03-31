@@ -1,7 +1,6 @@
 import { Author } from '@/types/types';
 import styles from './AuthorHeader.module.css';
 import { Avatar, Button, ButtonProps, Text } from '@mantine/core';
-import { themeParams, useSignal } from '@telegram-apps/sdk-react';
 
 const ChannelButton = (
   props: ButtonProps & React.ComponentPropsWithoutRef<'a'>,
@@ -16,8 +15,6 @@ const AuthorHeader = ({
   author: Author;
   onOtherAuthorsClick: (() => void) | null;
 }) => {
-  const buttonColor = useSignal(themeParams.buttonColor);
-
   return (
     <div className={styles.wrapper}>
       <Avatar src={author.logo} size="sm" className={styles.logo} />

@@ -16,7 +16,7 @@ const Info = ({ slot }: { slot: Slot }) => {
         />
 
         <div className={styles.workInfo}>
-          <Text fz="md" fw={600}>
+          <Text fz="sm" fw={600}>
             {slot.work.name}
           </Text>
 
@@ -39,9 +39,9 @@ const Info = ({ slot }: { slot: Slot }) => {
           </Text>
         </div>
 
-        <Text fz="sm" c={fontStyle.color} className={styles.uploadDate}>
+        <Text fz="xs" c={fontStyle.color} className={styles.uploadDate}>
           {new Date(slot.work.createdAt).toLocaleDateString([], {
-            dateStyle: 'medium',
+            dateStyle: 'short',
           })}
         </Text>
       </div>
