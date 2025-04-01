@@ -9,4 +9,5 @@
   z-index: 2000;
   box-sizing: border-box;
   overflow-y: auto;
+  pointer-events: auto;
 }

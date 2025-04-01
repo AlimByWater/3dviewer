@@ -26,6 +26,11 @@
   position: absolute;
   font-size: 24px;
   color: inherit;
+  line-height: 1;
+  font-weight: normal;
+}
+
+.triangle-loader.animated .loader-point {
   opacity: 0.2;
   animation: fadeInOut 0.9s infinite;
 }
@@ -34,17 +39,26 @@
   left: 50%;
   top: 0;
   transform: translateX(-50%);
+}
+
+.triangle-loader.animated .top {
   animation-delay: 0s;
 }
 
 .loader-point.bottom-right {
   bottom: 0;
   right: 0;
+}
+
+.triangle-loader.animated .bottom-right {
   animation-delay: 0.3s;
 }
 
 .loader-point.bottom-left {
   bottom: 0;
   left: 0;
+}
+
+.triangle-loader.animated .bottom-left {
   animation-delay: 0.6s;
 }
