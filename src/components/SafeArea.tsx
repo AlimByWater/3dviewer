@@ -1,5 +1,6 @@
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import {
+  postEvent,
   useSignal,
   viewportContentSafeAreaInsets,
   viewportSafeAreaInsets,
@@ -8,6 +9,11 @@ import {
 const SafeArea = ({ children }: PropsWithChildren) => {
   const safeAreaInsets = useSignal(viewportSafeAreaInsets);
   const contentSafeAreaInsets = useSignal(viewportContentSafeAreaInsets);
+
+  useEffect(() => {
+    postEvent('web_app_request_safe_area');
+    postEvent('web_app_request_content_safe_area');
+  }, []);
 
   return (
     <div
