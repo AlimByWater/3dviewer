@@ -33,7 +33,7 @@ const MenuModal = ({
       backButton.offClick(handleBack);
       window.removeEventListener('popstate', handleBack);
     };
-  }, []);
+  }, [onCloseClick]);
 
   switch (mode) {
     case 'slots':
