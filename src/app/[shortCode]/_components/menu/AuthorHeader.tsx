@@ -1,6 +1,12 @@
 import { Author } from '@/types/types';
 import styles from './AuthorHeader.module.css';
-import { Avatar, Button, ButtonProps, Text } from '@mantine/core';
+import {
+  Avatar,
+  Button,
+  ButtonProps,
+  Text,
+  useMantineTheme,
+} from '@mantine/core';
 
 const ChannelButton = (
   props: ButtonProps & React.ComponentPropsWithoutRef<'a'>,
@@ -15,6 +21,8 @@ const AuthorHeader = ({
   author: Author;
   onOtherAuthorsClick: (() => void) | null;
 }) => {
+  const theme = useMantineTheme();
+
   return (
     <div className={styles.wrapper}>
       <Avatar src={author.logo} size="sm" className={styles.logo} />
@@ -23,7 +31,7 @@ const AuthorHeader = ({
       </Text>
       <ChannelButton
         href={author.channel}
-        color="black"
+        color={theme.white}
         size="compact-sm"
         target="_blank"
         rel="noopener noreferrer"

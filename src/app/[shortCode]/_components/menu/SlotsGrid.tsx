@@ -3,7 +3,8 @@ import { useGLTF } from '@react-three/drei';
 import { useEffect, useState } from 'react';
 import styles from './SlotsGrid.module.css';
 import AuthorHeader from './AuthorHeader';
-import { Card, Image, Text } from '@mantine/core';
+import { Card, Image, Text, useMantineTheme } from '@mantine/core';
+import { addOpacityToHex } from '@/utils/addOpacityToHex';
 
 const fetchSlots = async (telegramUserId: number): Promise<Slot[]> => {
   const res = await fetch(
@@ -12,7 +13,9 @@ const fetchSlots = async (telegramUserId: number): Promise<Slot[]> => {
   if (!res.ok) {
     throw Error(`Failed to fetch slots by author ${telegramUserId}`);
   }
-  return res.json();
+  const allSlots = (await res.json()) as Slot[];
+  const publicSlots = allSlots.filter((slot) => slot.public);
+  return publicSlots;
 };
 
 const SlotsGrid = ({
@@ -25,6 +28,7 @@ const SlotsGrid = ({
   onOtherAuthorsClick: (() => void) | null;
 }) => {
   const [slots, setSlots] = useState<Slot[] | null>(null);
+  const theme = useMantineTheme();
 
   useEffect(() => {
     fetchSlots(author.telegramUserId).then((slots) => {
@@ -52,6 +56,8 @@ const SlotsGrid = ({
         {slots &&
           slots.map((slot) => (
             <Card
+              bg={addOpacityToHex(theme.colors.gray[8], 0.5)}
+              c={theme.white}
               className={styles.workCard}
               key={slot.id}
               onClick={() => onSelect(slot)}
