@@ -33,82 +33,48 @@ const MenuModal = ({
       backButton.offClick(handleBack);
       window.removeEventListener('popstate', handleBack);
     };
-  }, []);
+  }, [onCloseClick]);
 
   switch (mode) {
     case 'slots':
       return (
-        <AuthorSlotsModalPage
-          author={currentSlot.work.authors[0]}
-          onSelect={onSlotSelect}
-          // onOtherAuthorsClick={() => setMode('otherAuthors')}
-          onOtherAuthorsClick={null}
-          onBackClick={null}
-          onCloseClick={onCloseClick}
-        />
+        <MenuModalLayout onBackClick={null} onCloseClick={onCloseClick}>
+          <SlotsGrid
+            author={currentSlot.work.authors[0]}
+            onSelect={onSlotSelect}
+            onOtherAuthorsClick={null}
+            // onOtherAuthorsClick={() => setMode('otherAuthors')}
+          />
+        </MenuModalLayout>
       );
     case 'otherAuthors':
       return (
-        <AuthorsModalPage
-          onSelect={(author) => {
-            setOtherAuthor(author);
-            setMode('otherAuthorSlots');
-          }}
+        <MenuModalLayout
           onBackClick={() => setMode('slots')}
           onCloseClick={onCloseClick}
-        />
+        >
+          <AuthorsList
+            onSelect={(author) => {
+              setOtherAuthor(author);
+              setMode('otherAuthorSlots');
+            }}
+          />
+        </MenuModalLayout>
       );
     case 'otherAuthorSlots':
       return (
-        <AuthorSlotsModalPage
-          author={otherAuthor!}
-          onSelect={onSlotSelect}
-          onOtherAuthorsClick={null}
+        <MenuModalLayout
           onBackClick={() => setMode('otherAuthors')}
           onCloseClick={onCloseClick}
-        />
+        >
+          <SlotsGrid
+            author={otherAuthor!}
+            onSelect={onSlotSelect}
+            onOtherAuthorsClick={null}
+          />
+        </MenuModalLayout>
       );
   }
 };
 
 export default MenuModal;
-
-const AuthorSlotsModalPage = ({
-  author,
-  onSelect,
-  onOtherAuthorsClick,
-  onBackClick,
-  onCloseClick,
-}: {
-  author: Author;
-  onSelect: (slot: Slot) => void;
-  onOtherAuthorsClick: (() => void) | null;
-  onBackClick: (() => void) | null;
-  onCloseClick: () => void;
-}) => {
-  return (
-    <MenuModalLayout onBackClick={onBackClick} onCloseClick={onCloseClick}>
-      <SlotsGrid
-        author={author}
-        onSelect={onSelect}
-        onOtherAuthorsClick={onOtherAuthorsClick}
-      />
-    </MenuModalLayout>
-  );
-};
-
-const AuthorsModalPage = ({
-  onSelect,
-  onBackClick,
-  onCloseClick,
-}: {
-  onSelect: (author: Author) => void;
-  onBackClick: () => void;
-  onCloseClick: () => void;
-}) => {
-  return (
-    <MenuModalLayout onBackClick={onBackClick} onCloseClick={onCloseClick}>
-      <AuthorsList onSelect={(author) => onSelect(author)} />
-    </MenuModalLayout>
-  );
-};

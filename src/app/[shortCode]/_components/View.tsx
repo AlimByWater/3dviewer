@@ -24,13 +24,7 @@ const HDRIVariants = [
   `${basePath}/hdri/env-4.jpg`,
 ];
 
-const View = ({
-  slot,
-  isAuthorsPageOpen,
-}: {
-  slot: Slot;
-  isAuthorsPageOpen: boolean;
-}) => {
+const View = ({ slot, lowQuality }: { slot: Slot; lowQuality: boolean }) => {
   const DEFAULT_PARAMS = {
     hdri: 0,
     bgColor: Color(slot.work.backgroundColor).hex(),
@@ -41,7 +35,7 @@ const View = ({
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <Canvas
-        dpr={getPixelRatio(isAuthorsPageOpen)}
+        dpr={getPixelRatio(lowQuality)}
         style={{ backgroundColor: panelParams.bgColor }}
         shadows
         camera={{ position: [-10, 0, 5], fov: 70, near: 1, far: 300 }}

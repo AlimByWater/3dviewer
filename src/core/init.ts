@@ -11,7 +11,7 @@ import {
   swipeBehavior,
   themeParams,
   viewport,
-} from "@telegram-apps/sdk-react";
+} from '@telegram-apps/sdk-react';
 
 /**
  * Initializes the application and configures its dependencies.
@@ -42,7 +42,7 @@ export function init(debug: boolean): void {
   if (!viewport.isMounted() && !viewport.isMounting()) {
     if (!viewport.isMounting()) {
       viewport.mount().catch((e) => {
-        console.error("Something went wrong mounting the viewport", e);
+        console.error('Something went wrong mounting the viewport', e);
       });
     }
   }
@@ -56,5 +56,14 @@ export function init(debug: boolean): void {
   }
   if (!themeParams.isCssVarsBound()) {
     themeParams.bindCssVars();
+  }
+
+  if (debug && process.env.PUBLIC_NEXT_BASE_PATH === '/local') {
+    const isMobile =
+      navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i) !==
+      null;
+    if (isMobile) {
+      import('eruda').then((lib) => lib.default.init()).catch(console.error);
+    }
   }
 }

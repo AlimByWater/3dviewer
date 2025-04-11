@@ -35,7 +35,6 @@ export interface Author {
 
 export interface WorkObject {
   hdriUrl?: string;
-  objectUrl: string;
   position?: Vector3;
   scale?: number | Vector3;
   playAction?: string;
@@ -64,10 +63,8 @@ export const worksMock: Work[] = [
     name: 'instinctive',
     createdAt: '2025-03-30T01:33:31.320Z',
     authors: [authorsMock[0], authorsMock[1]],
-    link: 'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/sasha-instinctive.glb',
+    link: `${process.env.NEXT_PUBLIC_BASE_PATH}/models/sasha-instinctive.glb`,
     object: {
-      objectUrl:
-        'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/sasha-instinctive.glb',
       scale: 5,
       position: [0, -4, 0],
     },
@@ -81,8 +78,6 @@ export const worksMock: Work[] = [
     authors: [authorsMock[0]],
     link: 'https://efc1ea83-8d42-4e62-ae0e-e88e8e890ca8.selstorage.ru/models/compressed_sleeptable.glb',
     object: {
-      objectUrl:
-        'https://efc1ea83-8d42-4e62-ae0e-e88e8e890ca8.selstorage.ru/models/compressed_sleeptable.glb',
       scale: 2,
     },
     backgroundColor: 'red',

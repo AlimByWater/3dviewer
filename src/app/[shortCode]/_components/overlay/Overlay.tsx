@@ -1,16 +1,16 @@
 import ProgressIndicator from './ProgressIndicator';
 import { Slot } from '@/types/types';
-import dynamic from 'next/dynamic';
 import Info from './Info';
-
-const MenuButton = dynamic(() => import('../menu/MenuButton'));
+import MenuButton from '../menu/MenuButton';
 
 const Overlay = ({
   slot,
   onSlotSelect,
+  onChangeMenuVisible,
 }: {
   slot: Slot;
   onSlotSelect: (slot: Slot) => void;
+  onChangeMenuVisible?: (visible: boolean) => void;
 }) => {
   return (
     <div
@@ -23,7 +23,11 @@ const Overlay = ({
         pointerEvents: 'none',
       }}
     >
-      <MenuButton currentSlot={slot} onSlotSelect={onSlotSelect} />
+      <MenuButton
+        currentSlot={slot}
+        onSlotSelect={onSlotSelect}
+        onChangeMenuVisible={onChangeMenuVisible}
+      />
       <ProgressIndicator color={slot.work.foregroundColor} />
       <Info slot={slot} />
     </div>

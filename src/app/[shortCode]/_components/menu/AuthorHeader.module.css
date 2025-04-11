@@ -1,7 +1,7 @@
 .wrapper {
   display: flex;
   align-items: center;
-  margin: 12px auto;
+  margin-bottom: 12px;
 }
 
 .logo {
@@ -9,6 +9,5 @@
 }
 
 .name {
-  color: #000;
   flex-grow: 1;
 }

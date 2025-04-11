@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 
 const SlotPage = () => {
   const lp = useLaunchParams();
-  const shortCode = lp.startParam ?? 'apoplex-dayfly';
+  const shortCode = lp.startParam;
 
   redirect(`/${shortCode}`);
 };

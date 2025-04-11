@@ -19,7 +19,7 @@ const fetchSlotByShortCode = async (shortCode: string): Promise<Slot> => {
 
 const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   const [slot, setSlot] = useState<Slot | null>();
-  const [isAuthorsPageOpen] = useState(false);
+  const [isModalOpened, setIsModalOpened] = useState<boolean | null>(null);
 
   useEffect(() => {
     fetchSlotByShortCode(params.shortCode).then((slot) => {
@@ -29,8 +29,12 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
 
   return slot ? (
     <Page back={false}>
-      <View slot={slot} isAuthorsPageOpen={isAuthorsPageOpen} />
-      <Overlay slot={slot} onSlotSelect={setSlot} />
+      <View slot={slot} lowQuality={isModalOpened || false} />
+      <Overlay
+        slot={slot}
+        onSlotSelect={setSlot}
+        onChangeMenuVisible={setIsModalOpened}
+      />
     </Page>
   ) : (
     <div className="root__loading">
