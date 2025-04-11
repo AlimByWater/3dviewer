@@ -39,13 +39,14 @@ export function init(debug: boolean): void {
   miniApp.mount();
   themeParams.mount();
   initData.restore();
-  if (!viewport.isMounted() && !viewport.isMounting()) {
-    if (!viewport.isMounting()) {
-      viewport.mount().catch((e) => {
-        console.error('Something went wrong mounting the viewport', e);
-      });
-    }
-  }
+  void viewport
+    .mount()
+    .then(() => {
+      viewport.bindCssVars();
+    })
+    .catch((e) => {
+      console.error('Something went wrong mounting the viewport', e);
+    });
 
   // Define components-related CSS variables.
   if (viewport.isMounted() && !viewport.isCssVarsBound()) {

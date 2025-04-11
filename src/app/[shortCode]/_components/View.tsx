@@ -42,7 +42,7 @@ const View = ({ slot, lowQuality }: { slot: Slot; lowQuality: boolean }) => {
         gl={{ stencil: true }}
       >
         <Suspense fallback={null}>
-          {/* <color attach="background" args={[work.backgroundColor]} /> */}
+          {/* <color attach="background" args={[panelParams.bgColor]} /> */}
           {/** Стакан аквариума */}
           {slot.in_aquarium ? (
             <WorkInAquariumView work={slot.work} />

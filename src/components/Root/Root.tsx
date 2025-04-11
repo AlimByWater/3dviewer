@@ -70,18 +70,9 @@ function RootInner({ children }: PropsWithChildren) {
 }
 
 export function Root(props: PropsWithChildren) {
-  // Unfortunately, Telegram Mini Apps does not allow us to use all features of
-  // the Server Side Rendering. That's why we are showing loader on the server
-  // side.
-  const didMount = useDidMount();
-
-  return didMount ? (
+  return (
     <ErrorBoundary fallback={ErrorPage}>
       <RootInner {...props} />
     </ErrorBoundary>
-  ) : (
-    <div className="root__loading">
-      <TriangleLoader />
-    </div>
   );
 }
