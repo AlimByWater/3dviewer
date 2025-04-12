@@ -1,7 +1,3 @@
-body {
-  background: var(--tg-theme-secondary-bg-color, white);
-}
-
 /* From 3d viewer source */
 html,
 body,
@@ -10,4 +6,10 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
+}
+
+/* Mantine overrides */
+:root {
+  --mantine-color-body: var(--tg-theme-secondary-bg-color) !important;
+  --mantine-color-text: var(--tg-theme-text-color) !important;
 }
