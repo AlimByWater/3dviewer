@@ -32,8 +32,8 @@
   "devDependencies": {
     "@tweakpane/core": "^2.0.5",
     "@types/color": "^4.2.0",
-    "@types/node": "^20",
-    "@types/react": "^18",
+    "@types/node": "^20.17.11",
+    "@types/react": "^18.3.18",
     "@types/react-dom": "^18",
     "@types/three": "^0.171.0",
     "eslint": "^8",
@@ -42,7 +42,7 @@
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5.6.3"
   },
   "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a",
   "pnpm": {
