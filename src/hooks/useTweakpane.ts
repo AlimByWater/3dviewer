@@ -1,4 +1,3 @@
-import { useLaunchParams } from '@telegram-apps/sdk-react';
 import { useEffect, useState } from 'react';
 
 import { Pane as Tweakpane } from 'tweakpane';
@@ -10,7 +9,6 @@ type PanelParams = {
 };
 
 export function useTweakpane(defaultParams: PanelParams) {
-  const lp = useLaunchParams();
   const { top, right } = useSafeArea();
 
   const [params, setParams] = useState<PanelParams>(defaultParams);
@@ -39,10 +37,6 @@ export function useTweakpane(defaultParams: PanelParams) {
     pane.element.style.position = 'relative';
     pane.element.style.top = `calc(${top}px + 15px)`;
     pane.element.style.right = `calc(${right}px + 15px)`;
-
-    if (['android', 'android_x', 'ios'].includes(lp.platform)) {
-      pane.element.style.top = `calc(${top}px + 92px)`;
-    }
 
     return () => {
       pane.dispose();
