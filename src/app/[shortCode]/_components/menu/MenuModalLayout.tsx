@@ -2,8 +2,8 @@ import styles from './MenuModalLayout.module.css';
 
 import { PropsWithChildren } from 'react';
 import SafeArea from '@/components/SafeArea';
-import { addOpacityToHex } from '@/utils/addOpacityToHex';
 import { useMantineTheme } from '@mantine/core';
+import Color from 'color';
 
 const MenuModalLayout = ({
   children,
@@ -19,7 +19,7 @@ const MenuModalLayout = ({
     <div
       className={styles.wrapper}
       style={{
-        backgroundColor: addOpacityToHex(theme.colors.gray[9], 0.5),
+        backgroundColor: Color(theme.colors.gray[9]).alpha(0.5).hexa(),
         color: theme.white,
       }}
     >

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import styles from './SlotsGrid.module.css';
 import AuthorHeader from './AuthorHeader';
 import { Card, Image, Text, useMantineTheme } from '@mantine/core';
-import { addOpacityToHex } from '@/utils/addOpacityToHex';
+import Color from 'color';
 
 const fetchSlots = async (telegramUserId: number): Promise<Slot[]> => {
   const res = await fetch(
@@ -56,7 +56,7 @@ const SlotsGrid = ({
         {slots &&
           slots.map((slot) => (
             <Card
-              bg={addOpacityToHex(theme.colors.gray[8], 0.5)}
+              bg={Color(theme.colors.gray[8]).alpha(0.5).hexa()}
               c={theme.white}
               className={styles.workCard}
               key={slot.id}
