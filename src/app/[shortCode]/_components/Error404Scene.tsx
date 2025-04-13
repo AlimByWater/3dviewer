@@ -18,10 +18,10 @@ const DripNumber = () => {
   const textMeshRef = useRef<THREE.Mesh>(null);
   const [font, setFont] = useState<Font | null>(null);
   const noiseTexture = useTexture(
-    `${process.env.NEXT_PUBLIC_BASE_PATH}/textures/grunge.jpeg`,
+    `${process.env.NEXT_PUBLIC_BASE_PATH}/textures/rust-0.jpeg`,
     (texture) => {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(0.1, 0.1);
+      texture.repeat.set(0.07, 0.07);
     },
   );
 
@@ -98,7 +98,7 @@ const DripNumberScene = () => {
         <DripNumber />
         <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} />
         <CameraControls
-          // dollySpeed={0}
+          dollySpeed={0}
           minPolarAngle={Math.PI / 2}
           maxPolarAngle={Math.PI / 2}
           minAzimuthAngle={0}
