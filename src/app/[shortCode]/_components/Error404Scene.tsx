@@ -17,7 +17,7 @@ const DripNumber = () => {
   const textGeomRef = useRef<TextGeometry>(null);
   const textMeshRef = useRef<THREE.Mesh>(null);
   const [font, setFont] = useState<Font | null>(null);
-  const noiseTexture = useTexture(
+  const texture = useTexture(
     `${process.env.NEXT_PUBLIC_BASE_PATH}/textures/rust-0.jpeg`,
     (texture) => {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
@@ -77,7 +77,7 @@ const DripNumber = () => {
             },
           ]}
         />
-        <meshBasicMaterial map={noiseTexture} toneMapped={false} />
+        <meshBasicMaterial map={texture} toneMapped={false} />
       </mesh>
     </group>
   );
