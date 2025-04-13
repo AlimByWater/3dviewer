@@ -4,6 +4,7 @@ import MenuModal from './MenuModal';
 import { Slot } from '@/types/types';
 import styles from './MenuButton.module.css';
 import SafeArea from '@/components/SafeArea';
+import { useViewer } from '../../_context/ViewerContext';
 
 const MenuButton = ({
   currentSlot,
@@ -15,6 +16,9 @@ const MenuButton = ({
   onChangeMenuVisible?: (visible: boolean) => void;
 }) => {
   const [visible, setVisible] = useState(false);
+  const {
+    state: { panelParams },
+  } = useViewer();
 
   const handleSlotSelect = (slot: Slot) => {
     onSlotSelect(slot);
@@ -30,7 +34,7 @@ const MenuButton = ({
       <SafeArea>
         <TriangleButton
           onClick={() => setVisible(true)}
-          color={currentSlot.work.foregroundColor}
+          color={panelParams?.foreground}
         />
       </SafeArea>
       {visible && (

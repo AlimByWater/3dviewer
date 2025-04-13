@@ -1,6 +1,7 @@
 import { Work } from '@/types/types';
 import { useAnimations, useGLTF } from '@react-three/drei';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useViewer } from '../_context/ViewerContext';
 
 interface WorkViewProps {
   work: Work;
@@ -9,6 +10,11 @@ interface WorkViewProps {
 const WorkView = ({ work }: WorkViewProps) => {
   const { scene, animations } = useGLTF(work.link);
   const { actions } = useAnimations(animations, scene);
+  const {
+    state: { panelParams },
+  } = useViewer();
+  const pos = panelParams?.position;
+  const scale = panelParams?.scale;
 
   useEffect(() => {
     // Проигрываем все анимации на сцене
@@ -20,8 +26,8 @@ const WorkView = ({ work }: WorkViewProps) => {
   return (
     <primitive
       object={scene}
-      position={work.object.position}
-      scale={work.object.scale}
+      position={pos && [pos.x, pos.y, pos.z]}
+      scale={scale && [scale.x, scale.y, scale.z]}
     />
   );
 };

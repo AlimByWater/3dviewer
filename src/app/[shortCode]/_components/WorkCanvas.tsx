@@ -1,6 +1,6 @@
 'use client';
 
-import './View.css';
+import './WorkCanvas.css';
 
 import { Canvas } from '@react-three/fiber';
 import { CameraControls, Lightformer, Environment } from '@react-three/drei';
@@ -8,9 +8,8 @@ import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import { Slot } from '@/types/types';
 import { Suspense } from 'react';
 
-import { useTweakpane } from '@/hooks/useTweakpane';
-import Color from 'color';
 import dynamic from 'next/dynamic';
+import { useViewer } from '../_context/ViewerContext';
 
 const WorkInAquariumView = dynamic(() => import('./WorkInAquariumView'));
 const WorkView = dynamic(() => import('./WorkView'));
@@ -24,25 +23,30 @@ const HDRIVariants = [
   `${basePath}/hdri/env-4.jpg`,
 ];
 
-const View = ({ slot, lowQuality }: { slot: Slot; lowQuality: boolean }) => {
-  const DEFAULT_PARAMS = {
-    hdri: 0,
-    bgColor: Color(slot.work.backgroundColor).hex(),
-  };
-
-  const panelParams = useTweakpane(DEFAULT_PARAMS);
+const WorkCanvas = ({
+  slot,
+  lowQuality,
+}: {
+  slot: Slot;
+  lowQuality: boolean;
+}) => {
+  const {
+    state: { panelParams },
+  } = useViewer();
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <Canvas
         dpr={getPixelRatio(lowQuality)}
-        style={{ backgroundColor: panelParams.bgColor }}
+        style={{
+          backgroundColor: panelParams!.background,
+        }}
         shadows
         camera={{ position: [-10, 0, 5], fov: 70, near: 1, far: 300 }}
         gl={{ stencil: true }}
       >
         <Suspense fallback={null}>
-          {/* <color attach="background" args={[work.backgroundColor]} /> */}
+          <color attach="background" args={[panelParams!.background]} />
           {/** Стакан аквариума */}
           {slot.in_aquarium ? (
             <WorkInAquariumView work={slot.work} />
@@ -99,10 +103,12 @@ const View = ({ slot, lowQuality }: { slot: Slot; lowQuality: boolean }) => {
             </group>
           </Environment>
           {/* HDRI карта */}
-          <Environment
-            backgroundIntensity={0}
-            files={HDRIVariants[panelParams.hdri]}
-          />
+          {
+            <Environment
+              backgroundIntensity={0}
+              files={HDRIVariants[panelParams!.hdri]}
+            />
+          }
           <CameraControls
             truckSpeed={1}
             dollySpeed={1}
@@ -116,4 +122,4 @@ const View = ({ slot, lowQuality }: { slot: Slot; lowQuality: boolean }) => {
   );
 };
 
-export default View;
+export default WorkCanvas;
