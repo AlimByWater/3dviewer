@@ -73,6 +73,13 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
   const paneRef = useRef<Tweakpane | null>(null); // Используем ref для хранения панели
   const paramsRef = useRef(state.panelParams); // Ref для отслеживания параметров
 
+  useEffect(() => {
+    if (paneRef.current) {
+      paneRef.current.dispose();
+      paneRef.current = null;
+    }
+  }, [state.slot?.id]);
+
   // Синхронизация ref с параметрами
   useEffect(() => {
     paramsRef.current = state.panelParams;
