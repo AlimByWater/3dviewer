@@ -9,6 +9,7 @@ import { Slot } from '@/types/types';
 import TriangleLoader from '@/components/TriangleLoader';
 import { useViewer } from './_context/ViewerContext';
 import { useRouter } from 'next/navigation';
+import DripNumberScene from './_components/Error404Scene';
 
 const fetchSlotByShortCode = async (shortCode: string): Promise<Slot> => {
   const res = await fetch(
@@ -45,7 +46,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
     const loadData = async () => {
       try {
         const data = await fetchSlotByShortCode(params.shortCode);
-        dispatch({ type: 'slot_changed', slot: data });
+        setSlot(data);
         setError(null);
       } catch (err) {
         if (err instanceof Error && err) {
@@ -61,20 +62,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   }, [params.shortCode, setSlot]);
 
   if (error) {
-    return (
-      <div className="root__loading">
-        <Alert
-          // icon={<IconAlertCircle size="1rem"/>}
-          title="Error!"
-          color="red"
-          variant="filled"
-          maw={500}
-          mx="auto"
-        >
-          {error}
-        </Alert>
-      </div>
-    );
+    return <DripNumberScene />;
   }
 
   if (!state.slot) {
