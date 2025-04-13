@@ -23,6 +23,7 @@ export interface Work {
   name: string;
   object: WorkObject;
   link: string;
+  showPanel: boolean | null;
 }
 
 export interface Author {
@@ -70,6 +71,7 @@ export const worksMock: Work[] = [
     },
     backgroundColor: 'black',
     foregroundColor: 'white',
+    showPanel: true,
   },
   {
     id: 'ss-sleep-table',
@@ -82,6 +84,7 @@ export const worksMock: Work[] = [
     },
     backgroundColor: 'red',
     foregroundColor: 'white',
+    showPanel: true,
   },
 ];
 
@@ -111,9 +114,3 @@ export const slotsMock: Slot[] = [
     work: worksMock[1],
   },
 ];
-
-export const get3DObject = (id?: string) => {
-  id ??= 'ss-instinctive';
-  const obj = worksMock.find((e) => e.id == id);
-  return obj ?? worksMock[0]; // Return first object as fallback
-};

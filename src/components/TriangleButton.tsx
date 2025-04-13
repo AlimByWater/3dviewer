@@ -6,7 +6,7 @@ const TriangleButton = ({
   color,
 }: {
   onClick: () => void;
-  color: string;
+  color?: string;
 }) => {
   return (
     <ActionIcon

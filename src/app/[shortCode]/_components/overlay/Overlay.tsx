@@ -29,7 +29,7 @@ const Overlay = ({
         onChangeMenuVisible={onChangeMenuVisible}
       />
       <ProgressIndicator color={slot.work.foregroundColor} />
-      <Info slot={slot} />
+      <Info />
     </div>
   );
 };

@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Alert } from '@mantine/core';
 import Overlay from './_components/overlay/Overlay';
-import View from './_components/View';
+import WorkCanvas from './_components/WorkCanvas';
 import { Page } from '@/components/Page';
 import { Slot } from '@/types/types';
 import TriangleLoader from '@/components/TriangleLoader';
+import { useViewer } from './_context/ViewerContext';
+import { useRouter } from 'next/navigation';
 
 const fetchSlotByShortCode = async (shortCode: string): Promise<Slot> => {
   const res = await fetch(
@@ -27,15 +29,23 @@ const fetchSlotByShortCode = async (shortCode: string): Promise<Slot> => {
 };
 
 const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
-  const [slot, setSlot] = useState<Slot | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpened, setIsModalOpened] = useState<boolean | null>(null);
+  const { state, dispatch } = useViewer();
+  const router = useRouter();
+
+  const setSlot = useCallback(
+    (slot: Slot | null) => {
+      dispatch({ type: 'slot_changed', slot: slot });
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const data = await fetchSlotByShortCode(params.shortCode);
-        setSlot(data);
+        dispatch({ type: 'slot_changed', slot: data });
         setError(null);
       } catch (err) {
         if (err instanceof Error && err) {
@@ -67,7 +77,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
     );
   }
 
-  if (!slot) {
+  if (!state.slot) {
     return (
       <div className="root__loading">
         <TriangleLoader />
@@ -77,10 +87,10 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
 
   return (
     <Page back={false}>
-      <View slot={slot} lowQuality={isModalOpened || false} />
+      <WorkCanvas slot={state.slot} lowQuality={isModalOpened || false} />
       <Overlay
-        slot={slot}
-        onSlotSelect={setSlot}
+        slot={state.slot}
+        onSlotSelect={(s) => router.replace(`?shortCode=${s.link.short_code}`)}
         onChangeMenuVisible={setIsModalOpened}
       />
     </Page>

@@ -3,6 +3,7 @@
 import { useLaunchParams } from '@telegram-apps/sdk-react';
 import { useSearchParams } from 'next/navigation';
 import SlotDetailsPage from './[shortCode]/page';
+import { ViewerProvider } from './[shortCode]/_context/ViewerContext';
 
 const SlotPage = () => {
   const lp = useLaunchParams();
@@ -11,11 +12,13 @@ const SlotPage = () => {
   const searchParams = useSearchParams();
 
   return (
-    <SlotDetailsPage
-      params={{
-        shortCode: shortCode || searchParams.get('shortCode') || '',
-      }}
-    />
+    <ViewerProvider>
+      <SlotDetailsPage
+        params={{
+          shortCode: shortCode || searchParams.get('shortCode') || '',
+        }}
+      />
+    </ViewerProvider>
   );
 };
 
