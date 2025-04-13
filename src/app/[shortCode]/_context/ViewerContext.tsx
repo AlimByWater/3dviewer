@@ -72,6 +72,13 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
   const { top, right } = useSafeArea();
   const paneRef = useRef<Tweakpane | null>(null); // Используем ref для хранения панели
   const paramsRef = useRef(state.panelParams); // Ref для отслеживания параметров
+  let pane: Tweakpane | null;
+
+  const positionPane = (pane: Tweakpane) => {
+    pane.element.style.position = 'relative';
+    pane.element.style.top = `calc(${top}px + 16px)`;
+    pane.element.style.right = `calc(${right}px + 16px)`;
+  };
 
   useEffect(() => {
     if (paneRef.current) {
@@ -92,15 +99,12 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
       // Создаем панель при появлении параметров
       if (!paneRef.current) {
         paramsRef.current = state.panelParams;
-        const pane = new Tweakpane({
+        pane = new Tweakpane({
           title: 'Model parameters',
           expanded: true,
         });
 
-        // Позиционирование
-        pane.element.style.position = 'relative';
-        pane.element.style.top = `calc(${top}px + 16px)`;
-        pane.element.style.right = `calc(${right}px + 16px)`;
+        positionPane(pane);
 
         // Создаем копию параметров для панели
         const paneParams = { ...state.panelParams };
@@ -165,7 +169,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
         paneRef.current = null;
       }
     };
-  }, [right, state.panelParams, state.slot?.work.showPanel, top]); // Добавляем параметры в зависимости
+  }, [state.panelParams, state.slot?.work.showPanel]); // Добавляем параметры в зависимости
 
   // Эффект для синхронизации панели с состоянием
   useEffect(() => {
@@ -173,6 +177,12 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
       paneRef.current.refresh();
     }
   }, [state.panelParams]);
+
+  useEffect(() => {
+    if (paneRef.current) {
+      positionPane(paneRef.current);
+    }
+  }, [top, right]);
 
   return (
     <ViewerContext.Provider value={{ state, dispatch }}>
