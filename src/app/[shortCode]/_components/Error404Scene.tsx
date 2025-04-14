@@ -28,7 +28,7 @@ const DripNumber = () => {
   useEffect(() => {
     const loader = new FontLoader();
     loader.load(
-      'https://threejs.org/examples/fonts/helvetiker_regular.typeface.json',
+      'https://threejs.org/examples/fonts/helvetiker_bold.typeface.json',
       (loadedFont) => {
         setFont(loadedFont);
       },
@@ -38,9 +38,9 @@ const DripNumber = () => {
   useFrame(({ clock }) => {
     // Вращение текста
     if (groupRef.current) {
-      groupRef.current.rotation.y = clock.getElapsedTime() * 0.5;
+      groupRef.current.rotation.y = Math.cos(clock.getElapsedTime() * 1) * 0.25;
       groupRef.current.rotation.x =
-        Math.sin(clock.getElapsedTime() * 0.5) * 0.1;
+        Math.sin(clock.getElapsedTime() * 0.5) * 0.5;
     }
 
     // Центрирование текста
@@ -94,7 +94,6 @@ const DripNumberScene = () => {
     >
       <Canvas linear={true}>
         <PerspectiveCamera makeDefault position={[0, 0, 70]} fov={50} />
-
         <DripNumber />
         <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} />
         <CameraControls
