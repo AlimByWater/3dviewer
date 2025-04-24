@@ -7,7 +7,6 @@ export interface SlotLink {
 export interface Slot {
   id: string;
   author_id: number;
-  public: boolean;
   in_aquarium: boolean;
   link: SlotLink;
   previewUrl: string;
@@ -23,6 +22,7 @@ export interface Work {
   name: string;
   object: WorkObject;
   link: string;
+  showWorkInList: boolean;
   showPanel: boolean | null;
 }
 
@@ -35,10 +35,14 @@ export interface Author {
 }
 
 export interface WorkObject {
-  hdriUrl?: string;
-  position?: Vector3;
-  scale?: number | Vector3;
-  playAction?: string;
+  position: Vector3;
+  scale: Vector3;
+  distance: number;
+  azimuthAngle: number;
+  polarAngle: number;
+  enableHdri: false;
+  hdri: number;
+  useHdriAsBackground: 'true' | 'false' | 'only';
 }
 
 export const authorsMock: Author[] = [
@@ -66,11 +70,18 @@ export const worksMock: Work[] = [
     authors: [authorsMock[0], authorsMock[1]],
     link: `${process.env.NEXT_PUBLIC_BASE_PATH}/models/sasha-instinctive.glb`,
     object: {
-      scale: 5,
+      scale: [5, 5, 5],
       position: [0, -4, 0],
+      distance: 1,
+      azimuthAngle: 0,
+      polarAngle: 0,
+      enableHdri: false,
+      hdri: 0,
+      useHdriAsBackground: 'false',
     },
     backgroundColor: 'black',
     foregroundColor: 'white',
+    showWorkInList: true,
     showPanel: true,
   },
   {
@@ -80,10 +91,18 @@ export const worksMock: Work[] = [
     authors: [authorsMock[0]],
     link: 'https://efc1ea83-8d42-4e62-ae0e-e88e8e890ca8.selstorage.ru/models/compressed_sleeptable.glb',
     object: {
-      scale: 2,
+      scale: [2, 2, 2],
+      position: [0, -4, 0],
+      distance: 1,
+      azimuthAngle: 0,
+      polarAngle: 0,
+      enableHdri: false,
+      hdri: 0,
+      useHdriAsBackground: 'false',
     },
     backgroundColor: 'red',
     foregroundColor: 'white',
+    showWorkInList: true,
     showPanel: true,
   },
 ];
@@ -93,7 +112,6 @@ export const slotsMock: Slot[] = [
     id: '0',
     author_id: authorsMock[0].id,
     in_aquarium: false,
-    public: true,
     link: {
       short_code: 'slot_0',
     },
@@ -105,7 +123,6 @@ export const slotsMock: Slot[] = [
     id: '1',
     author_id: authorsMock[0].id,
     in_aquarium: true,
-    public: true,
     link: {
       short_code: 'slot_1',
     },

@@ -58,7 +58,7 @@ export function init(debug: boolean): void {
     themeParams.bindCssVars();
   }
 
-  if (debug && process.env.PUBLIC_NEXT_BASE_PATH === '/local') {
+  if (debug || process.env.NEXT_PUBLIC_BASE_PATH === '/local') {
     const isMobile =
       navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i) !==
       null;

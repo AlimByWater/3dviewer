@@ -29,15 +29,17 @@ const AuthorHeader = ({
       <Text fz="h4" fw={600} className={styles.name}>
         {author.name}
       </Text>
-      <ChannelButton
-        href={author.channel}
-        color={theme.white}
-        size="compact-sm"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Канал
-      </ChannelButton>
+      {author.channel && (
+        <ChannelButton
+          href={author.channel}
+          color={theme.white}
+          size="compact-sm"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Канал
+        </ChannelButton>
+      )}
       {onOtherAuthorsClick && (
         <button onClick={onOtherAuthorsClick}>Другие авторы</button>
       )}

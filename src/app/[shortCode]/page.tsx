@@ -10,24 +10,7 @@ import TriangleLoader from '@/components/TriangleLoader';
 import { useViewer } from './_context/ViewerContext';
 import { useRouter } from 'next/navigation';
 import DripNumberScene from './_components/Error404Scene';
-
-const fetchSlotByShortCode = async (shortCode: string): Promise<Slot> => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/slots/by-link/${shortCode}`,
-  );
-
-  if (!res.ok) {
-    let errorMessage = `Failed to fetch slot - ${shortCode}`;
-    try {
-      const errorData = await res.json();
-      errorMessage = errorData.message || errorMessage;
-    } catch (e) {
-      // Не удалось распарсить JSON ответ
-    }
-    throw new Error(errorMessage);
-  }
-  return res.json();
-};
+import { fetchSlotByShortCode } from '@/core/api';
 
 const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   const [error, setError] = useState<string | null>(null);

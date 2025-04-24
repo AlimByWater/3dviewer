@@ -1,16 +1,19 @@
 import { useSafeArea } from '@/hooks/useSafeArea';
 import { PanelParams } from '@/types/panel';
 import { Slot } from '@/types/types';
+import { useLaunchParams } from '@telegram-apps/sdk-react';
 import Color from 'color';
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useReducer,
   useRef,
 } from 'react';
 import { Pane as Tweakpane } from 'tweakpane';
+import { saveWorkParams } from '@/core/api';
 
 type Action =
   | { type: 'slot_changed'; slot: Slot | null }
@@ -37,25 +40,38 @@ const ViewerContext = createContext<{
 const viewerReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'slot_changed':
-      const pos = action.slot?.work.object.position;
-      const scale = action.slot?.work.object.scale;
+      const slot = action.slot;
+
+      let panelParams: PanelParams | null;
+      if (slot) {
+        const work = slot.work;
+        const object = work.object;
+        panelParams = {
+          showPanel: work.showPanel === true,
+          showWorkInList: work.showWorkInList,
+          background: Color(work.backgroundColor).hex(),
+          foreground: Color(work.foregroundColor).hex(),
+          scale: { x: object.scale[0], y: object.scale[1], z: object.scale[2] },
+          position: {
+            x: object.position[0],
+            y: object.position[1],
+            z: object.position[2],
+          },
+          distance: object.distance,
+          azimuthAngle: object.azimuthAngle,
+          polarAngle: object.polarAngle,
+          enableHdri: object.enableHdri,
+          hdri: object.hdri,
+          useHdriAsBackground: object.useHdriAsBackground,
+        };
+      } else {
+        panelParams = null;
+      }
 
       return {
         ...state,
-        slot: action.slot,
-        panelParams: action.slot && {
-          hdri: 0,
-          background: Color(action.slot.work.backgroundColor).hex(),
-          foreground: Color(action.slot.work.foregroundColor).hex(),
-          scale: scale
-            ? typeof scale === 'number'
-              ? { x: scale, y: scale, z: scale }
-              : { x: scale[0], y: scale[1], z: scale[2] }
-            : { x: 1, y: 1, z: 1 },
-          position: pos
-            ? { x: pos[0], y: pos[1], z: pos[2] }
-            : { x: 0, y: 0, z: 0 },
-        },
+        slot: slot,
+        panelParams: panelParams,
       };
     case 'panel_params_changed':
       return {
@@ -68,17 +84,20 @@ const viewerReducer = (state: State, action: Action): State => {
 export const useViewer = () => useContext(ViewerContext);
 
 export const ViewerProvider = ({ children }: { children: ReactNode }) => {
+  const lp = useLaunchParams();
   const [state, dispatch] = useReducer(viewerReducer, initialState);
   const { top, right } = useSafeArea();
   const paneRef = useRef<Tweakpane | null>(null); // Используем ref для хранения панели
   const paramsRef = useRef(state.panelParams); // Ref для отслеживания параметров
-  let pane: Tweakpane | null;
 
-  const positionPane = (pane: Tweakpane) => {
-    pane.element.style.position = 'relative';
-    pane.element.style.top = `calc(${top}px + 16px)`;
-    pane.element.style.right = `calc(${right}px + 16px)`;
-  };
+  const positionPane = useCallback(
+    (pane: Tweakpane) => {
+      pane.element.style.position = 'relative';
+      pane.element.style.top = `calc(${top}px + 16px)`;
+      pane.element.style.right = `calc(${right}px + 16px)`;
+    },
+    [top, right],
+  );
 
   useEffect(() => {
     if (paneRef.current) {
@@ -94,12 +113,16 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
 
   // Эффект для управления жизненным циклом панели
   useEffect(() => {
-    // TODO: (state.slot?.work.showPanel === true || tgUserId && tgUserId != state.slot?.author_id) && state.panelParams
-    if (state.slot?.work.showPanel !== false && state.panelParams) {
+    if (
+      state.panelParams &&
+      state.slot &&
+      (state.slot.work.showPanel === true ||
+        lp.initData?.user?.id === state.slot.work.authors[0].telegramUserId)
+    ) {
       // Создаем панель при появлении параметров
       if (!paneRef.current) {
         paramsRef.current = state.panelParams;
-        pane = new Tweakpane({
+        const pane = new Tweakpane({
           title: 'Model parameters',
           expanded: true,
         });
@@ -110,10 +133,11 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
         const paneParams = { ...state.panelParams };
 
         // Добавляем биндинги
-        const hdri = pane.addBinding(paneParams, 'hdri', {
-          min: 0,
-          max: 3,
-          step: 1,
+        const showPanel = pane.addBinding(paneParams, 'showPanel', {
+          label: 'public panel',
+        });
+        const showWorkInList = pane.addBinding(paneParams, 'showWorkInList', {
+          label: 'public work',
         });
         const bgColor = pane.addBinding(paneParams, 'background');
         const fgColor = pane.addBinding(paneParams, 'foreground');
@@ -123,6 +147,55 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
         });
         const position = pane.addBinding(paneParams, 'position');
 
+        const cameraFolder = pane.addFolder({
+          expanded: false,
+          title: 'Camera',
+        });
+        const distance = cameraFolder.addBinding(paneParams, 'distance', {
+          min: 1,
+          max: 100,
+        });
+        const azimuthAngle = cameraFolder.addBinding(
+          paneParams,
+          'azimuthAngle',
+          {
+            label: 'azimuth angle',
+            min: -2 * Math.PI,
+            max: 2 * Math.PI,
+          },
+        );
+        const polarAngle = cameraFolder.addBinding(paneParams, 'polarAngle', {
+          label: 'polar angle',
+          min: -2 * Math.PI,
+          max: 2 * Math.PI,
+        });
+
+        const hdriFolder = pane.addFolder({
+          expanded: false,
+          title: 'HDRI',
+        });
+        const enableHdri = hdriFolder.addBinding(paneParams, 'enableHdri', {
+          label: 'enable',
+        });
+        const hdri = hdriFolder.addBinding(paneParams, 'hdri', {
+          label: 'file',
+          min: 0,
+          max: 3,
+          step: 1,
+        });
+        const useHdriAsBackground = hdriFolder.addBinding(
+          paneParams,
+          'useHdriAsBackground',
+          {
+            label: 'use as background',
+            options: {
+              only: 'only',
+              true: 'true',
+              false: 'false',
+            },
+          },
+        );
+
         // Обработчики изменений
         const handleChange =
           (key: keyof PanelParams, ifChanged = true) =>
@@ -131,11 +204,37 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
           };
 
         // Обработчики изменений
-        hdri.on('change', handleChange('hdri'));
+        showPanel.on('change', handleChange('showPanel'));
+        showWorkInList.on('change', handleChange('showWorkInList'));
         bgColor.on('change', handleChange('background'));
         fgColor.on('change', handleChange('foreground'));
         scale.on('change', handleChange('scale', false));
         position.on('change', handleChange('position', false));
+
+        distance.on('change', handleChange('distance'));
+        azimuthAngle.on('change', handleChange('azimuthAngle'));
+        polarAngle.on('change', handleChange('polarAngle'));
+
+        enableHdri.on('change', handleChange('enableHdri'));
+        hdri.on('change', handleChange('hdri'));
+        useHdriAsBackground.on('change', handleChange('useHdriAsBackground'));
+
+        const saveButton = pane.addButton({ title: 'Save' });
+        saveButton.on('click', async () => {
+          try {
+            saveButton.disabled = true;
+            saveButton.title = '...';
+            await saveWorkParams(state.slot!.work.id, paramsRef.current!);
+            saveButton.title = 'Success';
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          } catch (e) {
+            saveButton.title = 'Failed';
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          } finally {
+            saveButton.disabled = false;
+            saveButton.title = 'Save';
+          }
+        });
 
         paneRef.current = pane;
       }
@@ -169,7 +268,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
         paneRef.current = null;
       }
     };
-  }, [state.panelParams, state.slot?.work.showPanel]); // Добавляем параметры в зависимости
+  }, [state.panelParams, positionPane, lp.initData?.user?.id, state.slot]);
 
   // Эффект для синхронизации панели с состоянием
   useEffect(() => {
@@ -182,7 +281,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
     if (paneRef.current) {
       positionPane(paneRef.current);
     }
-  }, [top, right]);
+  }, [positionPane]);
 
   return (
     <ViewerContext.Provider value={{ state, dispatch }}>

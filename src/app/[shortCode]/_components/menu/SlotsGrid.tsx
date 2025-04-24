@@ -5,18 +5,7 @@ import styles from './SlotsGrid.module.css';
 import AuthorHeader from './AuthorHeader';
 import { Card, Image, Text, useMantineTheme } from '@mantine/core';
 import Color from 'color';
-
-const fetchSlots = async (telegramUserId: number): Promise<Slot[]> => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/slots/by-telegram-id/${telegramUserId}`,
-  );
-  if (!res.ok) {
-    throw Error(`Failed to fetch slots by author ${telegramUserId}`);
-  }
-  const allSlots = (await res.json()) as Slot[];
-  const publicSlots = allSlots.filter((slot) => slot.public);
-  return publicSlots;
-};
+import { fetchSlots } from '@/core/api';
 
 const SlotsGrid = ({
   author,

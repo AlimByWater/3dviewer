@@ -6,7 +6,7 @@ import { Canvas } from '@react-three/fiber';
 import { CameraControls, Lightformer, Environment } from '@react-three/drei';
 import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import { Slot } from '@/types/types';
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 
 import dynamic from 'next/dynamic';
 import { useViewer } from '../_context/ViewerContext';
@@ -33,6 +33,17 @@ const WorkCanvas = ({
   const {
     state: { panelParams },
   } = useViewer();
+
+  const useHdriAsBackground = useMemo(() => {
+    switch (panelParams?.useHdriAsBackground) {
+      case 'true':
+        return true;
+      case 'false':
+        return false;
+      default:
+        return panelParams?.useHdriAsBackground;
+    }
+  }, [panelParams?.useHdriAsBackground]);
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
@@ -103,18 +114,19 @@ const WorkCanvas = ({
             </group>
           </Environment>
           {/* HDRI карта */}
-          {
+          {panelParams?.enableHdri && (
             <Environment
-              backgroundIntensity={0}
               files={HDRIVariants[panelParams!.hdri]}
+              background={useHdriAsBackground}
             />
-          }
+          )}
           <CameraControls
             truckSpeed={1}
             dollySpeed={1}
-            minDistance={6}
-            minPolarAngle={0}
-            maxPolarAngle={Math.PI / 2}
+            minDistance={1}
+            distance={panelParams?.distance}
+            azimuthAngle={panelParams?.azimuthAngle}
+            polarAngle={panelParams?.polarAngle}
           />
         </Suspense>
       </Canvas>
