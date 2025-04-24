@@ -166,7 +166,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
         );
         const polarAngle = cameraFolder.addBinding(paneParams, 'polarAngle', {
           label: 'polar angle',
-          min: -2 * Math.PI,
+          min: 0,
           max: 2 * Math.PI,
         });
 

@@ -10,7 +10,7 @@ export type PanelParams = {
   // camera
   /** From 1 to 100 */
   distance: number;
-  /** From 0 to 2π */
+  /** From -2π to 2π */
   azimuthAngle: number;
   /** From 0 to 2π */
   polarAngle: number;
