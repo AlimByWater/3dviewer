@@ -1,5 +1,5 @@
 import TriangleButton from '@/components/TriangleButton';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import MenuModal from './MenuModal';
 import { Slot } from '@/types/types';
 import styles from './MenuButton.module.css';
@@ -19,6 +19,8 @@ const MenuButton = ({
   const {
     state: { panelParams },
   } = useViewer();
+
+  const onCloseClick = useCallback(() => setVisible(false), [setVisible]);
 
   const handleSlotSelect = (slot: Slot) => {
     onSlotSelect(slot);
@@ -41,7 +43,7 @@ const MenuButton = ({
         <MenuModal
           currentSlot={currentSlot}
           onSlotSelect={handleSlotSelect}
-          onCloseClick={() => setVisible(false)}
+          onCloseClick={onCloseClick}
         />
       )}
     </div>
