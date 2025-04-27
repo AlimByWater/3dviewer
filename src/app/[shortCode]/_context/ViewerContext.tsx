@@ -116,7 +116,8 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
     if (
       state.panelParams &&
       state.slot &&
-      (state.slot.work.showPanel === true ||
+      (process.env.NEXT_PUBLIC_BASE_PATH === '/local' ||
+        state.slot.work.showPanel === true ||
         lp.initData?.user?.id === state.slot.work.authors[0].telegramUserId)
     ) {
       // Создаем панель при появлении параметров
