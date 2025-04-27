@@ -13,6 +13,7 @@ import { useViewer } from '../_context/ViewerContext';
 
 const WorkInAquariumView = dynamic(() => import('./WorkInAquariumView'));
 const WorkView = dynamic(() => import('./WorkView'));
+const SplatSceneView = dynamic(() => import('./SplatSceneView')); // Import SplatSceneView
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 
@@ -26,9 +27,11 @@ const HDRIVariants = [
 const WorkCanvas = ({
   slot,
   lowQuality,
+  onLoad, // Add onLoad prop
 }: {
   slot: Slot;
   lowQuality: boolean;
+  onLoad?: () => void; // Define prop type
 }) => {
   const {
     state: { panelParams },
@@ -45,6 +48,34 @@ const WorkCanvas = ({
     }
   }, [panelParams?.useHdriAsBackground]);
 
+  // Determine which component to render based on file extension in work.link
+  const renderWorkComponent = () => {
+    const link = slot.work.link;
+    if (!link) {
+      console.warn('Work link is missing.');
+      onLoad?.(); // Call onLoad even if link is missing to potentially hide loader
+      return null;
+    }
+
+    // Extract file extension, handling potential query parameters
+    const pathname = new URL(link, 'http://dummybase').pathname; // Use dummy base for relative URLs if needed
+    const extension = pathname.split('.').pop()?.toLowerCase();
+
+    if (extension === 'glb' || extension === 'gltf') {
+      // Assuming WorkView/useGLTF handles its own loading indication or loads fast enough
+      // If WorkView needs explicit load handling, it would require similar onLoad logic
+      onLoad?.(); // Call onLoad immediately for GLB/GLTF for now
+      return <WorkView work={slot.work} />;
+    } else if (extension === 'splat' || extension === 'ksplat') {
+      // SplatSceneView now uses context for loading state, remove onLoad prop
+      return <SplatSceneView work={slot.work} />;
+    }
+    // Handle unknown format or provide a default
+    console.warn('Unknown work format based on extension:', extension, 'from link:', link);
+    // Default to WorkView or return null if preferred
+    return <WorkView work={slot.work} />; // Defaulting to GLB/GLTF loader
+  };
+
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <Canvas
@@ -58,11 +89,11 @@ const WorkCanvas = ({
       >
         <Suspense fallback={null}>
           <color attach="background" args={[panelParams!.background]} />
-          {/** Стакан аквариума */}
+          {/** Стакан аквариума или основная работа */}
           {slot.in_aquarium ? (
-            <WorkInAquariumView work={slot.work} />
+            <WorkInAquariumView work={slot.work} /> // Aquarium view might need format check too if it can contain splats
           ) : (
-            <WorkView work={slot.work} />
+            renderWorkComponent() // Render based on format
           )}
           {/** Пользовательская среда */}
           <Environment resolution={isLowPerformanceDevice() ? 256 : 1024}>

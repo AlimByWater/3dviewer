@@ -15,20 +15,28 @@ import {
 import { Pane as Tweakpane } from 'tweakpane';
 import { saveWorkParams } from '@/core/api';
 
+// Define asset loading actions
 type Action =
   | { type: 'slot_changed'; slot: Slot | null }
-  | { type: 'panel_params_changed'; panelParams: PanelParams };
+  | { type: 'panel_params_changed'; panelParams: PanelParams }
+  | { type: 'asset_loading'; assetType: 'glb' | 'splat' } // Combined loading start
+  | { type: 'asset_loaded' }; // Combined loading end
 
+// Use assetLoading in state
 interface State {
   slot: Slot | null;
   panelParams: PanelParams | null;
+  assetLoading: 'glb' | 'splat' | 'none'; // Track type of loading asset
 }
 
+// Initialize assetLoading
 const initialState: State = {
   slot: null,
   panelParams: null,
+  assetLoading: 'none', // Default to none loading
 };
 
+// Update context type to include new State shape
 const ViewerContext = createContext<{
   state: State;
   dispatch: React.Dispatch<Action>;
@@ -37,6 +45,7 @@ const ViewerContext = createContext<{
   dispatch: () => {},
 });
 
+// Add reducer cases for asset loading
 const viewerReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'slot_changed':
@@ -68,16 +77,35 @@ const viewerReducer = (state: State, action: Action): State => {
         panelParams = null;
       }
 
+      // Reset asset loading state when slot changes
       return {
         ...state,
         slot: slot,
         panelParams: panelParams,
+        assetLoading: 'none', // Correctly reset assetLoading
       };
     case 'panel_params_changed':
       return {
         ...state,
         panelParams: action.panelParams,
+        // Keep assetLoading state unchanged here
       };
+    // Handle asset loading actions
+    case 'asset_loading':
+      return {
+        ...state,
+        assetLoading: action.assetType, // Set to 'glb' or 'splat'
+      };
+    case 'asset_loaded':
+      return {
+        ...state,
+        assetLoading: 'none', // Set back to 'none' when loaded
+      };
+    // Add default case to handle potential unknown actions
+    default:
+      // Ensure exhaustive check if needed, or just return state
+      // const _exhaustiveCheck: never = action;
+      return state;
   }
 };
 
@@ -221,15 +249,24 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
 
         const saveButton = pane.addButton({ title: 'Save' });
         saveButton.on('click', async () => {
+          // Keep the null check for safety
+          if (!state.slot || !paramsRef.current) {
+            console.error('Cannot save: slot or params are missing.');
+            return;
+          }
           try {
             saveButton.disabled = true;
             saveButton.title = '...';
-            await saveWorkParams(state.slot!.work.id, paramsRef.current!);
+
+            // Pass only PanelParams (paramsRef.current)
+            await saveWorkParams(state.slot.work.id, paramsRef.current);
+
             saveButton.title = 'Success';
             await new Promise((resolve) => setTimeout(resolve, 1000));
           } catch (e) {
-            saveButton.title = 'Failed';
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            console.error('Failed to save work params:', e); // Keep logging
+            saveButton.title = `Failed: ${e instanceof Error ? e.message : 'Unknown error'}`; // Keep improved error message
+            await new Promise((resolve) => setTimeout(resolve, 2000)); // Keep longer timeout
           } finally {
             saveButton.disabled = false;
             saveButton.title = 'Save';
