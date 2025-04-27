@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Alert } from '@mantine/core';
 import Overlay from './_components/overlay/Overlay';
 import WorkCanvas from './_components/WorkCanvas';
 import { Page } from '@/components/Page';
@@ -61,7 +60,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
       <WorkCanvas slot={state.slot} lowQuality={isModalOpened || false} />
       <Overlay
         slot={state.slot}
-        onSlotSelect={(s) => router.replace(`?shortCode=${s.link.short_code}`)}
+        onSlotSelect={setSlot}
         onChangeMenuVisible={setIsModalOpened}
       />
     </Page>
