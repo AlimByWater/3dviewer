@@ -56,7 +56,8 @@ const WorkCanvas = ({
         camera={{ position: [-10, 0, 5], fov: 70, near: 1, far: 300 }}
         gl={{ stencil: true }}
       >
-        <Suspense fallback={null}>
+        {/* Ключ нужен для того, чтобы параметры сцены сбрасывались */}
+        <Suspense key={slot.id} fallback={null}>
           <color attach="background" args={[panelParams!.background]} />
           {/** Стакан аквариума */}
           {slot.in_aquarium ? (
