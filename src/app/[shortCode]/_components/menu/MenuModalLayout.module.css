@@ -4,11 +4,14 @@
   right: 0;
   bottom: 0;
   left: 0;
-  padding: 8px 12px;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  padding: 12px 16px 16px 16px;
   z-index: 2000;
   box-sizing: border-box;
   overflow-y: auto;
   pointer-events: auto;
+
+  /* Фон */
+  /* mask: linear-gradient(black, transparent); */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
 }

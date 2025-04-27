@@ -1,6 +1,6 @@
 import { Work } from '@/types/types';
 import { useAnimations, useGLTF } from '@react-three/drei';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useViewer } from '../_context/ViewerContext';
 
 interface WorkViewProps {
