@@ -7,12 +7,14 @@ import { CameraControls, Lightformer, Environment } from '@react-three/drei';
 import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import { Slot } from '@/types/types';
 import { Suspense, useMemo } from 'react';
-
 import dynamic from 'next/dynamic';
+
 import { useViewer } from '../_context/ViewerContext';
+import { getFormat } from '@/utils/modelFormat'; // <-- Added import
 
 const WorkInAquariumView = dynamic(() => import('./WorkInAquariumView'));
 const WorkView = dynamic(() => import('./WorkView'));
+const GaussianSplatView = dynamic(() => import('./GaussianSplatView')); // <-- Added dynamic import
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 
@@ -58,11 +60,13 @@ const WorkCanvas = ({
       >
         <Suspense fallback={null}>
           <color attach="background" args={[panelParams!.background]} />
-          {/** Стакан аквариума */}
+          {/** Стакан аквариума или основная модель */}
           {slot.in_aquarium ? (
-            <WorkInAquariumView work={slot.work} />
+            <WorkInAquariumView key={slot.work.id} work={slot.work} />
+          ) : getFormat(slot.work.link) === 'splat' ? (
+            <GaussianSplatView key={slot.work.id} work={slot.work} />
           ) : (
-            <WorkView work={slot.work} />
+            <WorkView key={slot.work.id} work={slot.work} />
           )}
           {/** Пользовательская среда */}
           <Environment resolution={isLowPerformanceDevice() ? 256 : 1024}>

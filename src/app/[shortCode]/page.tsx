@@ -61,7 +61,11 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
       <WorkCanvas slot={state.slot} lowQuality={isModalOpened || false} />
       <Overlay
         slot={state.slot}
-        onSlotSelect={(s) => router.replace(`?shortCode=${s.link.short_code}`)}
+        onSlotSelect={(s) => {
+          // Обновляем контекст напрямую
+          dispatch({ type: 'slot_changed', slot: s });
+          // Не меняем URL здесь, чтобы избежать повторной загрузки
+        }}
         onChangeMenuVisible={setIsModalOpened}
       />
     </Page>
