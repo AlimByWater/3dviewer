@@ -35,15 +35,23 @@ const WorkCanvas = ({
   } = useViewer();
 
   const useHdriAsBackground = useMemo(() => {
-    switch (panelParams?.useHdriAsBackground) {
-      case 'true':
-        return true;
-      case 'false':
-        return false;
-      default:
-        return panelParams?.useHdriAsBackground;
-    }
+    return panelParams?.useHdriAsBackground;
   }, [panelParams?.useHdriAsBackground]);
+
+  const hdriBackgroundProp = useMemo(() => {
+    if (panelParams?.enableHdri) {
+      switch (panelParams.useHdriAsBackground) {
+        case 'yes':
+          return true; // Use HDRI for background and environment
+        case 'only':
+          return 'only'; // Use HDRI for environment only
+        case 'no':
+        default:
+          return false; // No HDRI at all
+      }
+    }
+    return false; // No HDRI if not enabled
+  }, [panelParams?.enableHdri, panelParams?.useHdriAsBackground]);
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
@@ -116,8 +124,8 @@ const WorkCanvas = ({
           {/* HDRI карта */}
           {panelParams?.enableHdri && (
             <Environment
-              files={HDRIVariants[panelParams!.hdri]}
-              background={useHdriAsBackground}
+              files={`${basePath}/hdri/${panelParams!.hdri}.jpg`}
+              background={hdriBackgroundProp}
             />
           )}
           <CameraControls
