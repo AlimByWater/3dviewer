@@ -13,6 +13,7 @@ import {
   useRef,
 } from 'react';
 import { Pane as Tweakpane } from 'tweakpane';
+import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 import { saveWorkParams } from '@/core/api';
 
 // Define asset loading actions
@@ -66,8 +67,8 @@ const viewerReducer = (state: State, action: Action): State => {
           azimuthAngle: object.azimuthAngle,
           polarAngle: object.polarAngle,
           enableHdri: object.enableHdri,
-          hdri: object.hdri,
-          useHdriAsBackground: object.useHdriAsBackground,
+          hdri: 'env-1',
+          useHdriAsBackground: object.useHdriAsBackground === 'true' ? 'true' : object.useHdriAsBackground === 'false' ? 'false' : object.useHdriAsBackground === 'only' ? 'only' : 'true',
         };
       } else {
         panelParams = null;
@@ -137,6 +138,8 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
           expanded: true,
         });
 
+        pane.registerPlugin(EssentialsPlugin); // Register the EssentialsPlugin
+
         positionPane(pane);
 
         // Создаем копию параметров для панели
@@ -149,59 +152,82 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
         const showWorkInList = pane.addBinding(paneParams, 'showWorkInList', {
           label: 'public work',
         });
-        const bgColor = pane.addBinding(paneParams, 'background');
-        const fgColor = pane.addBinding(paneParams, 'foreground');
+        const bgColor = pane.addBinding(paneParams, 'background', {
+          label: 'Background'
+        });
+        const fgColor = pane.addBinding(paneParams, 'foreground', {
+          label: 'Text'
+        });
         const scale = pane.addBinding(paneParams, 'scale', {
+          label: 'Scale',
           min: 0,
           max: 10,
         });
-        const position = pane.addBinding(paneParams, 'position');
+        const position = pane.addBinding(paneParams, 'position', {
+          label: 'Position'
+        });
 
         const cameraFolder = pane.addFolder({
           expanded: false,
-          title: 'Camera',
-        });
-        const distance = cameraFolder.addBinding(paneParams, 'distance', {
-          min: 1,
-          max: 100,
+          title: 'Start Camera Position',
         });
         const azimuthAngle = cameraFolder.addBinding(
           paneParams,
           'azimuthAngle',
           {
-            label: 'azimuth angle',
+            label: 'Y',
             min: -2 * Math.PI,
             max: 2 * Math.PI,
           },
         );
         const polarAngle = cameraFolder.addBinding(paneParams, 'polarAngle', {
-          label: 'polar angle',
+          label: 'X',
           min: 0,
           max: 2 * Math.PI,
         });
-
+        const distance = cameraFolder.addBinding(paneParams, 'distance', {
+          label: 'Z',
+          min: 1,
+          max: 100,
+        });
         const hdriFolder = pane.addFolder({
           expanded: false,
-          title: 'HDRI',
+          title: 'HDRI-background',
         });
         const enableHdri = hdriFolder.addBinding(paneParams, 'enableHdri', {
-          label: 'enable',
+          label: 'Enable',
         });
         const hdri = hdriFolder.addBinding(paneParams, 'hdri', {
-          label: 'file',
-          min: 0,
-          max: 3,
-          step: 1,
+          label: 'HDRI',
+          options: {
+            'city': 'env-1',
+            'orbit': 'env-2',
+            'polygon': 'env-3',
+            'studio': 'env-4',
+          },
         });
         const useHdriAsBackground = hdriFolder.addBinding(
           paneParams,
           'useHdriAsBackground',
           {
-            label: 'use as background',
-            options: {
-              only: 'only',
-              true: 'true',
-              false: 'false',
+            label: 'Use HDRI as Background',
+            view: 'radiogrid',
+            groupName: 'backgroundToggle', // Уникальное имя для группы радиокнопок
+            size: [3, 1], // 3 колонки, 1 ряд
+            cells: (x: number, y: number) => {
+              let title = '';
+              let value: 'true' | 'false' | 'only' = 'true'; // Default value to satisfy TS
+              if (x === 0) {
+                title = 'true'; // HDRI as background & environment
+                value = 'true';
+              } else if (x === 1) {
+                title = 'false'; // No HDRI at all
+                value = 'false';
+              } else { // x === 2
+                title = 'only'; // HDRI for environment only
+                value = 'only';
+              }
+              return { title, value };
             },
           },
         );

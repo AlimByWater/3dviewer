@@ -17,6 +17,6 @@ export type PanelParams = {
 
   // hdri
   enableHdri: boolean;
-  hdri: number;
+  hdri: string;
   useHdriAsBackground: 'true' | 'false' | 'only';
 };
