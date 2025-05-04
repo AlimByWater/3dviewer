@@ -1,5 +1,4 @@
 import { Author, Slot } from '@/types/types';
-import { useGLTF } from '@react-three/drei';
 import { useEffect, useState } from 'react';
 import styles from './SlotsGrid.module.css';
 import AuthorHeader from './AuthorHeader';
@@ -24,14 +23,6 @@ const SlotsGrid = ({
       setSlots(slots);
     });
   }, [author.telegramUserId]);
-
-  useEffect(() => {
-    if (slots) {
-      for (let i = 0; i < slots.length; i++) {
-        useGLTF.preload(slots[i].work.link);
-      }
-    }
-  }, [slots]);
 
   return (
     <>
