@@ -68,7 +68,7 @@ const viewerReducer = (state: State, action: Action): State => {
           polarAngle: object.polarAngle,
           enableHdri: object.enableHdri,
           hdri: 'env-1',
-          useHdriAsBackground: object.useHdriAsBackground === 'true' ? 'yes' : object.useHdriAsBackground === 'false' ? 'no' : object.useHdriAsBackground === 'only' ? 'only' : 'yes',
+          useHdriAsBackground: object.useHdriAsBackground === 'true' ? 'true' : object.useHdriAsBackground === 'false' ? 'false' : object.useHdriAsBackground === 'only' ? 'only' : 'true',
         };
       } else {
         panelParams = null;
@@ -175,13 +175,13 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
           paneParams,
           'azimuthAngle',
           {
-            label: 'X',
+            label: 'Y',
             min: -2 * Math.PI,
             max: 2 * Math.PI,
           },
         );
         const polarAngle = cameraFolder.addBinding(paneParams, 'polarAngle', {
-          label: 'Y',
+          label: 'X',
           min: 0,
           max: 2 * Math.PI,
         });
@@ -216,15 +216,15 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
             size: [3, 1], // 3 колонки, 1 ряд
             cells: (x: number, y: number) => {
               let title = '';
-              let value: 'yes' | 'no' | 'only' = 'yes'; // Default value to satisfy TS
+              let value: 'true' | 'false' | 'only' = 'true'; // Default value to satisfy TS
               if (x === 0) {
-                title = 'Yes'; // HDRI as background & environment
-                value = 'yes';
+                title = 'true'; // HDRI as background & environment
+                value = 'true';
               } else if (x === 1) {
-                title = 'No'; // No HDRI at all
-                value = 'no';
+                title = 'false'; // No HDRI at all
+                value = 'false';
               } else { // x === 2
-                title = 'Only'; // HDRI for environment only
+                title = 'only'; // HDRI for environment only
                 value = 'only';
               }
               return { title, value };

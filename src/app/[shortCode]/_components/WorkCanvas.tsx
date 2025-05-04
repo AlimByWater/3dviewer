@@ -78,11 +78,11 @@ const WorkCanvas = ({
   const hdriBackgroundProp = useMemo(() => {
     if (panelParams?.enableHdri) {
       switch (panelParams.useHdriAsBackground) {
-        case 'yes':
+        case 'true':
           return true; // Use HDRI for background and environment
         case 'only':
           return 'only'; // Use HDRI for environment only
-        case 'no':
+        case 'false':
         default:
           return false; // No HDRI at all
       }
