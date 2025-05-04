@@ -1,10 +1,16 @@
 import './ProgressIndicator.css';
 import TriangleLoader from '@/components/TriangleLoader';
 import { useProgress } from '@react-three/drei';
+import { useViewer } from '../../_context/ViewerContext'; // Import useViewer
 
-export default function ProgressIndicator({ color }: { color: string }) {
-  const { progress } = useProgress();
-  if (progress == 100) return;
+export default function ProgressIndicator({
+  color,
+  progress,
+}: {
+  color: string;
+  progress: number | null;
+}) {
+  // Render the loader
   return (
     <div
       className="loader-container"
@@ -14,7 +20,8 @@ export default function ProgressIndicator({ color }: { color: string }) {
     >
       <div className="loader">
         <TriangleLoader />
-        {progress.toFixed(0)}%
+        {/* Show percentage only if loading GLB */}
+        {progress && `${progress.toFixed(0)}%`}
       </div>
     </div>
   );

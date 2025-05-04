@@ -7,7 +7,6 @@ import { Page } from '@/components/Page';
 import { Slot } from '@/types/types';
 import TriangleLoader from '@/components/TriangleLoader';
 import { useViewer } from './_context/ViewerContext';
-import { useRouter } from 'next/navigation';
 import DripNumberScene from './_components/Error404Scene';
 import { fetchSlotByShortCode } from '@/core/api';
 
@@ -15,7 +14,6 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpened, setIsModalOpened] = useState<boolean | null>(null);
   const { state, dispatch } = useViewer();
-  const router = useRouter();
 
   const setSlot = useCallback(
     (slot: Slot | null) => {
@@ -60,7 +58,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
       <WorkCanvas slot={state.slot} lowQuality={isModalOpened || false} />
       <Overlay
         slot={state.slot}
-        onSlotSelect={setSlot}
+        onSlotSelect={(s) => setSlot(s)} // Directly update state instead of routing
         onChangeMenuVisible={setIsModalOpened}
       />
     </Page>
