@@ -1,7 +1,5 @@
 import './ProgressIndicator.css';
 import TriangleLoader from '@/components/TriangleLoader';
-import { useProgress } from '@react-three/drei';
-import { useViewer } from '../../_context/ViewerContext'; // Import useViewer
 
 export default function ProgressIndicator({
   color,

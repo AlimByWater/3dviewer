@@ -49,6 +49,7 @@ const SplatSceneView = ({ work, onProgress }: SplatSceneViewProps) => {
       .catch((err: Error) => {
         // Specify Error type for err
         console.error('Error loading splat scene:', err);
+        onProgress({ active: false, progress: null });
       });
 
     // Cleanup on unmount

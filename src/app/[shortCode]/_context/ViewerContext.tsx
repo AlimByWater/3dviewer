@@ -67,8 +67,8 @@ const viewerReducer = (state: State, action: Action): State => {
           azimuthAngle: object.azimuthAngle,
           polarAngle: object.polarAngle,
           enableHdri: object.enableHdri,
-          hdri: 'env-1',
-          useHdriAsBackground: object.useHdriAsBackground === 'true' ? 'true' : object.useHdriAsBackground === 'false' ? 'false' : object.useHdriAsBackground === 'only' ? 'only' : 'true',
+          hdri: object.hdri,
+          useHdriAsBackground: object.useHdriAsBackground,
         };
       } else {
         panelParams = null;
@@ -153,10 +153,10 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
           label: 'public work',
         });
         const bgColor = pane.addBinding(paneParams, 'background', {
-          label: 'Background'
+          label: 'Background',
         });
         const fgColor = pane.addBinding(paneParams, 'foreground', {
-          label: 'Text'
+          label: 'Text',
         });
         const scale = pane.addBinding(paneParams, 'scale', {
           label: 'Scale',
@@ -164,7 +164,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
           max: 10,
         });
         const position = pane.addBinding(paneParams, 'position', {
-          label: 'Position'
+          label: 'Position',
         });
 
         const cameraFolder = pane.addFolder({
@@ -200,10 +200,10 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
         const hdri = hdriFolder.addBinding(paneParams, 'hdri', {
           label: 'HDRI',
           options: {
-            'city': 'env-1',
-            'orbit': 'env-2',
-            'polygon': 'env-3',
-            'studio': 'env-4',
+            city: 'env-1',
+            orbit: 'env-2',
+            polygon: 'env-3',
+            studio: 'env-4',
           },
         });
         const useHdriAsBackground = hdriFolder.addBinding(
@@ -215,19 +215,16 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
             groupName: 'backgroundToggle', // Уникальное имя для группы радиокнопок
             size: [3, 1], // 3 колонки, 1 ряд
             cells: (x: number, y: number) => {
-              let title = '';
-              let value: 'true' | 'false' | 'only' = 'true'; // Default value to satisfy TS
               if (x === 0) {
-                title = 'true'; // HDRI as background & environment
-                value = 'true';
+                // HDRI as background & environment
+                return { title: 'true', value: 'true' };
               } else if (x === 1) {
-                title = 'false'; // No HDRI at all
-                value = 'false';
-              } else { // x === 2
-                title = 'only'; // HDRI for environment only
-                value = 'only';
+                // No HDRI for background
+                return { title: 'false', value: 'false' };
+              } else {
+                // HDRI for background only
+                return { title: 'only', value: 'only' };
               }
-              return { title, value };
             },
           },
         );

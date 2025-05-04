@@ -41,7 +41,7 @@ export interface WorkObject {
   azimuthAngle: number;
   polarAngle: number;
   enableHdri: false;
-  hdri: number;
+  hdri: string;
   useHdriAsBackground: 'true' | 'false' | 'only';
 }
 
@@ -76,7 +76,7 @@ export const worksMock: Work[] = [
       azimuthAngle: 0,
       polarAngle: 0,
       enableHdri: false,
-      hdri: 0,
+      hdri: 'env-1',
       useHdriAsBackground: 'false',
     },
     backgroundColor: 'black',
@@ -97,7 +97,7 @@ export const worksMock: Work[] = [
       azimuthAngle: 0,
       polarAngle: 0,
       enableHdri: false,
-      hdri: 0,
+      hdri: 'env-2',
       useHdriAsBackground: 'false',
     },
     backgroundColor: 'red',

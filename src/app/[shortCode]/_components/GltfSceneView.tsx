@@ -26,6 +26,10 @@ const GltfSceneView = ({ work, onProgress }: GltfSceneViewProps) => {
       loader.manager.onLoad = () => {
         onProgress({ active: false, progress: null });
       };
+      loader.manager.onError = (url) => {
+        console.error('Error loading gltf scene:', url);
+        onProgress({ active: false, progress: null });
+      };
     },
   );
   const { actions } = useAnimations(animations, scene);
