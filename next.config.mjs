@@ -16,6 +16,18 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
   },
+  // Add headers for Cross-Origin Isolation (COOP only, COEP removed)
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          // { key: 'Cross-Origin-Embedder-Policy', value: 'require-corp' }, // Removed COEP
+        ],
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

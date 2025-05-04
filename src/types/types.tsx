@@ -72,7 +72,7 @@ export const worksMock: Work[] = [
     object: {
       scale: [5, 5, 5],
       position: [0, -4, 0],
-      distance: 1,
+      distance: 10,
       azimuthAngle: 0,
       polarAngle: 0,
       enableHdri: false,
@@ -93,7 +93,7 @@ export const worksMock: Work[] = [
     object: {
       scale: [2, 2, 2],
       position: [0, -4, 0],
-      distance: 1,
+      distance: 10,
       azimuthAngle: 0,
       polarAngle: 0,
       enableHdri: false,

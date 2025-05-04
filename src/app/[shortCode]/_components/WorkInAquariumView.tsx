@@ -16,7 +16,7 @@ interface WorkInAquariumViewProps {
   work: Work;
 }
 
-const WorkInAquariumView = ({ work }: WorkInAquariumViewProps) => {
+const WorkInAquariumView = ({ children }: PropsWithChildren) => {
   return (
     <Aquarium position={new THREE.Vector3(0, 0.25, 0)}>
       <Float
@@ -24,7 +24,8 @@ const WorkInAquariumView = ({ work }: WorkInAquariumViewProps) => {
         floatIntensity={isLowPerformanceDevice() ? 5 : 10}
         speed={2}
       >
-        <WorkView work={work} />
+        {children}
+        {/* <WorkView work={work} /> */}
       </Float>
       <Instances renderOrder={-1000}>
         <sphereGeometry

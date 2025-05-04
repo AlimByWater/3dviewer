@@ -1,4 +1,4 @@
-.worksGrid {
+.grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 16px;
@@ -6,7 +6,7 @@
   margin: 0 auto;
 }
 
-.workCard {
+.slotCard {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -14,7 +14,7 @@
   cursor: pointer;
 }
 
-.workCard:hover {
+.slotCard:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -30,7 +30,9 @@
   object-fit: cover;
 }
 
-.workInfo {
+.slotInfo {
+  height: 100%;
+  align-content: center;
   padding: 4px 8px;
 
   /* Overflow */
