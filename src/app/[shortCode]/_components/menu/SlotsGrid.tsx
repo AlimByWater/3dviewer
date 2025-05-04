@@ -1,5 +1,4 @@
 import { Author, Slot } from '@/types/types';
-import { useGLTF } from '@react-three/drei';
 import { useEffect, useState } from 'react';
 import styles from './SlotsGrid.module.css';
 import AuthorHeader from './AuthorHeader';
@@ -25,14 +24,6 @@ const SlotsGrid = ({
     });
   }, [author.telegramUserId]);
 
-  useEffect(() => {
-    if (slots) {
-      for (let i = 0; i < slots.length; i++) {
-        useGLTF.preload(slots[i].work.link);
-      }
-    }
-  }, [slots]);
-
   return (
     <>
       {author && (
@@ -41,13 +32,13 @@ const SlotsGrid = ({
           onOtherAuthorsClick={onOtherAuthorsClick}
         />
       )}
-      <div className={styles.worksGrid}>
+      <div className={styles.grid}>
         {slots &&
           slots.map((slot) => (
             <Card
               bg={Color(theme.colors.gray[7]).alpha(0.3).hexa()}
               c={theme.white}
-              className={styles.workCard}
+              className={styles.slotCard}
               key={slot.id}
               onClick={() => onSelect(slot)}
             >
@@ -56,7 +47,7 @@ const SlotsGrid = ({
               </Card.Section>
               <Card.Section
                 bg={Color(theme.colors.gray[7]).alpha(0.3).hexa()}
-                className={styles.workInfo}
+                className={styles.slotInfo}
               >
                 <Text fz="sm" fw={500}>
                   {slot.work.name}
