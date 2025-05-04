@@ -6,13 +6,16 @@ import { Canvas } from '@react-three/fiber';
 import { CameraControls, Lightformer, Environment } from '@react-three/drei';
 import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import { Slot } from '@/types/types';
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 
 import dynamic from 'next/dynamic';
 import { useViewer } from '../_context/ViewerContext';
+import { getFileExtensionFromUrl } from '@/utils/getFileExtension';
+import { SceneProgressParams } from '@/types/scene';
+import ProgressIndicator from './overlay/ProgressIndicator';
 
 const WorkInAquariumView = dynamic(() => import('./WorkInAquariumView'));
-const WorkView = dynamic(() => import('./WorkView'));
+const GltfSceneView = dynamic(() => import('./GltfSceneView'));
 const SplatSceneView = dynamic(() => import('./SplatSceneView')); // Import SplatSceneView
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
@@ -27,15 +30,17 @@ const HDRIVariants = [
 const WorkCanvas = ({
   slot,
   lowQuality,
-  onLoad, // Add onLoad prop
 }: {
   slot: Slot;
   lowQuality: boolean;
-  onLoad?: () => void; // Define prop type
 }) => {
   const {
     state: { panelParams },
   } = useViewer();
+  const [sceneProgress, setSceneProgress] = useState<SceneProgressParams>({
+    active: false,
+    progress: null,
+  });
 
   const useHdriAsBackground = useMemo(() => {
     switch (panelParams?.useHdriAsBackground) {
@@ -53,45 +58,53 @@ const WorkCanvas = ({
     const link = slot.work.link;
     if (!link) {
       console.warn('Work link is missing.');
-      onLoad?.(); // Call onLoad even if link is missing to potentially hide loader
       return null;
     }
 
     // Extract file extension, handling potential query parameters
-    const pathname = new URL(link, 'http://dummybase').pathname; // Use dummy base for relative URLs if needed
-    const extension = pathname.split('.').pop()?.toLowerCase();
+    const extension = getFileExtensionFromUrl(link);
 
     if (extension === 'glb' || extension === 'gltf') {
       // Assuming WorkView/useGLTF handles its own loading indication or loads fast enough
       // If WorkView needs explicit load handling, it would require similar onLoad logic
-      onLoad?.(); // Call onLoad immediately for GLB/GLTF for now
-      return <WorkView work={slot.work} />;
+      return <GltfSceneView work={slot.work} onProgress={setSceneProgress} />;
     } else if (extension === 'splat' || extension === 'ksplat') {
       // SplatSceneView now uses context for loading state, remove onLoad prop
-      return <SplatSceneView work={slot.work} />;
+      return <SplatSceneView work={slot.work} onProgress={setSceneProgress} />;
     }
-    // Handle unknown format or provide a default
-    console.warn('Unknown work format based on extension:', extension, 'from link:', link);
-    // Default to WorkView or return null if preferred
-    return <WorkView work={slot.work} />; // Defaulting to GLB/GLTF loader
+    // Handle unknown format
+    console.error(
+      'Unknown work format based on extension:',
+      extension,
+      'from link:',
+      link,
+    );
+    return null;
   };
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+      {sceneProgress.active && (
+        <ProgressIndicator
+          color={slot.work.foregroundColor}
+          progress={sceneProgress.progress}
+        />
+      )}
+
       <Canvas
         dpr={getPixelRatio(lowQuality)}
         style={{
           backgroundColor: panelParams!.background,
         }}
         shadows
-        camera={{ position: [-10, 0, 5], fov: 70, near: 1, far: 300 }}
+        camera={{ position: [-10, 0, 5], fov: 70, near: 0.1, far: 300 }}
         gl={{ stencil: true }}
       >
         <Suspense fallback={null}>
           <color attach="background" args={[panelParams!.background]} />
           {/** Стакан аквариума или основная работа */}
           {slot.in_aquarium ? (
-            <WorkInAquariumView work={slot.work} /> // Aquarium view might need format check too if it can contain splats
+            <WorkInAquariumView>{renderWorkComponent()}</WorkInAquariumView> // Aquarium view might need format check too if it can contain splats
           ) : (
             renderWorkComponent() // Render based on format
           )}
@@ -151,14 +164,23 @@ const WorkCanvas = ({
               background={useHdriAsBackground}
             />
           )}
-          <CameraControls
-            truckSpeed={1}
-            dollySpeed={1}
-            minDistance={1}
-            distance={panelParams?.distance}
-            azimuthAngle={panelParams?.azimuthAngle}
-            polarAngle={panelParams?.polarAngle}
-          />
+          {slot.in_aquarium ? (
+            <CameraControls
+              truckSpeed={1}
+              distance={15}
+              azimuthAngle={Math.PI / 2}
+              polarAngle={Math.PI / 2}
+            />
+          ) : (
+            <CameraControls
+              truckSpeed={1}
+              dollySpeed={1}
+              minDistance={1}
+              distance={panelParams?.distance}
+              azimuthAngle={panelParams?.azimuthAngle}
+              polarAngle={panelParams?.polarAngle}
+            />
+          )}
         </Suspense>
       </Canvas>
     </div>

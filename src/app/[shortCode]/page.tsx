@@ -1,14 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Alert } from '@mantine/core';
 import Overlay from './_components/overlay/Overlay';
 import WorkCanvas from './_components/WorkCanvas';
 import { Page } from '@/components/Page';
 import { Slot } from '@/types/types';
 import TriangleLoader from '@/components/TriangleLoader';
 import { useViewer } from './_context/ViewerContext';
-import { useRouter } from 'next/navigation';
 import DripNumberScene from './_components/Error404Scene';
 import { fetchSlotByShortCode } from '@/core/api';
 
@@ -16,7 +14,6 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpened, setIsModalOpened] = useState<boolean | null>(null);
   const { state, dispatch } = useViewer();
-  const router = useRouter();
 
   const setSlot = useCallback(
     (slot: Slot | null) => {
