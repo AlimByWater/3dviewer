@@ -193,7 +193,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
         });
         const distance = cameraFolder.addBinding(paneParams, 'distance', {
           label: 'Z',
-          min: 1,
+          min: 0.1,
           max: 100,
         });
         const hdriFolder = pane.addFolder({
