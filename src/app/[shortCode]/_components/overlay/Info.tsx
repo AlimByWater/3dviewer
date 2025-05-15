@@ -3,8 +3,15 @@ import styles from './Info.module.css';
 import { Avatar, Text } from '@mantine/core';
 import SafeArea from '@/components/SafeArea';
 import { useViewer } from '../../_context/ViewerContext';
+import MenuButton from './MenuButton';
 
-const Info = () => {
+const Info = ({
+  modalVisible,
+  onChangeModalVisible,
+}: {
+  modalVisible: boolean;
+  onChangeModalVisible: (visible: boolean) => void;
+}) => {
   const {
     state: { slot, panelParams },
   } = useViewer();
@@ -43,12 +50,10 @@ const Info = () => {
               ))}
             </Text>
           </div>
-
-          <Text fz="sm" c={fontStyle.color} className={styles.uploadDate}>
-            {new Date(slot!.work.createdAt).toLocaleDateString([], {
-              dateStyle: 'short',
-            })}
-          </Text>
+          <MenuButton
+            modalVisible={modalVisible}
+            onChangeModalVisible={onChangeModalVisible}
+          />
         </div>
       </SafeArea>
     </div>

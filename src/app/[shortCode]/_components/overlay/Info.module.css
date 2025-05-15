@@ -22,9 +22,3 @@
 .workInfo {
   flex-grow: 1;
 }
-
-.uploadDate {
-  white-space: nowrap;
-  margin-left: 12px;
-  align-self: flex-end;
-}

@@ -2,15 +2,19 @@ import './TriangleButton.css';
 import { ActionIcon } from '@mantine/core';
 
 const TriangleButton = ({
+  href,
   onClick,
   color,
 }: {
-  onClick: () => void;
+  href?: string;
+  onClick?: () => void;
   color?: string;
 }) => {
   return (
     <ActionIcon
       variant="transparent"
+      component="a"
+      href={href}
       onClick={onClick}
       style={{
         color,

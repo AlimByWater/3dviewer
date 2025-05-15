@@ -1,16 +1,12 @@
-import ProgressIndicator from './ProgressIndicator';
-import { Slot } from '@/types/types';
 import Info from './Info';
-import MenuButton from '../menu/MenuButton';
+import LogoButton from './LogoButton';
 
 const Overlay = ({
-  slot,
-  onSlotSelect,
-  onChangeMenuVisible,
+  modalVisible,
+  onChangeModalVisible,
 }: {
-  slot: Slot;
-  onSlotSelect: (slot: Slot) => void;
-  onChangeMenuVisible?: (visible: boolean) => void;
+  modalVisible: boolean;
+  onChangeModalVisible: (visible: boolean) => void;
 }) => {
   return (
     <div
@@ -23,12 +19,11 @@ const Overlay = ({
         pointerEvents: 'none',
       }}
     >
-      <MenuButton
-        currentSlot={slot}
-        onSlotSelect={onSlotSelect}
-        onChangeMenuVisible={onChangeMenuVisible}
+      <LogoButton />
+      <Info
+        modalVisible={modalVisible}
+        onChangeModalVisible={onChangeModalVisible}
       />
-      <Info />
     </div>
   );
 };

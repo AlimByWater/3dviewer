@@ -216,7 +216,7 @@ const WorkCanvas = ({
               ref={handleRef}
               truckSpeed={1}
               dollySpeed={1}
-              minDistance={1}
+              minDistance={0.1}
               onChange={() => {
                 const camera = cameraRef.current;
                 if (camera && panelParams) {

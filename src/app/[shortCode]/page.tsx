@@ -12,7 +12,7 @@ import { fetchSlotByShortCode } from '@/core/api';
 
 const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpened, setIsModalOpened] = useState<boolean | null>(null);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { state, dispatch } = useViewer();
 
   const setSlot = useCallback(
@@ -55,11 +55,10 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
 
   return (
     <Page back={false}>
-      <WorkCanvas slot={state.slot} lowQuality={isModalOpened || false} />
+      <WorkCanvas slot={state.slot} lowQuality={modalVisible || false} />
       <Overlay
-        slot={state.slot}
-        onSlotSelect={(s) => setSlot(s)} // Directly update state instead of routing
-        onChangeMenuVisible={setIsModalOpened}
+        modalVisible={modalVisible}
+        onChangeModalVisible={setModalVisible}
       />
     </Page>
   );
