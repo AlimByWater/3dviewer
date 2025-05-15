@@ -6,7 +6,14 @@ import { Canvas } from '@react-three/fiber';
 import { CameraControls, Lightformer, Environment } from '@react-three/drei';
 import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import { Slot } from '@/types/types';
-import { Suspense, useMemo, useState } from 'react';
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import dynamic from 'next/dynamic';
 import { useViewer } from '../_context/ViewerContext';
@@ -36,15 +43,39 @@ const WorkCanvas = ({
 }) => {
   const {
     state: { panelParams },
+    dispatch,
   } = useViewer();
   const [sceneProgress, setSceneProgress] = useState<SceneProgressParams>({
     active: false,
     progress: null,
   });
+  const cameraRef = useRef<CameraControls | null>(null);
+  const handleRef = (element: CameraControls | null) => {
+    cameraRef.current = element;
+    if (element) {
+      // Элемент появился в DOM
+      updateParams();
+    }
+  };
 
-  const useHdriAsBackground = useMemo(() => {
-    return panelParams?.useHdriAsBackground;
-  }, [panelParams?.useHdriAsBackground]);
+  const updateParams = useCallback(() => {
+    const camera = cameraRef.current;
+    if (camera && panelParams) {
+      if (camera.distance !== panelParams.distance) {
+        camera.distance = panelParams.distance;
+      }
+      if (camera.azimuthAngle !== panelParams.azimuthAngle) {
+        camera.azimuthAngle = panelParams.azimuthAngle;
+      }
+      if (camera.polarAngle !== panelParams.polarAngle) {
+        camera.polarAngle = panelParams.polarAngle;
+      }
+    }
+  }, [panelParams]);
+
+  useEffect(() => {
+    updateParams();
+  }, [updateParams]);
 
   // Determine which component to render based on file extension in work.link
   const renderWorkComponent = () => {
@@ -105,7 +136,7 @@ const WorkCanvas = ({
           backgroundColor: panelParams!.background,
         }}
         shadows
-        camera={{ position: [-10, 0, 5], fov: 70, near: 0.1, far: 300 }}
+        camera={{ position: [-10, 0, 5], fov: 70, near: 0.01, far: 300 }}
         gl={{ stencil: true }}
       >
         {/* Ключ нужен для того, чтобы параметры сцены сбрасывались */}
@@ -182,12 +213,24 @@ const WorkCanvas = ({
             />
           ) : (
             <CameraControls
+              ref={handleRef}
               truckSpeed={1}
               dollySpeed={1}
               minDistance={1}
-              distance={panelParams?.distance}
-              azimuthAngle={panelParams?.azimuthAngle}
-              polarAngle={panelParams?.polarAngle}
+              onChange={() => {
+                const camera = cameraRef.current;
+                if (camera && panelParams) {
+                  dispatch({
+                    type: 'panel_params_changed',
+                    panelParams: {
+                      ...panelParams,
+                      distance: camera.distance,
+                      azimuthAngle: camera.azimuthAngle,
+                      polarAngle: camera.polarAngle,
+                    },
+                  });
+                }
+              }}
             />
           )}
         </Suspense>

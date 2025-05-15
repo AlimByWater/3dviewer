@@ -99,6 +99,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
   const { top, right } = useSafeArea();
   const paneRef = useRef<Tweakpane | null>(null); // Используем ref для хранения панели
   const paramsRef = useRef(state.panelParams); // Ref для отслеживания параметров
+  const panelParamsRef = useRef(state.panelParams);
 
   const positionPane = useCallback(
     (pane: Tweakpane) => {
@@ -118,7 +119,13 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
 
   // Синхронизация ref с параметрами
   useEffect(() => {
-    paramsRef.current = state.panelParams;
+    panelParamsRef.current = state.panelParams;
+    if (state.panelParams && paramsRef.current) {
+      Object.assign(paramsRef.current, state.panelParams);
+      if (paneRef.current) {
+        paneRef.current.refresh();
+      }
+    }
   }, [state.panelParams]);
 
   // Эффект для управления жизненным циклом панели
@@ -132,7 +139,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
     ) {
       // Создаем панель при появлении параметров
       if (!paneRef.current) {
-        paramsRef.current = state.panelParams;
+        paramsRef.current = { ...state.panelParams };
         const pane = new Tweakpane({
           title: 'Model parameters',
           expanded: true,
@@ -142,8 +149,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
 
         positionPane(pane);
 
-        // Создаем копию параметров для панели
-        const paneParams = { ...state.panelParams };
+        const paneParams = paramsRef.current;
 
         // Добавляем биндинги
         const showPanel = pane.addBinding(paneParams, 'showPanel', {
@@ -229,28 +235,36 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
           },
         );
 
-        // Обработчики изменений
-        const handleChange =
-          (key: keyof PanelParams, ifChanged = true) =>
-          (e: any) => {
-            updateParam(key, e.value, ifChanged);
-          };
+        // Общая функция для обновления параметров
+        const updateParam = (key: keyof PanelParams, value: any) => {
+          const currParams = panelParamsRef.current!;
+          if (!currParams) return;
+
+          dispatch({
+            type: 'panel_params_changed',
+            panelParams: { ...currParams, [key]: value },
+          });
+        };
+
+        const createHandler = (key: keyof PanelParams) => (e: any) => {
+          updateParam(key, e.value);
+        };
 
         // Обработчики изменений
-        showPanel.on('change', handleChange('showPanel'));
-        showWorkInList.on('change', handleChange('showWorkInList'));
-        bgColor.on('change', handleChange('background'));
-        fgColor.on('change', handleChange('foreground'));
-        scale.on('change', handleChange('scale', false));
-        position.on('change', handleChange('position', false));
+        showPanel.on('change', createHandler('showPanel'));
+        showWorkInList.on('change', createHandler('showWorkInList'));
+        bgColor.on('change', createHandler('background'));
+        fgColor.on('change', createHandler('foreground'));
+        scale.on('change', createHandler('scale'));
+        position.on('change', createHandler('position'));
 
-        distance.on('change', handleChange('distance'));
-        azimuthAngle.on('change', handleChange('azimuthAngle'));
-        polarAngle.on('change', handleChange('polarAngle'));
+        distance.on('change', createHandler('distance'));
+        azimuthAngle.on('change', createHandler('azimuthAngle'));
+        polarAngle.on('change', createHandler('polarAngle'));
 
-        enableHdri.on('change', handleChange('enableHdri'));
-        hdri.on('change', handleChange('hdri'));
-        useHdriAsBackground.on('change', handleChange('useHdriAsBackground'));
+        enableHdri.on('change', createHandler('enableHdri'));
+        hdri.on('change', createHandler('hdri'));
+        useHdriAsBackground.on('change', createHandler('useHdriAsBackground'));
 
         const saveButton = pane.addButton({ title: 'Save' });
         saveButton.on('click', async () => {
@@ -289,21 +303,6 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
         paneRef.current = null;
       }
     }
-
-    // Общая функция для обновления параметров
-    const updateParam = (
-      key: keyof PanelParams,
-      value: any,
-      ifChanged: boolean,
-    ) => {
-      const currParams = paramsRef.current!;
-      if (ifChanged && currParams[key] === value) return;
-
-      dispatch({
-        type: 'panel_params_changed',
-        panelParams: { ...currParams, [key]: value },
-      });
-    };
 
     return () => {
       // Дополнительная очистка при полном исчезновении параметров
