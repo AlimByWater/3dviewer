@@ -29,7 +29,7 @@ export const saveWorkParams = async (workId: string, params: PanelParams) => {
       method: 'PUT',
       // Remove Content-Type header if not needed by backend for this endpoint
       headers: {
-         'Content-Type': 'application/json', // Keep if backend expects JSON
+        'Content-Type': 'application/json', // Keep if backend expects JSON
       },
       body: JSON.stringify(params), // Send only PanelParams
     },
