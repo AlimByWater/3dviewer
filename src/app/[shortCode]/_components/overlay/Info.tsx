@@ -51,6 +51,7 @@ const Info = ({
             </Text>
           </div>
           <MenuButton
+            className={styles.menuButton}
             modalVisible={modalVisible}
             onChangeModalVisible={onChangeModalVisible}
           />

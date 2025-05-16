@@ -22,3 +22,7 @@
 .workInfo {
   flex-grow: 1;
 }
+
+.menuButton {
+  margin-left: 12px;
+}
