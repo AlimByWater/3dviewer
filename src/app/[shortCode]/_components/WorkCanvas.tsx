@@ -57,8 +57,12 @@ const WorkCanvas = ({
       updateParams();
     }
   };
+  // Означает управляет ли юзер камерой в данный момент
+  const isCameraControl = useRef(false);
 
   const updateParams = useCallback(() => {
+    if (isCameraControl.current === true) return;
+
     const camera = cameraRef.current;
     if (camera && panelParams) {
       if (camera.distance !== panelParams.distance) {
@@ -217,18 +221,24 @@ const WorkCanvas = ({
               truckSpeed={1}
               dollySpeed={1}
               minDistance={0.1}
-              onChange={() => {
-                const camera = cameraRef.current;
-                if (camera && panelParams) {
-                  dispatch({
-                    type: 'panel_params_changed',
-                    panelParams: {
-                      ...panelParams,
-                      distance: camera.distance,
-                      azimuthAngle: camera.azimuthAngle,
-                      polarAngle: camera.polarAngle,
-                    },
-                  });
+              onStart={() => (isCameraControl.current = true)}
+              onEnd={() => (isCameraControl.current = false)}
+              onChange={(p) => {
+                if (isCameraControl.current) {
+                  if (p?.type == 'update') {
+                    const camera = cameraRef.current;
+                    if (camera && panelParams) {
+                      dispatch({
+                        type: 'panel_params_changed',
+                        panelParams: {
+                          ...panelParams,
+                          distance: camera.distance,
+                          azimuthAngle: camera.azimuthAngle,
+                          polarAngle: camera.polarAngle,
+                        },
+                      });
+                    }
+                  }
                 }
               }}
             />
