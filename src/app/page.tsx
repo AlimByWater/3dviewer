@@ -1,21 +1,31 @@
 'use client';
 
 import { useLaunchParams } from '@telegram-apps/sdk-react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation'; // Re-add this
 import SlotDetailsPage from './[shortCode]/page';
 import { ViewerProvider } from './[shortCode]/_context/ViewerContext';
 
 const SlotPage = () => {
   const lp = useLaunchParams();
-  const shortCode = lp.startParam;
+  const searchParams = useSearchParams(); // Re-add this
 
-  const searchParams = useSearchParams();
+  let finalShortCode: string;
+  if (lp.startParam) {
+    finalShortCode = lp.startParam;
+  } else {
+    const queryShortCode = searchParams.get('shortCode');
+    if (queryShortCode) {
+      finalShortCode = queryShortCode;
+    } else {
+      finalShortCode = '404';
+    }
+  }
 
   return (
     <ViewerProvider>
       <SlotDetailsPage
         params={{
-          shortCode: shortCode || searchParams.get('shortCode') || '',
+          shortCode: finalShortCode,
         }}
       />
     </ViewerProvider>
