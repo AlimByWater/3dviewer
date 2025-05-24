@@ -130,4 +130,19 @@ export const slotsMock: Slot[] = [
       'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/ss-sleep-table-preview.webm',
     work: worksMock[1],
   },
+  {
+    id: '2',
+    author_id: authorsMock[0].id,
+    in_aquarium: false,
+    link: {
+      short_code: 'dotASHTRAY',
+    },
+    previewUrl:
+      'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/ss-instinctive-preview.webm',
+    work: {
+      ...worksMock[0],
+      id: 'dot-ashtray',
+      name: 'DOT Ashtray',
+    },
+  },
 ];

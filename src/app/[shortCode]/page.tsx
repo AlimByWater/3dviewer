@@ -55,7 +55,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
 
   return (
     <Page back={false}>
-      <WorkCanvas slot={state.slot} lowQuality={modalVisible || false} />
+      <WorkCanvas slot={state.slot} lowQuality={modalVisible || false} isGalleryOpen={modalVisible} />
       <Overlay
         modalVisible={modalVisible}
         onChangeModalVisible={setModalVisible}

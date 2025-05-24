@@ -1,0 +1,54 @@
+@keyframes gradient-flow {
+  0% { 
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+  50% { 
+    background-position: 100% 50%;
+    filter: hue-rotate(30deg);
+  }
+  100% { 
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 0.5; 
+    transform: scale(1); 
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: scale(1.1); 
+  }
+}
+
+.dot-button-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gradient-border {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: linear-gradient(
+    45deg,
+    transparent 10%,
+    rgba(255, 255, 255, 0.3) 30%,
+    rgba(200, 200, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.3) 70%,
+    transparent 90%
+  );
+  background-size: 300% 300%;
+  animation: gradient-flow 3s ease infinite;
+  filter: blur(1px);
+  transition: all 0.3s ease;
+}
+
+.gradient-border:hover {
+  filter: blur(2px);
+}

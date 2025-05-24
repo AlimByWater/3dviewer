@@ -37,9 +37,11 @@ const HDRIVariants = [
 const WorkCanvas = ({
   slot,
   lowQuality,
+  isGalleryOpen = false,
 }: {
   slot: Slot;
   lowQuality: boolean;
+  isGalleryOpen?: boolean;
 }) => {
   const {
     state: { panelParams },
@@ -88,14 +90,17 @@ const WorkCanvas = ({
       console.warn('Work link is missing.');
       return null;
     }
-
+  
     // Extract file extension, handling potential query parameters
     const extension = getFileExtensionFromUrl(link);
-
+    
+    // Get shortCode from slot
+    const shortCode = slot.link.short_code;
+  
     if (extension === 'glb' || extension === 'gltf') {
       // Assuming WorkView/useGLTF handles its own loading indication or loads fast enough
       // If WorkView needs explicit load handling, it would require similar onLoad logic
-      return <GltfSceneView work={slot.work} onProgress={setSceneProgress} />;
+      return <GltfSceneView work={slot.work} onProgress={setSceneProgress} shortCode={shortCode} isGalleryOpen={isGalleryOpen} />;
     } else if (extension === 'splat' || extension === 'ksplat') {
       // SplatSceneView now uses context for loading state, remove onLoad prop
       return <SplatSceneView work={slot.work} onProgress={setSceneProgress} />;
