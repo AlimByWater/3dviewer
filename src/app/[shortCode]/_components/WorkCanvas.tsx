@@ -7,6 +7,7 @@ import { CameraControls, Lightformer, Environment } from '@react-three/drei';
 import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import { Slot } from '@/types/types';
 import {
+  PropsWithChildren,
   Suspense,
   useCallback,
   useEffect,
@@ -27,22 +28,14 @@ const SplatSceneView = dynamic(() => import('./SplatSceneView')); // Import Spla
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 
-const HDRIVariants = [
-  `${basePath}/hdri/env-1.jpg`,
-  `${basePath}/hdri/env-2.jpg`,
-  `${basePath}/hdri/env-3.jpg`,
-  `${basePath}/hdri/env-4.jpg`,
-];
-
 const WorkCanvas = ({
   slot,
   lowQuality,
-  isGalleryOpen = false,
-}: {
+  children,
+}: PropsWithChildren<{
   slot: Slot;
   lowQuality: boolean;
-  isGalleryOpen?: boolean;
-}) => {
+}>) => {
   const {
     state: { panelParams },
     dispatch,
@@ -90,17 +83,14 @@ const WorkCanvas = ({
       console.warn('Work link is missing.');
       return null;
     }
-  
+
     // Extract file extension, handling potential query parameters
     const extension = getFileExtensionFromUrl(link);
-    
-    // Get shortCode from slot
-    const shortCode = slot.link.short_code;
-  
+
     if (extension === 'glb' || extension === 'gltf') {
       // Assuming WorkView/useGLTF handles its own loading indication or loads fast enough
       // If WorkView needs explicit load handling, it would require similar onLoad logic
-      return <GltfSceneView work={slot.work} onProgress={setSceneProgress} shortCode={shortCode} isGalleryOpen={isGalleryOpen} />;
+      return <GltfSceneView work={slot.work} onProgress={setSceneProgress} />;
     } else if (extension === 'splat' || extension === 'ksplat') {
       // SplatSceneView now uses context for loading state, remove onLoad prop
       return <SplatSceneView work={slot.work} onProgress={setSceneProgress} />;
@@ -248,6 +238,8 @@ const WorkCanvas = ({
               }}
             />
           )}
+
+          {children}
         </Suspense>
       </Canvas>
     </div>

@@ -9,7 +9,6 @@ interface DotButtonProps {
   targetUrl: string;
   scale?: number;
   modelRef?: React.RefObject<THREE.Object3D>;
-  hidden?: boolean;
 }
 
 export const DotButton = ({
@@ -17,22 +16,26 @@ export const DotButton = ({
   targetUrl,
   scale = 1,
   modelRef,
-  hidden = false
 }: DotButtonProps) => {
   const [hovered, setHovered] = useState(false);
   const [visible, setVisible] = useState(true);
   const [opacity, setOpacity] = useState(1);
   const [occlusionOpacity, setOcclusionOpacity] = useState(1); // Новое состояние для окклюзии
-  const [computedPosition, setComputedPosition] = useState<[number, number, number]>(position || [5, -3, 0]);
-  const [debugRay, setDebugRay] = useState<{ start: THREE.Vector3; end: THREE.Vector3 } | null>(null);
+  const [computedPosition, setComputedPosition] = useState<
+    [number, number, number]
+  >(position || [5, -3, 0]);
+  const [debugRay, setDebugRay] = useState<{
+    start: THREE.Vector3;
+    end: THREE.Vector3;
+  } | null>(null);
   const groupRef = useRef<THREE.Group>(null);
   const raycaster = useRef(new THREE.Raycaster());
   const checkInterval = useRef(0); // Для оптимизации проверок
   const { camera, scene } = useThree();
-  
+
   // Флаг для включения/выключения отладки (можно вынести в props)
   const DEBUG_RAYCASTING = false;
-  
+
   // Вычисляем позицию на основе bounding box модели
   useEffect(() => {
     if (position) {
@@ -43,82 +46,99 @@ export const DotButton = ({
       const topPosition: [number, number, number] = [
         (box.min.x + box.max.x) / 2,
         box.max.y + 0.5, // Увеличено расстояние над моделью
-        (box.min.z + box.max.z) / 2
+        (box.min.z + box.max.z) / 2,
       ];
       setComputedPosition(topPosition);
       // console.log('Button position calculated:', topPosition);
       // console.log('Model bounds:', box);
     }
   }, [modelRef, position]);
-  
+
   // Анимация и проверка видимости
   useFrame((state) => {
     if (groupRef.current) {
       // Billboard эффект - кнопка всегда смотрит на камеру
       groupRef.current.lookAt(camera.position);
-      
+
       // Получаем мировую позицию кнопки
       const buttonWorldPos = new THREE.Vector3();
       groupRef.current.getWorldPosition(buttonWorldPos);
-      
+
       // Проверка окклюзии с помощью raycasting (оптимизировано - не каждый кадр)
       checkInterval.current += state.clock.getDelta();
-      if (checkInterval.current > 0.05 && modelRef?.current) { // Проверка 20 раз в секунду
+      if (checkInterval.current > 0.05 && modelRef?.current) {
+        // Проверка 20 раз в секунду
         checkInterval.current = 0;
-        
+
         // Создаем луч от камеры к кнопке
-        const direction = buttonWorldPos.clone().sub(camera.position).normalize();
+        const direction = buttonWorldPos
+          .clone()
+          .sub(camera.position)
+          .normalize();
         raycaster.current.set(camera.position, direction);
-        
+
         // Расстояние от камеры до кнопки
         const distanceToButton = camera.position.distanceTo(buttonWorldPos);
-        
+
         // Проверяем пересечения с моделью
-        const intersects = raycaster.current.intersectObject(modelRef.current, true);
-        
+        const intersects = raycaster.current.intersectObject(
+          modelRef.current,
+          true,
+        );
+
         // Кнопка скрыта, если есть пересечение ближе, чем сама кнопка
-        const isOccluded = intersects.length > 0 &&
-                          intersects[0].distance < distanceToButton - 0.1; // Небольшой отступ
-        
+        const isOccluded =
+          intersects.length > 0 &&
+          intersects[0].distance < distanceToButton - 0.1; // Небольшой отступ
+
         // Плавное изменение прозрачности окклюзии
         const targetOcclusionOpacity = isOccluded ? 0 : 1;
-        setOcclusionOpacity(prev =>
-          THREE.MathUtils.lerp(prev, targetOcclusionOpacity, 0.15)
+        setOcclusionOpacity((prev) =>
+          THREE.MathUtils.lerp(prev, targetOcclusionOpacity, 0.15),
         );
-        
+
         // Сохраняем данные для отладочной визуализации
         if (DEBUG_RAYCASTING) {
-          const rayEnd = camera.position.clone().add(
-            direction.multiplyScalar(distanceToButton)
-          );
+          const rayEnd = camera.position
+            .clone()
+            .add(direction.multiplyScalar(distanceToButton));
           setDebugRay({ start: camera.position.clone(), end: rayEnd });
         }
       }
-      
+
       // Вычисляем угол между камерой и кнопкой для угловой видимости
-      const cameraDirection = camera.position.clone().sub(buttonWorldPos).normalize();
+      const cameraDirection = camera.position
+        .clone()
+        .sub(buttonWorldPos)
+        .normalize();
       const upVector = new THREE.Vector3(0, 1, 0);
       const angle = cameraDirection.angleTo(upVector);
-      
+
       // Показываем кнопку только под определенными углами
-      const targetOpacity = angle > Math.PI / 4 && angle < Math.PI * 3/4 ? 1 : 0;
-      
+      const targetOpacity =
+        angle > Math.PI / 4 && angle < (Math.PI * 3) / 4 ? 1 : 0;
+
       // Плавное изменение прозрачности
-      setOpacity(prev => THREE.MathUtils.lerp(prev, targetOpacity, 0.1));
+      setOpacity((prev) => THREE.MathUtils.lerp(prev, targetOpacity, 0.1));
       setVisible(opacity > 0.01 || occlusionOpacity > 0.01);
-      
+
       // Плавное вращение при hover
       if (hovered) {
-        groupRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 2) * 0.1;
+        groupRef.current.rotation.z =
+          Math.sin(state.clock.elapsedTime * 2) * 0.1;
       } else {
-        groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, 0, 0.1);
+        groupRef.current.rotation.z = THREE.MathUtils.lerp(
+          groupRef.current.rotation.z,
+          0,
+          0.1,
+        );
       }
-      
+
       // Плавное изменение масштаба при hover
       const targetScale = hovered ? 1.2 : 1.0;
       groupRef.current.scale.lerp(
-        new THREE.Vector3(targetScale, targetScale, targetScale), 
-        0.1
+        new THREE.Vector3(targetScale, targetScale, targetScale),
+        0.1,
       );
     }
   });
@@ -128,7 +148,7 @@ export const DotButton = ({
   };
 
   // Скрываем компонент если он полностью прозрачен или явно скрыт
-  if (hidden || !visible) return null;
+  if (!visible) return null;
 
   return (
     <group ref={groupRef} position={computedPosition}>
@@ -139,20 +159,26 @@ export const DotButton = ({
             <bufferAttribute
               attach="attributes-position"
               count={2}
-              array={new Float32Array([
-                debugRay.start.x, debugRay.start.y, debugRay.start.z,
-                debugRay.end.x, debugRay.end.y, debugRay.end.z
-              ])}
+              array={
+                new Float32Array([
+                  debugRay.start.x,
+                  debugRay.start.y,
+                  debugRay.start.z,
+                  debugRay.end.x,
+                  debugRay.end.y,
+                  debugRay.end.z,
+                ])
+              }
               itemSize={3}
             />
           </bufferGeometry>
           <lineBasicMaterial
-            color={occlusionOpacity < 0.5 ? "red" : "green"}
+            color={occlusionOpacity < 0.5 ? 'red' : 'green'}
             linewidth={2}
           />
         </line>
       )}
-      
+
       {/* Отладочная сфера в точке пересечения */}
       {DEBUG_RAYCASTING && occlusionOpacity < 0.5 && (
         <mesh position={computedPosition}>
@@ -160,7 +186,7 @@ export const DotButton = ({
           <meshBasicMaterial color="red" transparent opacity={0.5} />
         </mesh>
       )}
-      
+
       <Html
         center
         distanceFactor={10}
@@ -205,7 +231,7 @@ export const DotButton = ({
               filter: hovered ? 'blur(2px)' : 'blur(1px)',
             }}
           />
-          
+
           {/* Основная кнопка */}
           <div
             style={{
@@ -234,13 +260,16 @@ export const DotButton = ({
                 display: 'block',
               }}
               onError={(e) => {
-                console.error('Failed to load SVG from:', (e.target as HTMLImageElement).src);
+                console.error(
+                  'Failed to load SVG from:',
+                  (e.target as HTMLImageElement).src,
+                );
                 // Если не загрузился, скрываем изображение
                 (e.target as HTMLImageElement).style.display = 'none';
               }}
             />
           </div>
-          
+
           {/* Свечение */}
           {hovered && (
             <div
@@ -248,7 +277,8 @@ export const DotButton = ({
                 position: 'absolute',
                 inset: -20,
                 borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)',
+                background:
+                  'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)',
                 animation: 'pulse 2s ease-in-out infinite',
                 pointerEvents: 'none',
               }}
