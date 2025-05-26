@@ -1,8 +1,9 @@
 import { Work } from '@/types/types';
 import { useAnimations, useGLTF } from '@react-three/drei';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useViewer } from '../_context/ViewerContext';
 import { SceneProgressParams } from '@/types/scene';
+import * as THREE from 'three';
 
 interface GltfSceneViewProps {
   work: Work;
@@ -47,11 +48,13 @@ const GltfSceneView = ({ work, onProgress }: GltfSceneViewProps) => {
   }, [actions, animations]);
 
   return (
-    <primitive
-      object={scene}
-      position={pos && [pos.x, pos.y, pos.z]}
-      scale={scale && [scale.x, scale.y, scale.z]}
-    />
+    <>
+      <primitive
+        object={scene}
+        position={pos && [pos.x, pos.y, pos.z]}
+        scale={scale && [scale.x, scale.y, scale.z]}
+      />
+    </>
   );
 };
 

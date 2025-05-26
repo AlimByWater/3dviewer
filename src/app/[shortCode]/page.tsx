@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Overlay from './_components/overlay/Overlay';
 import WorkCanvas from './_components/WorkCanvas';
 import { Page } from '@/components/Page';
@@ -9,11 +9,22 @@ import TriangleLoader from '@/components/TriangleLoader';
 import { useViewer } from './_context/ViewerContext';
 import DripNumberScene from './_components/Error404Scene';
 import { fetchSlotByShortCode } from '@/core/api';
+import { DotButton } from './_components/DotButton';
 
 const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { state, dispatch } = useViewer();
+
+  const showDotButton = useMemo(
+    () => state.slot?.link.short_code === 'dotASHTRAY',
+    [state.slot?.link.short_code],
+  );
+
+  // Логирование для отладки
+  useEffect(() => {
+    console.log('Should show dot button:', showDotButton);
+  }, [showDotButton]);
 
   const setSlot = useCallback(
     (slot: Slot | null) => {
@@ -55,7 +66,16 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
 
   return (
     <Page back={false}>
-      <WorkCanvas slot={state.slot} lowQuality={modalVisible || false} />
+      <WorkCanvas slot={state.slot} lowQuality={modalVisible || false}>
+        {/* Добавляем кнопку только для модели с shortCode 'dotASHTRAY' */}
+        {showDotButton && !modalVisible && (
+          <DotButton
+            position={[5, -3, 0]} // Высоко над моделью
+            targetUrl="https://www.nobody.solutions/"
+            scale={2} // Увеличиваем размер для лучшей видимости
+          />
+        )}
+      </WorkCanvas>
       <Overlay
         modalVisible={modalVisible}
         onChangeModalVisible={setModalVisible}

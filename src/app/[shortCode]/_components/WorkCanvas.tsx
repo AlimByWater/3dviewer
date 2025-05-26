@@ -7,6 +7,7 @@ import { CameraControls, Lightformer, Environment } from '@react-three/drei';
 import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import { Slot } from '@/types/types';
 import {
+  PropsWithChildren,
   Suspense,
   useCallback,
   useEffect,
@@ -27,20 +28,14 @@ const SplatSceneView = dynamic(() => import('./SplatSceneView')); // Import Spla
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 
-const HDRIVariants = [
-  `${basePath}/hdri/env-1.jpg`,
-  `${basePath}/hdri/env-2.jpg`,
-  `${basePath}/hdri/env-3.jpg`,
-  `${basePath}/hdri/env-4.jpg`,
-];
-
 const WorkCanvas = ({
   slot,
   lowQuality,
-}: {
+  children,
+}: PropsWithChildren<{
   slot: Slot;
   lowQuality: boolean;
-}) => {
+}>) => {
   const {
     state: { panelParams },
     dispatch,
@@ -243,6 +238,8 @@ const WorkCanvas = ({
               }}
             />
           )}
+
+          {children}
         </Suspense>
       </Canvas>
     </div>
