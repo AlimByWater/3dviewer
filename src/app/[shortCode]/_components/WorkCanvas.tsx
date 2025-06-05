@@ -135,7 +135,7 @@ const WorkCanvas = ({
           backgroundColor: panelParams!.background,
         }}
         shadows
-        camera={{ position: [-10, 0, 5], fov: 70, near: 0.01, far: 300 }}
+        camera={{ position: [-10, 0, 5], fov: 70, near: 0.01, far: 10000 }}
         gl={{ stencil: true }}
       >
         {/* Ключ нужен для того, чтобы параметры сцены сбрасывались */}
