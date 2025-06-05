@@ -43,7 +43,7 @@ const MenuButton = ({
         color={panelParams?.foreground}
         onClick={onOpenClick}
       >
-        Gallery
+        gallery
       </Button>
       {modalVisible && (
         <MenuModal

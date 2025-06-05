@@ -11,7 +11,15 @@ import {
 const ChannelButton = (
   props: ButtonProps & React.ComponentPropsWithoutRef<'a'>,
 ) => {
-  return <Button component="a" variant="outline" {...props} />;
+  return (
+    <Button
+      component="a"
+      variant="outline"
+      className={styles.channelButton}
+      radius="md"
+      {...props}
+    />
+  );
 };
 
 const AuthorHeader = ({
@@ -37,7 +45,7 @@ const AuthorHeader = ({
           target="_blank"
           rel="noopener noreferrer"
         >
-          Канал
+          канал
         </ChannelButton>
       )}
       {onOtherAuthorsClick && (
