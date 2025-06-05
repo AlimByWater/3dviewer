@@ -1,3 +1,12 @@
 .galleryButton {
   pointer-events: auto;
+  padding-inline: 12px;   /* шире на 4 px слева-справа */
+  border-radius: 8px;     /* radius md */
+  text-transform: lowercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  height: 32px;
+  /* Можно скорректировать height/min-height под ваш дизайн */
 }

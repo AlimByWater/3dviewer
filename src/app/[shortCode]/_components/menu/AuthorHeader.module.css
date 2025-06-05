@@ -11,3 +11,8 @@
 .name {
   flex-grow: 1;
 }
+.channelButton {
+  padding-inline: 12px;
+  border-radius: 8px;
+  text-transform: lowercase;
+}
