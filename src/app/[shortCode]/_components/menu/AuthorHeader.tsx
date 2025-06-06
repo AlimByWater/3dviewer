@@ -45,7 +45,7 @@ const AuthorHeader = ({
           target="_blank"
           rel="noopener noreferrer"
         >
-          канал
+          channel
         </ChannelButton>
       )}
       {onOtherAuthorsClick && (
