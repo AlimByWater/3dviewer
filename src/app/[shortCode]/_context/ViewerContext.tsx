@@ -142,7 +142,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
         paramsRef.current = { ...state.panelParams };
         const pane = new Tweakpane({
           title: 'Model parameters',
-          expanded: true,
+          expanded: false,
         });
 
         pane.registerPlugin(EssentialsPlugin); // Register the EssentialsPlugin

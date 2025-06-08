@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Overlay from './_components/overlay/Overlay';
 import WorkCanvas from './_components/WorkCanvas';
 import { Page } from '@/components/Page';
@@ -15,16 +15,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const { state, dispatch } = useViewer();
-
-  const showDotButton = useMemo(
-    () => state.slot?.link.short_code === 'dotASHTRAY',
-    [state.slot?.link.short_code],
-  );
-
-  // Логирование для отладки
-  useEffect(() => {
-    console.log('Should show dot button:', showDotButton);
-  }, [showDotButton]);
+  const [sceneLoaded, setSceneLoaded] = useState(false);
 
   const setSlot = useCallback(
     (slot: Slot | null) => {
@@ -52,6 +43,42 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
     loadData();
   }, [params.shortCode, setSlot]);
 
+  const renderDotButton = useCallback(() => {
+    if (modalVisible || !sceneLoaded) return;
+
+    const shortCode = state.slot?.link.short_code;
+
+    if (shortCode == 'dotASHTRAY') {
+      return (
+        <DotButton
+          position={[5, -3, 0]}
+          targetUrl="https://www.nobody.solutions/"
+          scale={2}
+        />
+      );
+    }
+
+    if (shortCode == 'pension-wealthinesss') {
+      return (
+        <DotButton
+          position={[-0.02, -1.24, 0]}
+          targetUrl="https://jobs.gleb.solutions"
+          scale={0.25}
+        />
+      );
+    }
+
+    if (shortCode == 'leftys-lubrication') {
+      return (
+        <DotButton
+          position={[-4, 0.1, 0]}
+          targetUrl="https://jobs.gleb.solutions"
+          scale={1}
+        />
+      );
+    }
+  }, [sceneLoaded, modalVisible, state.slot?.link.short_code]);
+
   if (error) {
     return <DripNumberScene />;
   }
@@ -66,15 +93,12 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
 
   return (
     <Page back={false}>
-      <WorkCanvas slot={state.slot} lowQuality={modalVisible || false}>
-        {/* Добавляем кнопку только для модели с shortCode 'dotASHTRAY' */}
-        {showDotButton && !modalVisible && (
-          <DotButton
-            position={[5, -3, 0]} // Высоко над моделью
-            targetUrl="https://www.nobody.solutions/"
-            scale={2} // Увеличиваем размер для лучшей видимости
-          />
-        )}
+      <WorkCanvas
+        slot={state.slot}
+        lowQuality={modalVisible || false}
+        onProgress={(progress) => setSceneLoaded(progress.active === false)}
+      >
+        {renderDotButton()}
       </WorkCanvas>
       <Overlay
         modalVisible={modalVisible}

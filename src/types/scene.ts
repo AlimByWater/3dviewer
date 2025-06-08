@@ -1,4 +1,4 @@
 export type SceneProgressParams = {
-  active: boolean;
+  active: boolean | null;
   progress: number | null;
 };
