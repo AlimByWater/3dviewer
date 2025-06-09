@@ -61,7 +61,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
     if (shortCode == 'pension-wealthinesss') {
       return (
         <DotButton
-          position={[-0.02, -1.24, 0]}
+          position={[-0.65, -1.30, 0.15]}
           targetUrl="https://jobs.gleb.solutions"
           scale={0.25}
         />
