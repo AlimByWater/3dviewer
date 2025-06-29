@@ -67,14 +67,19 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   return (
     <Page back={false}>
       <WorkCanvas slot={state.slot} lowQuality={modalVisible || false}>
-        {/* Добавляем кнопку только для модели с shortCode 'dotASHTRAY' */}
-        {showDotButton && !modalVisible && (
-          <DotButton
-            position={[5, -3, 0]} // Высоко над моделью
-            targetUrl="https://www.nobody.solutions/"
-            scale={2} // Увеличиваем размер для лучшей видимости
-          />
-        )}
+        {!modalVisible &&
+          state.panelParams?.extra.dotButtons &&
+          state.panelParams?.extra.dotButtons.map((params) => {
+            const pos = params.position;
+            return (
+              <DotButton
+                key={params.id}
+                position={[pos.x, pos.y, pos.z]}
+                targetUrl={params.linkTo}
+                svgIcon={params.svgIcon}
+              />
+            );
+          })}
       </WorkCanvas>
       <Overlay
         modalVisible={modalVisible}

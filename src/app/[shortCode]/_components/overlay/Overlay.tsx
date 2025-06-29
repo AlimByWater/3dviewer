@@ -20,6 +20,20 @@ const Overlay = ({
       }}
     >
       <LogoButton />
+
+      <div
+        id="tweakpane-container"
+        style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          minWidth: '300px',
+          width: 'calc(100vw * 0.3)',
+          maxWidth: '400px',
+          padding: '16px 16px',
+          pointerEvents: 'auto',
+        }}
+      ></div>
       <Info
         modalVisible={modalVisible}
         onChangeModalVisible={onChangeModalVisible}

@@ -14,6 +14,9 @@ importers:
       '@mantine/core':
         specifier: ^8.0.1
         version: 8.0.1(@mantine/hooks@8.0.1(react@18.3.1))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@mattkrick/sanitize-svg':
+        specifier: ^0.4.1
+        version: 0.4.1(tslib@2.8.1)
       '@mkkellogg/gaussian-splats-3d':
         specifier: ^0.4.7
         version: 0.4.7(three@0.172.0)
@@ -68,6 +71,9 @@ importers:
       tweakpane:
         specifier: ^4.0.5
         version: 4.0.5
+      tweakpane-plugin-file-import:
+        specifier: ^1.1.1
+        version: 1.1.1(tweakpane@4.0.5)
     devDependencies:
       '@tweakpane/core':
         specifier: ^2.0.5
@@ -219,6 +225,12 @@ packages:
     resolution: {integrity: sha512-GvLdM4Ro3QcDyIgqrdXsUZmeeKye2TNL/k3mEr9JhM5KacHQjr83JPp0u9eLobn7kiyBqpLTYmVYAbmjJdCxHw==}
     peerDependencies:
       react: ^18.x || ^19.x
+
+  '@mattkrick/sanitize-svg@0.4.1':
+    resolution: {integrity: sha512-N1zRAtpUSvTZDv4hAk4KBZaNG0jLAB5rA8PsIuFixQTMXPnGwQKqQG0Jroljctw6lPpF2lGwxnI1bAeplQseKA==}
+    engines: {node: '>=6.0.0'}
+    peerDependencies:
+      tslib: ^2.8.1
 
   '@mediapipe/tasks-vision@0.10.17':
     resolution: {integrity: sha512-CZWV/q6TTe8ta61cZXjfnnHsfWIdFhms03M9T7Cnd5y2mdpylJM0rF1qRq+wsQVRMLz1OYPVEBU9ph2Bx8cxrg==}
@@ -2274,6 +2286,11 @@ packages:
   turbo-stream@2.4.0:
     resolution: {integrity: sha512-FHncC10WpBd2eOmGwpmQsWLDoK4cqsA/UT/GqNoaKOQnT8uzhtCbg3EoUDMvqpOSAI0S26mr0rkjzbOO6S3v1g==}
 
+  tweakpane-plugin-file-import@1.1.1:
+    resolution: {integrity: sha512-7QbLToRTPYprzrZWJ1BWefIDJOyxj/9IHzVE/wZwK1+z1oUFtZ+ptzMxKm6apeZNoQTG7zS6opEaJi5tJ0igaQ==}
+    peerDependencies:
+      tweakpane: ^4.0.0
+
   tweakpane@4.0.5:
     resolution: {integrity: sha512-rxEXdSI+ArlG1RyO6FghC4ZUX8JkEfz8F3v1JuteXSV0pEtHJzyo07fcDG+NsJfN5L39kSbCYbB9cBGHyuI/tQ==}
 
@@ -2634,6 +2651,10 @@ snapshots:
   '@mantine/hooks@8.0.1(react@18.3.1)':
     dependencies:
       react: 18.3.1
+
+  '@mattkrick/sanitize-svg@0.4.1(tslib@2.8.1)':
+    dependencies:
+      tslib: 2.8.1
 
   '@mediapipe/tasks-vision@0.10.17': {}
 
@@ -4929,6 +4950,10 @@ snapshots:
       - react
 
   turbo-stream@2.4.0: {}
+
+  tweakpane-plugin-file-import@1.1.1(tweakpane@4.0.5):
+    dependencies:
+      tweakpane: 4.0.5
 
   tweakpane@4.0.5: {}
 

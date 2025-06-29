@@ -1,20 +1,21 @@
-import { useSafeArea } from '@/hooks/useSafeArea';
-import { PanelParams } from '@/types/panel';
+import { DotButtonPanelParams, PanelParams } from '@/types/panel';
 import { Slot } from '@/types/types';
 import { useLaunchParams } from '@telegram-apps/sdk-react';
 import Color from 'color';
 import {
   createContext,
   ReactNode,
-  useCallback,
   useContext,
   useEffect,
   useReducer,
   useRef,
 } from 'react';
-import { Pane as Tweakpane } from 'tweakpane';
+import { ButtonApi, Pane as Tweakpane } from 'tweakpane';
 import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
+import * as TweakpaneFileImportPlugin from 'tweakpane-plugin-file-import';
 import { saveWorkParams } from '@/core/api';
+import sanitizeSVG from '@mattkrick/sanitize-svg';
+import { readSvgFileAsText } from '@/utils/svg';
 
 // Define asset loading actions
 type Action =
@@ -69,6 +70,16 @@ const viewerReducer = (state: State, action: Action): State => {
           enableHdri: object.enableHdri,
           hdri: object.hdri,
           useHdriAsBackground: object.useHdriAsBackground,
+          extra: {
+            dotButtons:
+              slot.work.object.extra?.dotButtons?.map((value) => ({
+                position: value.position ?? { x: 0, y: 0, z: 0 },
+                svgIcon: value.svgIcon ?? '',
+                id: value.id,
+                linkTo: value.linkTo ?? '',
+                scale: value.scale ?? 1,
+              })) || [],
+          },
         };
       } else {
         panelParams = null;
@@ -96,19 +107,14 @@ export const useViewer = () => useContext(ViewerContext);
 export const ViewerProvider = ({ children }: { children: ReactNode }) => {
   const lp = useLaunchParams();
   const [state, dispatch] = useReducer(viewerReducer, initialState);
-  const { top, right } = useSafeArea();
   const paneRef = useRef<Tweakpane | null>(null); // Используем ref для хранения панели
   const paramsRef = useRef(state.panelParams); // Ref для отслеживания параметров
   const panelParamsRef = useRef(state.panelParams);
 
-  const positionPane = useCallback(
-    (pane: Tweakpane) => {
-      pane.element.style.position = 'relative';
-      pane.element.style.top = `calc(${top}px + 16px)`;
-      pane.element.style.right = `calc(${right}px + 16px)`;
-    },
-    [top, right],
-  );
+  const addStyleForPane = (pane: Tweakpane) => {
+    pane.element.style.maxHeight = 'calc(100vh * 0.8)';
+    pane.element.style.overflowY = 'auto';
+  };
 
   useEffect(() => {
     if (paneRef.current) {
@@ -128,6 +134,10 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [state.panelParams]);
 
+  // Не синхронизировать с параметрами, которые используются непосредственно
+  // для отображения пользовательского интерфейса включая сцену.
+  // Сделать прослойку с интерфейсом данных, которые отображаются на экране.
+
   // Эффект для управления жизненным циклом панели
   useEffect(() => {
     if (
@@ -140,14 +150,16 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
       // Создаем панель при появлении параметров
       if (!paneRef.current) {
         paramsRef.current = { ...state.panelParams };
+
         const pane = new Tweakpane({
           title: 'Model parameters',
           expanded: true,
+          container: document.getElementById('tweakpane-container')!,
         });
 
-        pane.registerPlugin(EssentialsPlugin); // Register the EssentialsPlugin
+        addStyleForPane(pane);
 
-        positionPane(pane);
+        pane.registerPlugin(EssentialsPlugin); // Register the EssentialsPlugi
 
         const paneParams = paramsRef.current;
 
@@ -250,6 +262,125 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
           updateParam(key, e.value);
         };
 
+        // Dot buttons
+        pane.registerPlugin(TweakpaneFileImportPlugin);
+
+        const dotButtonsFolder = pane.addFolder({ title: 'Dot buttons' });
+
+        let addingButton: ButtonApi | undefined;
+        const recreateAddButton = (callback: () => void) => {
+          addingButton?.dispose();
+          addingButton = dotButtonsFolder
+            .addButton({ title: 'Add' })
+            .on('click', () => callback());
+        };
+
+        const addDotButtonParams = (params?: DotButtonPanelParams) => {
+          const buttonParams: DotButtonPanelParams = params ?? {
+            id:
+              paneParams.extra.dotButtons.length > 0
+                ? paneParams.extra.dotButtons[
+                    paneParams.extra.dotButtons.length - 1
+                  ].id + 1
+                : 0,
+            svgIcon: '',
+            linkTo: '',
+            position: { x: -1, y: 3, z: -2 },
+            scale: 1,
+          };
+
+          if (!params) {
+            paneParams.extra.dotButtons.push(buttonParams);
+          }
+
+          updateParam('extra', paneParams.extra);
+
+          const remove = () => {
+            paneParams.extra.dotButtons = paneParams.extra.dotButtons.filter(
+              (b) => b.id != buttonParams.id,
+            );
+            updateParam('extra', paneParams.extra);
+            components.forEach((c) => c.dispose());
+          };
+
+          const components: any[] = [];
+
+          const fileInputBinding = {
+            svgIcon: '' as any,
+          };
+
+          const updateButton = (
+            id: number,
+            update: Partial<DotButtonPanelParams>,
+          ) => {
+            const newButtons = paneParams.extra.dotButtons.map((btn) =>
+              btn.id === id ? { ...btn, ...update } : btn,
+            );
+            updateParam('extra', {
+              ...paneParams.extra,
+              dotButtons: newButtons,
+            });
+          };
+
+          components.push(
+            ...[
+              dotButtonsFolder
+                .addBinding(fileInputBinding, 'svgIcon', {
+                  label: 'Svg icon',
+                  view: 'file-input',
+                  lineCount: 1,
+                  filetypes: ['.svg'],
+                  invalidFiletypeMessage: "We can't accept those filetypes!",
+                })
+                .on('change', async (data) => {
+                  const svgFile = data.value;
+
+                  if (svgFile instanceof File) {
+                    sanitizeSVG(svgFile).then((sanitized) => {
+                      if (sanitized instanceof File) {
+                        readSvgFileAsText(sanitized).then((svgText) => {
+                          updateButton(buttonParams.id, { svgIcon: svgText });
+                        });
+                      }
+                    });
+                  } else {
+                    updateButton(buttonParams.id, { svgIcon: '' });
+                  }
+                }),
+              dotButtonsFolder
+                .addBinding(buttonParams, 'linkTo', {
+                  label: 'Link',
+                })
+                .on('change', (e) =>
+                  updateButton(buttonParams.id, { linkTo: e.value }),
+                ),
+              dotButtonsFolder
+                .addBinding(buttonParams, 'position', {
+                  label: 'Position',
+                })
+                .on('change', (e) =>
+                  updateButton(buttonParams.id, { position: e.value }),
+                ),
+              dotButtonsFolder
+                .addButton({
+                  title: 'Remove',
+                })
+                .on('click', remove),
+              dotButtonsFolder.addBlade({
+                view: 'separator',
+              }),
+            ],
+          );
+
+          recreateAddButton(addDotButtonParams);
+        };
+
+        recreateAddButton(addDotButtonParams);
+
+        state.panelParams.extra.dotButtons.forEach((button) => {
+          addDotButtonParams(structuredClone(button));
+        });
+
         // Обработчики изменений
         showPanel.on('change', createHandler('showPanel'));
         showWorkInList.on('change', createHandler('showWorkInList'));
@@ -311,7 +442,7 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
         paneRef.current = null;
       }
     };
-  }, [state.panelParams, positionPane, lp.initData?.user?.id, state.slot]);
+  }, [state.panelParams, lp.initData?.user?.id, state.slot]);
 
   // Эффект для синхронизации панели с состоянием
   useEffect(() => {
@@ -319,12 +450,6 @@ export const ViewerProvider = ({ children }: { children: ReactNode }) => {
       paneRef.current.refresh();
     }
   }, [state.panelParams]);
-
-  useEffect(() => {
-    if (paneRef.current) {
-      positionPane(paneRef.current);
-    }
-  }, [positionPane]);
 
   return (
     <ViewerContext.Provider value={{ state, dispatch }}>

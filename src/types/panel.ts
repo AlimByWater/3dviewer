@@ -19,4 +19,19 @@ export type PanelParams = {
   enableHdri: boolean;
   hdri: string;
   useHdriAsBackground: 'true' | 'false' | 'only';
+
+  // dot buttons
+  extra: ExtraPanelParams;
+};
+
+export type ExtraPanelParams = {
+  dotButtons: DotButtonPanelParams[];
+};
+
+export type DotButtonPanelParams = {
+  id: number;
+  svgIcon: string;
+  linkTo: string;
+  position: { x: number; y: number; z: number };
+  scale: number;
 };

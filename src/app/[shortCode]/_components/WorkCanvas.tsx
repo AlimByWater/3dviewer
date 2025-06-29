@@ -216,23 +216,25 @@ const WorkCanvas = ({
               truckSpeed={1}
               dollySpeed={1}
               minDistance={0.1}
-              onStart={() => (isCameraControl.current = true)}
-              onEnd={() => (isCameraControl.current = false)}
+              onStart={() => {
+                isCameraControl.current = true;
+              }}
+              onEnd={() => {
+                isCameraControl.current = false;
+              }}
               onChange={(p) => {
-                if (isCameraControl.current) {
-                  if (p?.type == 'update') {
-                    const camera = cameraRef.current;
-                    if (camera && panelParams) {
-                      dispatch({
-                        type: 'panel_params_changed',
-                        panelParams: {
-                          ...panelParams,
-                          distance: camera.distance,
-                          azimuthAngle: camera.azimuthAngle,
-                          polarAngle: camera.polarAngle,
-                        },
-                      });
-                    }
+                if (p?.type == 'update') {
+                  const camera = cameraRef.current;
+                  if (camera && panelParams) {
+                    dispatch({
+                      type: 'panel_params_changed',
+                      panelParams: {
+                        ...panelParams,
+                        distance: camera.distance,
+                        azimuthAngle: camera.azimuthAngle,
+                        polarAngle: camera.polarAngle,
+                      },
+                    });
                   }
                 }
               }}

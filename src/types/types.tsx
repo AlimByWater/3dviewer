@@ -1,4 +1,4 @@
-type Vector3 = number[];
+export type Vector3 = [number, number, number];
 
 export interface SlotLink {
   short_code: string;
@@ -11,6 +11,18 @@ export interface Slot {
   link: SlotLink;
   previewUrl: string;
   work: Work;
+}
+
+export interface SlotExtraParams {
+  dotButtons: DotButtonParams[] | null;
+}
+
+export interface DotButtonParams {
+  id: number;
+  svgIcon?: string;
+  linkTo?: string;
+  position?: { x: number; y: number; z: number };
+  scale?: number;
 }
 
 export interface Work {
@@ -43,6 +55,7 @@ export interface WorkObject {
   enableHdri: false;
   hdri: string;
   useHdriAsBackground: 'true' | 'false' | 'only';
+  extra: SlotExtraParams | null;
 }
 
 export const authorsMock: Author[] = [
@@ -78,6 +91,7 @@ export const worksMock: Work[] = [
       enableHdri: false,
       hdri: 'env-1',
       useHdriAsBackground: 'false',
+      extra: null,
     },
     backgroundColor: 'black',
     foregroundColor: 'white',
@@ -99,6 +113,7 @@ export const worksMock: Work[] = [
       enableHdri: false,
       hdri: 'env-2',
       useHdriAsBackground: 'false',
+      extra: null,
     },
     backgroundColor: 'red',
     foregroundColor: 'white',

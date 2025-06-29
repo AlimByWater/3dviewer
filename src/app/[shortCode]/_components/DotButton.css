@@ -1,26 +1,27 @@
 @keyframes gradient-flow {
-  0% { 
+  0% {
     background-position: 0% 50%;
     filter: hue-rotate(0deg);
   }
-  50% { 
+  50% {
     background-position: 100% 50%;
     filter: hue-rotate(30deg);
   }
-  100% { 
+  100% {
     background-position: 0% 50%;
     filter: hue-rotate(0deg);
   }
 }
 
 @keyframes pulse {
-  0%, 100% { 
-    opacity: 0.5; 
-    transform: scale(1); 
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
   }
-  50% { 
-    opacity: 0.8; 
-    transform: scale(1.1); 
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
   }
 }
 
@@ -51,4 +52,11 @@
 
 .gradient-border:hover {
   filter: blur(2px);
+}
+
+.user-svg-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none; /* Отключаем события для SVG */
 }
