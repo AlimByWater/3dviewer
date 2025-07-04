@@ -1,6 +1,6 @@
 import { DotButtonPanelParams, PanelParams } from '@/types/panel';
 import sanitizeSVG from '@mattkrick/sanitize-svg';
-import { ButtonApi, Pane } from 'tweakpane';
+import { ButtonApi, FolderApi, Pane } from 'tweakpane';
 import { createSvgPreview, readSvgFileAsText, revokeSvgPreview } from './svg';
 import { Slot } from '@/types/types';
 import Color from 'color';
@@ -157,14 +157,17 @@ export const configTweakpane = ({
   const dotButtonsFolder = pane.addFolder({ title: 'Dot buttons' });
 
   let addingButton: ButtonApi | undefined;
-  const recreateAddButton = (callback: () => void) => {
+  const createAddButton = (onClick: () => void) => {
     addingButton?.dispose();
     addingButton = dotButtonsFolder
       .addButton({ title: 'Add' })
-      .on('click', () => callback());
+      .on('click', () => onClick());
   };
 
-  const addDotButtonParams = (buttonParams?: DotButtonPanelParams) => {
+  // Возвращает папку кнопки
+  const addDotButtonParams = (
+    buttonParams?: DotButtonPanelParams,
+  ): FolderApi => {
     const newButton: DotButtonPanelParams = buttonParams || {
       id:
         params.extra.dotButtons.length > 0
@@ -267,6 +270,8 @@ export const configTweakpane = ({
       updateParam('extra', { ...params.extra });
       buttonFolder.dispose();
     });
+
+    return buttonFolder;
   };
 
   const updateDotButton = (
@@ -279,8 +284,14 @@ export const configTweakpane = ({
     updateParam('extra', { ...params.extra, dotButtons: newButtons });
   };
 
-  recreateAddButton(() => addDotButtonParams());
-  params.extra.dotButtons.forEach((button) => addDotButtonParams(button));
+  createAddButton(() => {
+    buttonFolders.forEach((folder) => (folder.expanded = false));
+    buttonFolders.push(addDotButtonParams());
+  });
+
+  const buttonFolders = params.extra.dotButtons.map((button) =>
+    addDotButtonParams(button),
+  );
 
   // Save button implementation
   const saveButton = pane.addButton({ title: 'Save' });
