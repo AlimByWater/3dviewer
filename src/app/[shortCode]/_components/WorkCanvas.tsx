@@ -76,7 +76,7 @@ const WorkCanvas = ({
 
   useEffect(() => {
     onProgress(sceneProgress);
-  }, [sceneProgress]);
+  }, [onProgress, sceneProgress]);
 
   useEffect(() => {
     updateParams();

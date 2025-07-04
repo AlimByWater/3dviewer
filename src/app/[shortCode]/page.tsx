@@ -77,7 +77,11 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
       <WorkCanvas
         slot={slot}
         lowQuality={modalVisible || false}
-        onProgress={(progress) => setSceneLoaded(progress.active === false)}
+        onProgress={(progress) => {
+          if (progress.active !== null) {
+            setSceneLoaded(!progress.active);
+          }
+        }}
       >
         {sceneLoaded &&
           !modalVisible &&

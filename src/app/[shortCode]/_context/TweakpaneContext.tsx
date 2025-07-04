@@ -155,7 +155,6 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
         !container.children.length ||
         (prevSlot.current && prevSlot.current.id != viewerState.slot.id))
     ) {
-      prevSlot.current = viewerState.slot;
       state.pane?.dispose();
       dispatch({ type: 'pane_destroyed' });
     }

@@ -1,7 +1,7 @@
 import { DotButtonPanelParams, PanelParams } from '@/types/panel';
 import sanitizeSVG from '@mattkrick/sanitize-svg';
 import { ButtonApi, Pane } from 'tweakpane';
-import { readSvgFileAsText } from './svg';
+import { createSvgPreview, readSvgFileAsText, revokeSvgPreview } from './svg';
 import { Slot } from '@/types/types';
 import Color from 'color';
 
@@ -197,15 +197,49 @@ export const configTweakpane = ({
       },
     );
 
+    // Создаем состояние для preview
+    let svgPreviewUrl = newButton.svgIcon
+      ? createSvgPreview(newButton.svgIcon)
+      : '';
+
+    const previewImg = document.createElement('img');
+    previewImg.style.width = '24px';
+    previewImg.style.height = '24px';
+    previewImg.style.margin = '8px';
+    previewImg.style.display = svgPreviewUrl ? 'block' : 'none';
+    previewImg.src = svgPreviewUrl;
+
+    // Добавляем контейнер preview в UI
+    fileBinding.element.insertBefore(
+      previewImg,
+      fileBinding.element.childNodes[1],
+    );
+
+    // console.error('Error processing SVG:');
     fileBinding.on('change', async (e) => {
       if (e.value instanceof File) {
         try {
           const sanitized = (await sanitizeSVG(e.value)) as File;
           const svgText = await readSvgFileAsText(sanitized);
+
+          // Обновляем preview
+          if (svgPreviewUrl) revokeSvgPreview(svgPreviewUrl);
+          svgPreviewUrl = createSvgPreview(svgText);
+          previewImg.src = svgPreviewUrl;
+          previewImg.style.display = 'block';
+
           updateDotButton(newButton.id, { svgIcon: svgText });
         } catch (error) {
           console.error('Error processing SVG:', error);
         }
+      } else {
+        // Очистка preview
+        if (svgPreviewUrl) {
+          revokeSvgPreview(svgPreviewUrl);
+          svgPreviewUrl = '';
+        }
+        previewImg.style.display = 'none';
+        updateDotButton(newButton.id, { svgIcon: '' });
       }
     });
 
@@ -224,6 +258,9 @@ export const configTweakpane = ({
       .on('change', (e) => updateDotButton(newButton.id, { scale: e.value }));
 
     buttonFolder.addButton({ title: 'Remove' }).on('click', () => {
+      // Очищаем ресурсы preview
+      if (svgPreviewUrl) revokeSvgPreview(svgPreviewUrl);
+
       params.extra.dotButtons = params.extra.dotButtons.filter(
         (b) => b.id !== newButton.id,
       );

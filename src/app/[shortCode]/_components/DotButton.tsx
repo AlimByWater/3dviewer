@@ -34,7 +34,7 @@ export const DotButton = ({
   const groupRef = useRef<THREE.Group>(null);
   const raycaster = useRef(new THREE.Raycaster());
   const checkInterval = useRef(0); // Для оптимизации проверок
-  const { camera, scene } = useThree();
+  const { camera } = useThree();
 
   // Флаг для включения/выключения отладки (можно вынести в props)
   const DEBUG_RAYCASTING = false;
