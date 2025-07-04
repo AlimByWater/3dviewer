@@ -8,17 +8,24 @@ import { Slot } from '@/types/types';
 import TriangleLoader from '@/components/TriangleLoader';
 import { useViewer } from './_context/ViewerContext';
 import DripNumberScene from './_components/Error404Scene';
-import { fetchSlotByShortCode } from '@/core/api';
+import * as api from '@/core/api';
 import { DotButton } from './_components/DotButton';
+import { useTweakpane } from './_context/TweakpaneContext';
 
 const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const { state, dispatch } = useViewer();
+  const {
+    state: { slot },
+    dispatch,
+  } = useViewer();
+  const {
+    state: { params: panelParams },
+  } = useTweakpane();
 
   const showDotButton = useMemo(
-    () => state.slot?.link.short_code === 'dotASHTRAY',
-    [state.slot?.link.short_code],
+    () => slot?.link.short_code === 'dotASHTRAY',
+    [slot?.link.short_code],
   );
 
   // Логирование для отладки
@@ -36,7 +43,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await fetchSlotByShortCode(params.shortCode);
+        const data = await api.fetchSlotByShortCode(params.shortCode);
         setSlot(data);
         setError(null);
       } catch (err) {
@@ -56,7 +63,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
     return <DripNumberScene />;
   }
 
-  if (!state.slot) {
+  if (!slot) {
     return (
       <div className="root__loading">
         <TriangleLoader />
@@ -66,10 +73,10 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
 
   return (
     <Page back={false}>
-      <WorkCanvas slot={state.slot} lowQuality={modalVisible || false}>
+      <WorkCanvas slot={slot} lowQuality={modalVisible || false}>
         {!modalVisible &&
-          state.panelParams?.extra.dotButtons &&
-          state.panelParams?.extra.dotButtons.map((params) => {
+          panelParams?.extra.dotButtons &&
+          panelParams?.extra.dotButtons.map((params) => {
             const pos = params.position;
             return (
               <DotButton
@@ -77,6 +84,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
                 position={[pos.x, pos.y, pos.z]}
                 targetUrl={params.linkTo}
                 svgIcon={params.svgIcon}
+                scale={params.scale}
               />
             );
           })}

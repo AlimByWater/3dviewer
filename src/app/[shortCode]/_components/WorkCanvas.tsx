@@ -17,10 +17,10 @@ import {
 } from 'react';
 
 import dynamic from 'next/dynamic';
-import { useViewer } from '../_context/ViewerContext';
 import { getFileExtensionFromUrl } from '@/utils/getFileExtension';
 import { SceneProgressParams } from '@/types/scene';
 import ProgressIndicator from './overlay/ProgressIndicator';
+import { useTweakpane } from '../_context/TweakpaneContext';
 
 const WorkInAquariumView = dynamic(() => import('./WorkInAquariumView'));
 const GltfSceneView = dynamic(() => import('./GltfSceneView'));
@@ -37,9 +37,9 @@ const WorkCanvas = ({
   lowQuality: boolean;
 }>) => {
   const {
-    state: { panelParams },
+    state: { params: panelParams },
     dispatch,
-  } = useViewer();
+  } = useTweakpane();
   const [sceneProgress, setSceneProgress] = useState<SceneProgressParams>({
     active: false,
     progress: null,
@@ -120,6 +120,8 @@ const WorkCanvas = ({
     return false; // No HDRI if not enabled
   }, [panelParams?.enableHdri, panelParams?.useHdriAsBackground]);
 
+  if (!panelParams) return;
+
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       {sceneProgress.active && (
@@ -132,7 +134,7 @@ const WorkCanvas = ({
       <Canvas
         dpr={getPixelRatio(lowQuality)}
         style={{
-          backgroundColor: panelParams!.background,
+          backgroundColor: panelParams.background,
         }}
         shadows
         camera={{ position: [-10, 0, 5], fov: 70, near: 0.01, far: 10000 }}
@@ -140,7 +142,7 @@ const WorkCanvas = ({
       >
         {/* Ключ нужен для того, чтобы параметры сцены сбрасывались */}
         <Suspense key={slot.id} fallback={null}>
-          <color attach="background" args={[panelParams!.background]} />
+          <color attach="background" args={[panelParams.background]} />
           {/** Стакан аквариума или основная работа */}
           {slot.in_aquarium ? (
             <WorkInAquariumView>{renderWorkComponent()}</WorkInAquariumView> // Aquarium view might need format check too if it can contain splats
@@ -199,7 +201,7 @@ const WorkCanvas = ({
           {/* HDRI карта */}
           {panelParams?.enableHdri && (
             <Environment
-              files={`${basePath}/hdri/${panelParams!.hdri}.jpg`}
+              files={`${basePath}/hdri/${panelParams.hdri}.jpg`}
               background={hdriBackgroundProp}
             />
           )}
@@ -227,8 +229,8 @@ const WorkCanvas = ({
                   const camera = cameraRef.current;
                   if (camera && panelParams) {
                     dispatch({
-                      type: 'panel_params_changed',
-                      panelParams: {
+                      type: 'params_updated',
+                      params: {
                         ...panelParams,
                         distance: camera.distance,
                         azimuthAngle: camera.azimuthAngle,
