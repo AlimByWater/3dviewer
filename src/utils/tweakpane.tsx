@@ -4,6 +4,7 @@ import { ButtonApi, FolderApi, Pane } from 'tweakpane';
 import { createSvgPreview, readSvgFileAsText, revokeSvgPreview } from './svg';
 import { Slot } from '@/types/types';
 import Color from 'color';
+import { ContainerApi } from '@tweakpane/core';
 
 // Функция преобразования слота в параметры панели
 export const convertSlotToPanelParams = (slot: Slot): PanelParams => {
@@ -189,78 +190,11 @@ export const configTweakpane = ({
       expanded: true,
     });
 
-    // File input binding
-    const fileBinding = buttonFolder.addBinding(
-      { svgIcon: '' as any },
-      'svgIcon',
-      {
-        label: 'SVG Icon',
-        view: 'file-input',
-        filetypes: ['.svg'],
-      },
-    );
-
-    // Создаем состояние для preview
-    let svgPreviewUrl = newButton.svgIcon
-      ? createSvgPreview(newButton.svgIcon)
-      : '';
-
-    const previewImg = document.createElement('img');
-    previewImg.style.width = '24px';
-    previewImg.style.height = '24px';
-    previewImg.style.margin = '8px';
-    previewImg.style.display = svgPreviewUrl ? 'block' : 'none';
-    previewImg.src = svgPreviewUrl;
-
-    // Добавляем контейнер preview в UI
-    fileBinding.element.insertBefore(
-      previewImg,
-      fileBinding.element.childNodes[1],
-    );
-
-    if (svgPreviewUrl) {
-      const deleteButton = fileBinding.element.lastElementChild
-        ?.firstElementChild?.lastElementChild as HTMLButtonElement | null;
-      if (deleteButton) {
-        deleteButton.style.display = 'block';
-
-        deleteButton.onclick = () => {
-          deleteButton.style.display = 'none';
-          removeSvgIcon();
-        };
-      }
-    }
-
-    fileBinding.on('change', async (e) => {
-      if (e.value instanceof File) {
-        try {
-          const sanitized = (await sanitizeSVG(e.value)) as File;
-          const svgText = await readSvgFileAsText(sanitized);
-
-          // Обновляем preview
-          if (svgPreviewUrl) revokeSvgPreview(svgPreviewUrl);
-          svgPreviewUrl = createSvgPreview(svgText);
-          previewImg.src = svgPreviewUrl;
-          previewImg.style.display = 'block';
-
-          updateDotButton(newButton.id, { svgIcon: svgText });
-        } catch (error) {
-          console.error('Error processing SVG:', error);
-        }
-      } else {
-        removeSvgIcon();
-      }
+    const disposeSvgInput = configureSvgInput({
+      parent: buttonFolder,
+      initialSvg: newButton.svgIcon,
+      onUpdate: (svg) => updateDotButton(newButton.id, { svgIcon: svg }),
     });
-
-    const removeSvgIcon = () => {
-      // Очистка preview
-      if (svgPreviewUrl) {
-        revokeSvgPreview(svgPreviewUrl);
-        svgPreviewUrl = '';
-      }
-      previewImg.style.display = 'none';
-      updateDotButton(newButton.id, { svgIcon: '' });
-    };
 
     buttonFolder
       .addBinding(newButton, 'linkTo', { label: 'Link' })
@@ -277,9 +211,7 @@ export const configTweakpane = ({
       .on('change', (e) => updateDotButton(newButton.id, { scale: e.value }));
 
     buttonFolder.addButton({ title: 'Remove' }).on('click', () => {
-      // Очищаем ресурсы preview
-      if (svgPreviewUrl) revokeSvgPreview(svgPreviewUrl);
-
+      disposeSvgInput();
       params.extra.dotButtons = params.extra.dotButtons.filter(
         (b) => b.id !== newButton.id,
       );
@@ -316,4 +248,109 @@ export const configTweakpane = ({
   });
 
   return params;
+};
+
+// Создает инпут svg и добавляет в parent
+// Возвращает функцию dispose
+const configureSvgInput = ({
+  parent,
+  initialSvg,
+  onUpdate,
+}: {
+  parent: ContainerApi;
+  initialSvg: string | null;
+  onUpdate: (svg: string) => void;
+}): (() => void) => {
+  const fileParam = { svgIcon: '' as any };
+
+  // File input binding
+  const fileBinding = parent.addBinding(fileParam, 'svgIcon', {
+    label: 'SVG Icon',
+    view: 'file-input',
+    filetypes: ['.svg'],
+  });
+
+  // Создаем состояние для preview
+  let svgPreviewUrl = initialSvg ? createSvgPreview(initialSvg) : '';
+
+  const previewImg = document.createElement('img');
+  previewImg.style.width = '24px';
+  previewImg.style.height = '24px';
+  previewImg.style.margin = '8px';
+  previewImg.style.display = svgPreviewUrl ? 'block' : 'none';
+  previewImg.src = svgPreviewUrl;
+
+  // Добавляем контейнер preview в UI
+  fileBinding.element.insertBefore(
+    previewImg,
+    fileBinding.element.childNodes[1],
+  );
+
+  if (svgPreviewUrl) {
+    const deleteButton = fileBinding.element.lastElementChild?.firstElementChild
+      ?.lastElementChild as HTMLButtonElement | null;
+    if (deleteButton) {
+      deleteButton.style.display = 'block';
+
+      deleteButton.onclick = () => {
+        deleteButton.style.display = 'none';
+        removeSvgIcon();
+      };
+    }
+  }
+
+  fileBinding.on('change', async (e) => {
+    if (!(e.value instanceof File)) {
+      removeSvgIcon();
+      return;
+    }
+    const sanitized = await sanitizeSVG(e.value);
+    if (!(sanitized instanceof File)) {
+      removeSvgIcon();
+      return;
+    }
+    // Проверка размера файла (16 КБ максимум)
+    if (sanitized.size > 16 * 1024) {
+      showInputError('File size exceeds 16KB limit');
+      return;
+    }
+
+    const svgText = await readSvgFileAsText(sanitized);
+
+    // Обновляем preview
+    if (svgPreviewUrl) revokeSvgPreview(svgPreviewUrl);
+    svgPreviewUrl = createSvgPreview(svgText);
+    previewImg.src = svgPreviewUrl;
+    previewImg.style.display = 'block';
+
+    onUpdate(svgText);
+  });
+
+  const removeSvgIcon = () => {
+    // Очистка preview
+    if (svgPreviewUrl) {
+      revokeSvgPreview(svgPreviewUrl);
+      svgPreviewUrl = '';
+    }
+    previewImg.style.display = 'none';
+    onUpdate('');
+  };
+
+  // Показывает ошибку под инпутом svg
+  const showInputError = (text: string) => {
+    const warningElement = fileBinding.element.lastElementChild
+      ?.firstElementChild?.children[1] as HTMLElement | null;
+    if (warningElement) {
+      const prevText = warningElement.textContent;
+      warningElement.textContent = text;
+      warningElement.style.display = 'block';
+
+      setTimeout(() => {
+        warningElement.textContent = prevText;
+        warningElement.style.display = 'none';
+      }, 5000);
+    }
+  };
+
+  return () => svgPreviewUrl && revokeSvgPreview(svgPreviewUrl);
 };
