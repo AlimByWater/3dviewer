@@ -218,7 +218,19 @@ export const configTweakpane = ({
       fileBinding.element.childNodes[1],
     );
 
-    // console.error('Error processing SVG:');
+    if (svgPreviewUrl) {
+      const deleteButton = fileBinding.element.lastElementChild
+        ?.firstElementChild?.lastElementChild as HTMLButtonElement | null;
+      if (deleteButton) {
+        deleteButton.style.display = 'block';
+
+        deleteButton.onclick = () => {
+          deleteButton.style.display = 'none';
+          removeSvgIcon();
+        };
+      }
+    }
+
     fileBinding.on('change', async (e) => {
       if (e.value instanceof File) {
         try {
@@ -236,15 +248,19 @@ export const configTweakpane = ({
           console.error('Error processing SVG:', error);
         }
       } else {
-        // Очистка preview
-        if (svgPreviewUrl) {
-          revokeSvgPreview(svgPreviewUrl);
-          svgPreviewUrl = '';
-        }
-        previewImg.style.display = 'none';
-        updateDotButton(newButton.id, { svgIcon: '' });
+        removeSvgIcon();
       }
     });
+
+    const removeSvgIcon = () => {
+      // Очистка preview
+      if (svgPreviewUrl) {
+        revokeSvgPreview(svgPreviewUrl);
+        svgPreviewUrl = '';
+      }
+      previewImg.style.display = 'none';
+      updateDotButton(newButton.id, { svgIcon: '' });
+    };
 
     buttonFolder
       .addBinding(newButton, 'linkTo', { label: 'Link' })
