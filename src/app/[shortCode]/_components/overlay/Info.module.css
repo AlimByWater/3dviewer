@@ -21,6 +21,7 @@
 
 .workInfo {
   flex-grow: 1;
+  overflow: hidden; /* Включаем ограничение содержимого */
 }
 
 .menuButton {
