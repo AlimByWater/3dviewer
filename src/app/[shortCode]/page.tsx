@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Overlay from './_components/overlay/Overlay';
 import WorkCanvas from './_components/WorkCanvas';
 import { Page } from '@/components/Page';
@@ -22,6 +22,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   const {
     state: { params: panelParams },
   } = useTweakpane();
+  const [sceneLoaded, setSceneLoaded] = useState(false);
 
   const showDotButton = useMemo(
     () => slot?.link.short_code === 'dotASHTRAY',
@@ -73,10 +74,15 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
 
   return (
     <Page back={false}>
-      <WorkCanvas slot={slot} lowQuality={modalVisible || false}>
-        {!modalVisible &&
+      <WorkCanvas
+        slot={slot}
+        lowQuality={modalVisible || false}
+        onProgress={(progress) => setSceneLoaded(progress.active === false)}
+      >
+        {sceneLoaded &&
+          !modalVisible &&
           panelParams?.extra.dotButtons &&
-          panelParams?.extra.dotButtons.map((params) => {
+          panelParams!.extra.dotButtons.map((params) => {
             const pos = params.position;
             return (
               <DotButton

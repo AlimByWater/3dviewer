@@ -31,17 +31,19 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 const WorkCanvas = ({
   slot,
   lowQuality,
+  onProgress,
   children,
 }: PropsWithChildren<{
   slot: Slot;
   lowQuality: boolean;
+  onProgress: (progress: SceneProgressParams) => void;
 }>) => {
   const {
     state: { params: panelParams },
     dispatch,
   } = useTweakpane();
   const [sceneProgress, setSceneProgress] = useState<SceneProgressParams>({
-    active: false,
+    active: null,
     progress: null,
   });
   const cameraRef = useRef<CameraControls | null>(null);
@@ -71,6 +73,10 @@ const WorkCanvas = ({
       }
     }
   }, [panelParams]);
+
+  useEffect(() => {
+    onProgress(sceneProgress);
+  }, [sceneProgress]);
 
   useEffect(() => {
     updateParams();

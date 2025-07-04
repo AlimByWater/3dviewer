@@ -135,7 +135,7 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
             );
 
             button.title = 'Saved!';
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 2000));
           } catch (e) {
             console.error('Failed to save work params:', e); // Keep logging
             button.title = `Error!`; // Keep improved error message
