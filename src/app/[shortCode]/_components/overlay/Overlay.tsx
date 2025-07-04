@@ -1,3 +1,4 @@
+import SafeArea from '@/components/SafeArea';
 import Info from './Info';
 import LogoButton from './LogoButton';
 
@@ -22,7 +23,6 @@ const Overlay = ({
       <LogoButton />
 
       <div
-        id="tweakpane-container"
         style={{
           position: 'fixed',
           top: 0,
@@ -33,7 +33,11 @@ const Overlay = ({
           padding: '16px 16px',
           pointerEvents: 'auto',
         }}
-      ></div>
+      >
+        <SafeArea>
+          <div id="tweakpane-container"></div>
+        </SafeArea>
+      </div>
       <Info
         modalVisible={modalVisible}
         onChangeModalVisible={onChangeModalVisible}
