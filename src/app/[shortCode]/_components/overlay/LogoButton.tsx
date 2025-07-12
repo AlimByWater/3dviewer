@@ -12,6 +12,8 @@ const LogoButton = () => {
     state: { params: panelParams },
   } = useTweakpane();
 
+  if (!panelParams) return;
+
   const userId = slot?.author_id;
   const slotId = slot?.id;
 
@@ -26,7 +28,7 @@ const LogoButton = () => {
   return (
     <div className={styles.wrapper}>
       <SafeArea>
-        <TriangleButton href={botUrl} color={panelParams?.foreground} />
+        <TriangleButton href={botUrl} color={panelParams.foreground} />
       </SafeArea>
     </div>
   );

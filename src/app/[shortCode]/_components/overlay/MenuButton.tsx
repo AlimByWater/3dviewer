@@ -5,6 +5,7 @@ import { useViewer } from '../../_context/ViewerContext';
 import { Button } from '@mantine/core';
 import { useCallback } from 'react';
 import { useTweakpane } from '../../_context/TweakpaneContext';
+import { useRouter } from 'next/navigation';
 
 const MenuButton = ({
   className,
@@ -33,8 +34,11 @@ const MenuButton = ({
     [onChangeModalVisible],
   );
 
+  const router = useRouter();
+
   const handleSlotSelect = (slot: Slot) => {
     dispatch({ type: 'slot_changed', slot: slot });
+    router.push(`?shortCode=${slot.link.short_code}`);
     onChangeModalVisible(false);
   };
 
