@@ -22,17 +22,8 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   const {
     state: { params: panelParams },
   } = useTweakpane();
-  const [sceneLoaded, setSceneLoaded] = useState(false);
 
-  const showDotButton = useMemo(
-    () => slot?.link.short_code === 'dotASHTRAY',
-    [slot?.link.short_code],
-  );
-
-  // Логирование для отладки
-  useEffect(() => {
-    console.log('Should show dot button:', showDotButton);
-  }, [showDotButton]);
+  const dotButtonParams = panelParams?.extra.dotButtons;
 
   const setSlot = useCallback(
     (slot: Slot | null) => {
@@ -77,28 +68,23 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
       <WorkCanvas
         slot={slot}
         lowQuality={modalVisible || false}
-        onProgress={(progress) => {
-          if (progress.active !== null) {
-            setSceneLoaded(!progress.active);
-          }
-        }}
-      >
-        {sceneLoaded &&
-          !modalVisible &&
-          panelParams?.extra.dotButtons &&
-          panelParams!.extra.dotButtons.map((params) => {
-            const pos = params.position;
-            return (
-              <DotButton
-                key={params.id}
-                position={[pos.x, pos.y, pos.z]}
-                targetUrl={params.linkTo}
-                svgIcon={params.svgIcon}
-                scale={params.scale}
-              />
-            );
-          })}
-      </WorkCanvas>
+        dotButtons={
+          !modalVisible && dotButtonParams
+            ? dotButtonParams.map((params) => {
+                const pos = params.position;
+                return (
+                  <DotButton
+                    key={params.id}
+                    position={[pos.x, pos.y, pos.z]}
+                    targetUrl={params.linkTo}
+                    svgIcon={params.svgIcon}
+                    scale={params.scale}
+                  />
+                );
+              })
+            : undefined
+        }
+      ></WorkCanvas>
       <Overlay
         modalVisible={modalVisible}
         onChangeModalVisible={setModalVisible}

@@ -8,6 +8,7 @@ import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import { Slot } from '@/types/types';
 import {
   PropsWithChildren,
+  ReactNode,
   Suspense,
   useCallback,
   useEffect,
@@ -31,12 +32,12 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 const WorkCanvas = ({
   slot,
   lowQuality,
-  onProgress,
+  dotButtons,
   children,
 }: PropsWithChildren<{
   slot: Slot;
   lowQuality: boolean;
-  onProgress: (progress: SceneProgressParams) => void;
+  dotButtons?: ReactNode[];
 }>) => {
   const {
     state: { params: panelParams },
@@ -73,10 +74,6 @@ const WorkCanvas = ({
       }
     }
   }, [panelParams]);
-
-  useEffect(() => {
-    onProgress(sceneProgress);
-  }, [onProgress, sceneProgress]);
 
   useEffect(() => {
     updateParams();
@@ -126,7 +123,7 @@ const WorkCanvas = ({
     return false; // No HDRI if not enabled
   }, [panelParams?.enableHdri, panelParams?.useHdriAsBackground]);
 
-  if (!panelParams) return;
+  const backgroundColor = panelParams?.background ?? slot.work.backgroundColor;
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
@@ -138,9 +135,10 @@ const WorkCanvas = ({
       )}
 
       <Canvas
+        key={slot.id}
         dpr={getPixelRatio(lowQuality)}
         style={{
-          backgroundColor: panelParams.background,
+          backgroundColor: backgroundColor,
         }}
         shadows
         camera={{ position: [-10, 0, 5], fov: 70, near: 0.01, far: 10000 }}
@@ -148,13 +146,14 @@ const WorkCanvas = ({
       >
         {/* Ключ нужен для того, чтобы параметры сцены сбрасывались */}
         <Suspense key={slot.id} fallback={null}>
-          <color attach="background" args={[panelParams.background]} />
+          <color attach="background" args={[backgroundColor]} />
           {/** Стакан аквариума или основная работа */}
           {slot.in_aquarium ? (
             <WorkInAquariumView>{renderWorkComponent()}</WorkInAquariumView> // Aquarium view might need format check too if it can contain splats
           ) : (
             renderWorkComponent() // Render based on format
           )}
+          {sceneProgress.active === false && dotButtons}
           {/** Пользовательская среда */}
           <Environment resolution={isLowPerformanceDevice() ? 256 : 1024}>
             <group rotation={[-Math.PI / 3, 0, 0]}>
@@ -248,7 +247,6 @@ const WorkCanvas = ({
               }}
             />
           )}
-
           {children}
         </Suspense>
       </Canvas>
