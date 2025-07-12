@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import './DotButton.css';
 import { Vector3 } from '@/types/types';
+import { useRouter } from 'next/navigation';
 
 interface DotButtonProps {
   position?: Vector3;
@@ -146,9 +147,15 @@ export const DotButton = ({
     }
   });
 
+  const router = useRouter();
+
   const handleClick = () => {
     if (targetUrl) {
-      window.open(targetUrl, '_blank');
+      if (targetUrl[0] === '/') {
+        router.push(`?shortCode=${targetUrl.substring(1)}`);
+      } else {
+        window.open(targetUrl, '_blank');
+      }
     }
   };
 

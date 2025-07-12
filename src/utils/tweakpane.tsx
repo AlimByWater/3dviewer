@@ -38,7 +38,7 @@ export const convertSlotToPanelParams = (slot: Slot): PanelParams => {
           id: btn.id,
           position: btn.position ?? { x: 0, y: 0, z: 0 },
           svgIcon: btn.svgIcon ?? '',
-          linkTo: btn.linkTo ?? '',
+          link: btn.link ?? '',
           scale: btn.scale ?? 1,
         })) || [],
     },
@@ -175,7 +175,7 @@ export const configTweakpane = ({
           ? Math.max(...params.extra.dotButtons.map((b) => b.id)) + 1
           : 1,
       svgIcon: '',
-      linkTo: '',
+      link: '',
       position: { x: -1, y: 3, z: -2 },
       scale: 1,
     };
@@ -197,8 +197,8 @@ export const configTweakpane = ({
     });
 
     buttonFolder
-      .addBinding(newButton, 'linkTo', { label: 'Link' })
-      .on('change', (e) => updateDotButton(newButton.id, { linkTo: e.value }));
+      .addBinding(newButton, 'link', { label: 'Link' })
+      .on('change', (e) => updateDotButton(newButton.id, { link: e.value }));
 
     buttonFolder
       .addBinding(newButton, 'position', { label: 'Position' })

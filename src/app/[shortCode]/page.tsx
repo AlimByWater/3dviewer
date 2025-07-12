@@ -76,7 +76,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
                   <DotButton
                     key={params.id}
                     position={[pos.x, pos.y, pos.z]}
-                    targetUrl={params.linkTo}
+                    targetUrl={params.link}
                     svgIcon={params.svgIcon}
                     scale={params.scale}
                   />

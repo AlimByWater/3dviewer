@@ -31,7 +31,7 @@ export type ExtraPanelParams = {
 export type DotButtonPanelParams = {
   id: number;
   svgIcon: string;
-  linkTo: string;
+  link: string;
   position: { x: number; y: number; z: number };
   scale: number;
 };

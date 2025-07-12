@@ -20,7 +20,7 @@ export interface SlotExtraParams {
 export interface DotButtonParams {
   id: number;
   svgIcon?: string;
-  linkTo?: string;
+  link?: string;
   position?: { x: number; y: number; z: number };
   scale?: number;
 }
