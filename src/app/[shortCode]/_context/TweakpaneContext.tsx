@@ -1,4 +1,4 @@
-import { ButtonApi, Pane as Tweakpane } from 'tweakpane';
+import { Pane as Tweakpane } from 'tweakpane';
 import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 import * as TweakpaneFileImportPlugin from 'tweakpane-plugin-file-import';
 import {
@@ -85,8 +85,7 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
 
   // Инициализация/разрушение панели
   useEffect(() => {
-    const container = document.getElementById('tweakpane-container');
-    if (!container || !viewerState.slot) return;
+    if (!viewerState.slot) return;
 
     const shouldCreatePane =
       process.env.NEXT_PUBLIC_BASE_PATH === '/local' ||
@@ -97,7 +96,6 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
       const pane = new Tweakpane({
         title: 'Model parameters',
         expanded: false,
-        container: container,
       });
       pane.registerPlugin(EssentialsPlugin);
       pane.registerPlugin(TweakpaneFileImportPlugin);
@@ -152,7 +150,6 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
     } else if (
       state.pane &&
       (!shouldCreatePane ||
-        !container.children.length ||
         (prevSlot.current && prevSlot.current.id != viewerState.slot.id))
     ) {
       state.pane?.dispose();
