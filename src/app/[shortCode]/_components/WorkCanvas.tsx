@@ -139,6 +139,7 @@ const WorkCanvas = ({
         dpr={getPixelRatio(lowQuality)}
         style={{
           backgroundColor: backgroundColor,
+          zIndex: 0,
         }}
         shadows
         camera={{ position: [-10, 0, 5], fov: 70, near: 0.01, far: 10000 }}

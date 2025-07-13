@@ -69,7 +69,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
         slot={slot}
         lowQuality={modalVisible || false}
         dotButtons={
-          !modalVisible && dotButtonParams
+          dotButtonParams
             ? dotButtonParams.map((params) => {
                 const pos = params.position;
                 return (
