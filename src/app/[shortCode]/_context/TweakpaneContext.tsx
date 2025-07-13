@@ -87,73 +87,85 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!viewerState.slot) return;
 
-    const shouldCreatePane =
+    const shouldShowPane =
       process.env.NEXT_PUBLIC_BASE_PATH === '/local' ||
       viewerState.slot.work.showPanel === true ||
       lp.initData?.user?.id === viewerState.slot.work.authors[0].telegramUserId;
 
-    if (shouldCreatePane && !state.pane) {
-      const pane = new Tweakpane({
-        title: 'Model parameters',
-        expanded: false,
-      });
-      pane.registerPlugin(EssentialsPlugin);
-      pane.registerPlugin(TweakpaneFileImportPlugin);
+    if (state.pane) {
+      if (
+        !shouldShowPane ||
+        (prevSlot.current && prevSlot.current.id != viewerState.slot.id)
+      ) {
+        // Если панель существует, но она не должна отображаться или изменился слот,
+        // уничтожаем её
+        state.pane?.dispose();
+        dispatch({ type: 'pane_destroyed' });
+      }
+    } else {
+      if (shouldShowPane) {
+        // Если панели нет, но она должна отображаться,
+        // создаём её
+        const pane = new Tweakpane({
+          title: 'Model parameters',
+          expanded: false,
+        });
+        pane.registerPlugin(EssentialsPlugin);
+        pane.registerPlugin(TweakpaneFileImportPlugin);
 
-      const panelParams = convertSlotToPanelParams(viewerState.slot);
-      paramsRef.current = configTweakpane({
-        pane: pane,
-        initialParams: panelParams,
-        onParamsUpdate: (key, value) => {
-          if (!paramsRef.current) return;
+        const panelParams = convertSlotToPanelParams(viewerState.slot);
+        paramsRef.current = configTweakpane({
+          pane: pane,
+          initialParams: panelParams,
+          onParamsUpdate: (key, value) => {
+            if (!paramsRef.current) return;
 
-          const newParams = {
-            ...paramsRef.current,
-            [key]: value,
-          };
+            const newParams = {
+              ...paramsRef.current,
+              [key]: value,
+            };
 
-          dispatch({ type: 'params_updated', params: newParams });
-        },
-        onSaveClick: async (button) => {
-          // Keep the null check for safety
-          if (!viewerState.slot || !paramsRef.current) {
-            console.error('Cannot save: slot or params are missing.');
-            return;
-          }
-          try {
-            dispatch({ type: 'set_saving', saving: true });
+            dispatch({ type: 'params_updated', params: newParams });
+          },
+          onSaveClick: async (button) => {
+            // Keep the null check for safety
+            if (!viewerState.slot || !paramsRef.current) {
+              console.error('Cannot save: slot or params are missing.');
+              return;
+            }
+            try {
+              dispatch({ type: 'set_saving', saving: true });
 
-            button.disabled = true;
-            button.title = '...';
+              button.disabled = true;
+              button.title = '...';
 
-            // Pass only PanelParams (paramsRef.current)
-            await api.saveWorkParams(
-              viewerState.slot.work.id,
-              paramsRef.current,
-            );
+              // Pass only PanelParams (paramsRef.current)
+              await api.saveWorkParams(
+                viewerState.slot.work.id,
+                paramsRef.current,
+              );
 
-            button.title = 'Saved!';
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-          } catch (e) {
-            console.error('Failed to save work params:', e); // Keep logging
-            button.title = `Error!`; // Keep improved error message
-            await new Promise((resolve) => setTimeout(resolve, 2000)); // Keep longer timeout
-          } finally {
-            button.disabled = false;
-            button.title = 'Save';
-          }
-        },
-      });
+              button.title = 'Saved!';
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+            } catch (e) {
+              console.error('Failed to save work params:', e); // Keep logging
+              button.title = `Error!`; // Keep improved error message
+              await new Promise((resolve) => setTimeout(resolve, 2000)); // Keep longer timeout
+            } finally {
+              button.disabled = false;
+              button.title = 'Save';
+            }
+          },
+        });
 
-      dispatch({ type: 'init_pane', pane });
-      dispatch({ type: 'params_updated', params: panelParams });
-    } else if (
-      state.pane &&
-      (!shouldCreatePane ||
-        (prevSlot.current && prevSlot.current.id != viewerState.slot.id))
-    ) {
-      state.pane?.dispose();
-      dispatch({ type: 'pane_destroyed' });
+        dispatch({ type: 'init_pane', pane });
+        dispatch({ type: 'params_updated', params: panelParams });
+      } else {
+        // Если панели нет и она не должна отображаться,
+        // инициализируем только параметры
+        const panelParams = convertSlotToPanelParams(viewerState.slot);
+        dispatch({ type: 'params_updated', params: panelParams });
+      }
     }
 
     prevSlot.current = viewerState.slot;
