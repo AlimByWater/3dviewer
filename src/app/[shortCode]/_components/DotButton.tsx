@@ -154,7 +154,10 @@ export const DotButton = ({
       if (targetUrl[0] === '/') {
         router.push(`?shortCode=${targetUrl.substring(1)}`);
       } else {
-        window.open(targetUrl, '_blank');
+        const url = targetUrl.match(/^https?:\/\//i)
+          ? targetUrl
+          : `https://${targetUrl}`;
+        window.open(url, '_blank');
       }
     }
   };
