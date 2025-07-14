@@ -10,17 +10,8 @@ const SlotPage = () => {
   const lp = useLaunchParams();
   const searchParams = useSearchParams(); // Re-add this
 
-  let finalShortCode: string;
-  if (lp.startParam) {
-    finalShortCode = lp.startParam;
-  } else {
-    const queryShortCode = searchParams.get('shortCode');
-    if (queryShortCode) {
-      finalShortCode = queryShortCode;
-    } else {
-      finalShortCode = '404';
-    }
-  }
+  const queryShortCode = searchParams.get('shortCode');
+  const finalShortCode = queryShortCode ?? lp.startParam ?? '404';
 
   return (
     <ViewerProvider>

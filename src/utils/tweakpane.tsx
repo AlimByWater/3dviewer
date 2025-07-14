@@ -50,11 +50,13 @@ export const configTweakpane = ({
   pane,
   initialParams,
   onParamsUpdate,
+  showSaveButton,
   onSaveClick,
 }: {
   pane: Pane;
   initialParams: PanelParams;
   onParamsUpdate: (key: keyof PanelParams, value: any) => void;
+  showSaveButton: boolean;
   onSaveClick: (button: ButtonApi) => void;
 }): PanelParams => {
   const params = initialParams;
@@ -155,7 +157,10 @@ export const configTweakpane = ({
   );
 
   // Dot buttons implementation
-  const dotButtonsFolder = pane.addFolder({ title: 'Dot buttons' });
+  const dotButtonsFolder = pane.addFolder({
+    title: 'Dot buttons',
+    expanded: false,
+  });
 
   let addingButton: ButtonApi | undefined;
   const createAddButton = (onClick: () => void) => {
@@ -241,11 +246,13 @@ export const configTweakpane = ({
     addDotButtonParams(button),
   );
 
-  // Save button implementation
-  const saveButton = pane.addButton({ title: 'Save' });
-  saveButton.on('click', () => {
-    onSaveClick(saveButton);
-  });
+  if (showSaveButton) {
+    // Save button implementation
+    const saveButton = pane.addButton({ title: 'Save' });
+    saveButton.on('click', () => {
+      onSaveClick(saveButton);
+    });
+  }
 
   return params;
 };

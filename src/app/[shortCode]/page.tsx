@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Overlay from './_components/overlay/Overlay';
 import WorkCanvas from './_components/WorkCanvas';
 import { Page } from '@/components/Page';
@@ -12,7 +12,11 @@ import * as api from '@/core/api';
 import { DotButton } from './_components/DotButton';
 import { useTweakpane } from './_context/TweakpaneContext';
 
-const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
+interface SlotDetailsPageParams {
+  shortCode: string;
+}
+
+const SlotDetailsPage = ({ params }: { params: SlotDetailsPageParams }) => {
   const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const {
@@ -35,6 +39,7 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   useEffect(() => {
     const loadData = async () => {
       try {
+        console.log(`Fetching slot from shortCode: ${params.shortCode}`);
         const data = await api.fetchSlotByShortCode(params.shortCode);
         setSlot(data);
         setError(null);
