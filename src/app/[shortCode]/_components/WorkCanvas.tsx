@@ -127,13 +127,6 @@ const WorkCanvas = ({
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      {sceneProgress.active && (
-        <ProgressIndicator
-          color={slot.work.foregroundColor}
-          progress={sceneProgress.progress}
-        />
-      )}
-
       <Canvas
         key={slot.id}
         dpr={getPixelRatio(lowQuality)}
@@ -251,6 +244,12 @@ const WorkCanvas = ({
           {children}
         </Suspense>
       </Canvas>
+      {sceneProgress.active && (
+        <ProgressIndicator
+          color={slot.work.foregroundColor}
+          progress={sceneProgress.progress}
+        />
+      )}
     </div>
   );
 };

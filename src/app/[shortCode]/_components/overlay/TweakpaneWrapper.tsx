@@ -28,7 +28,6 @@ const TweakpaneWrapper = () => {
         maxWidth: '400px',
         padding: '16px 16px',
         pointerEvents: 'auto',
-        zIndex: 100,
       }}
     >
       <SafeArea>
