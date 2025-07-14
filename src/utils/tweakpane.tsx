@@ -281,17 +281,24 @@ const configureSvgInput = ({
   let svgPreviewUrl = initialSvg ? createSvgPreview(initialSvg) : '';
 
   const previewImg = document.createElement('img');
+  previewImg.src = svgPreviewUrl;
+  previewImg.style.display = svgPreviewUrl ? 'block' : 'none';
+  previewImg.style.position = 'absolute';
   previewImg.style.width = '24px';
   previewImg.style.height = '24px';
-  previewImg.style.margin = '8px';
-  previewImg.style.display = svgPreviewUrl ? 'block' : 'none';
-  previewImg.src = svgPreviewUrl;
+  previewImg.style.padding = '2px';
+  previewImg.style.borderRadius = '4px';
+  previewImg.style.backgroundColor = 'var(--in-bg)';
+  previewImg.style.pointerEvents = 'none';
 
-  // Добавляем контейнер preview в UI
-  fileBinding.element.insertBefore(
-    previewImg,
-    fileBinding.element.childNodes[1],
-  );
+  const fileInputElement =
+    fileBinding.element.lastElementChild?.firstElementChild?.firstElementChild;
+  if (svgPreviewUrl) {
+    // Удаление иконки загрузки
+    fileInputElement?.lastElementChild?.remove();
+  }
+  // Добавляем превью вместо иконки загрузки
+  fileInputElement?.appendChild(previewImg);
 
   if (svgPreviewUrl) {
     const deleteButton = fileBinding.element.lastElementChild?.firstElementChild
