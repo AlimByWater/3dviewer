@@ -52,32 +52,46 @@ const WorkCanvas = ({
     cameraRef.current = element;
     if (element) {
       // Элемент появился в DOM
-      updateParams();
+      updateCamera();
     }
   };
   // Означает управляет ли юзер камерой в данный момент
   const isCameraControl = useRef(false);
 
-  const updateParams = useCallback(() => {
+  const prevSyncCameraEnabled = useRef<boolean | null>(null);
+
+  const updateCamera = useCallback(() => {
     if (isCameraControl.current === true) return;
 
     const camera = cameraRef.current;
     if (camera && panelParams) {
-      if (camera.distance !== panelParams.distance) {
-        camera.distance = panelParams.distance;
-      }
-      if (camera.azimuthAngle !== panelParams.azimuthAngle) {
-        camera.azimuthAngle = panelParams.azimuthAngle;
-      }
-      if (camera.polarAngle !== panelParams.polarAngle) {
-        camera.polarAngle = panelParams.polarAngle;
+      const prevSyncCamera = prevSyncCameraEnabled.current;
+      if (!prevSyncCamera && panelParams?.syncCamera) {
+        // Если переключили syncCamera на true с false, обновляем параметры
+        dispatch({
+          type: 'params_updated',
+          params: {
+            ...panelParams,
+            distance: camera.distance,
+            azimuthAngle: camera.azimuthAngle,
+            polarAngle: camera.polarAngle,
+          },
+        });
+      } else {
+        if (camera.distance !== panelParams.distance) {
+          camera.distance = panelParams.distance;
+        }
+        if (camera.azimuthAngle !== panelParams.azimuthAngle) {
+          camera.azimuthAngle = panelParams.azimuthAngle;
+        }
+        if (camera.polarAngle !== panelParams.polarAngle) {
+          camera.polarAngle = panelParams.polarAngle;
+        }
       }
     }
-  }, [panelParams]);
 
-  useEffect(() => {
-    updateParams();
-  }, [updateParams]);
+    prevSyncCameraEnabled.current = panelParams && panelParams.syncCamera;
+  }, [dispatch, panelParams]);
 
   // Determine which component to render based on file extension in work.link
   const renderWorkComponent = () => {
@@ -226,7 +240,7 @@ const WorkCanvas = ({
               onChange={(p) => {
                 if (p?.type == 'update') {
                   const camera = cameraRef.current;
-                  if (camera && panelParams) {
+                  if (camera && panelParams && panelParams.syncCamera) {
                     dispatch({
                       type: 'params_updated',
                       params: {

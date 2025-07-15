@@ -26,6 +26,7 @@ export const convertSlotToPanelParams = (slot: Slot): PanelParams => {
       y: object.position[1],
       z: object.position[2],
     },
+    syncCamera: false,
     distance: object.distance,
     azimuthAngle: object.azimuthAngle,
     polarAngle: object.polarAngle,
@@ -103,6 +104,9 @@ export const configTweakpane = ({
     min: 0,
     max: 2 * Math.PI,
   });
+  const syncCamera = cameraFolder.addBinding(params, 'syncCamera', {
+    label: 'sync params',
+  });
 
   const hdriFolder = pane.addFolder({
     expanded: false,
@@ -147,6 +151,7 @@ export const configTweakpane = ({
   fgColor.on('change', (e) => updateParam('foreground', e.value));
   scale.on('change', (e) => updateParam('scale', e.value));
   position.on('change', (e) => updateParam('position', e.value));
+  syncCamera.on('change', (e) => updateParam('syncCamera', e.value));
   distance.on('change', (e) => updateParam('distance', e.value));
   azimuthAngle.on('change', (e) => updateParam('azimuthAngle', e.value));
   polarAngle.on('change', (e) => updateParam('polarAngle', e.value));
@@ -201,9 +206,15 @@ export const configTweakpane = ({
       onUpdate: (svg) => updateDotButton(newButton.id, { svgIcon: svg }),
     });
 
-    buttonFolder
+    const link = buttonFolder
       .addBinding(newButton, 'link', { label: 'Link' })
       .on('change', (e) => updateDotButton(newButton.id, { link: e.value }));
+    // // Добавляем dropdown список с shortCode автора
+    // const linkInput = link.element.lastElementChild?.lastElementChild
+    //   ?.lastElementChild as HTMLInputElement | null;
+    // if (linkInput) {
+    //   addInputDropdownList(linkInput);
+    // }
 
     buttonFolder
       .addBinding(newButton, 'position', { label: 'Position' })
@@ -367,4 +378,21 @@ const configureSvgInput = ({
   };
 
   return () => svgPreviewUrl && revokeSvgPreview(svgPreviewUrl);
+};
+
+// Добавляет dropdown список с shortCode автора в текстовое поле
+const addInputDropdownList = (inputElement: HTMLInputElement) => {
+  inputElement.setAttribute('list', 'authorShortCodes');
+  const datalist = document.createElement('datalist');
+  datalist.setAttribute('id', 'authorShortCodes');
+
+  const authorShortCodes = ['/wrongness-discussions', '/404'];
+  const options: HTMLElement[] = authorShortCodes.map((shortCode) => {
+    const option = document.createElement('option');
+    option.setAttribute('value', shortCode);
+    return option;
+  });
+  datalist.append(...options);
+
+  inputElement.parentElement?.appendChild(datalist);
 };

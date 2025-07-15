@@ -8,6 +8,8 @@ export type PanelParams = {
   position: { x: number; y: number; z: number };
 
   // camera
+  // sync scene camera with params
+  syncCamera: boolean;
   /** From 1 to 100 */
   distance: number;
   /** From -2π to 2π */

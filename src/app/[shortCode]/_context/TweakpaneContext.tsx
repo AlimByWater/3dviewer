@@ -82,9 +82,7 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
 
   const shouldShowPane =
     viewerState.slot != null &&
-    (isLocalBuild ||
-      viewerState.slot.work.showPanel === true ||
-      userIsSlotAuthor);
+    (viewerState.slot.work.showPanel === true || userIsSlotAuthor);
 
   // Синхронизация ref с параметрами
   useEffect(() => {
