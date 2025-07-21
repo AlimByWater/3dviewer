@@ -2,13 +2,17 @@ import TriangleButton from '@/components/TriangleButton';
 import styles from './LogoButton.module.css';
 import SafeArea from '@/components/SafeArea';
 import { useViewer } from '../../_context/ViewerContext';
-import { useLaunchParams } from '@telegram-apps/sdk-react';
+import { useTweakpane } from '../../_context/TweakpaneContext';
 
 const LogoButton = () => {
   const {
-    state: { panelParams, slot },
+    state: { slot },
   } = useViewer();
-  const lp = useLaunchParams();
+  const {
+    state: { params: panelParams },
+  } = useTweakpane();
+
+  if (!panelParams) return;
 
   const userId = slot?.author_id;
   const slotId = slot?.id;
@@ -24,10 +28,7 @@ const LogoButton = () => {
   return (
     <div className={styles.wrapper}>
       <SafeArea>
-        <TriangleButton
-          href={botUrl}
-          color={panelParams?.foreground}
-        />
+        <TriangleButton href={botUrl} color={panelParams.foreground} />
       </SafeArea>
     </div>
   );

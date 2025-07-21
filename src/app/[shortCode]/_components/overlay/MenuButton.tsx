@@ -4,6 +4,8 @@ import styles from './MenuButton.module.css';
 import { useViewer } from '../../_context/ViewerContext';
 import { Button } from '@mantine/core';
 import { useCallback } from 'react';
+import { useTweakpane } from '../../_context/TweakpaneContext';
+import { useRouter } from 'next/navigation';
 
 const MenuButton = ({
   className,
@@ -15,9 +17,12 @@ const MenuButton = ({
   onChangeModalVisible: (visible: boolean) => void;
 }) => {
   const {
-    state: { slot, panelParams },
+    state: { slot },
     dispatch,
   } = useViewer();
+  const {
+    state: { params: panelParams },
+  } = useTweakpane();
 
   // useCallback фиксит рекурсию при открытии MenuModal на ios
   const onOpenClick = useCallback(
@@ -29,8 +34,11 @@ const MenuButton = ({
     [onChangeModalVisible],
   );
 
+  const router = useRouter();
+
   const handleSlotSelect = (slot: Slot) => {
     dispatch({ type: 'slot_changed', slot: slot });
+    router.push(`?shortCode=${slot.link.short_code}`);
     onChangeModalVisible(false);
   };
 

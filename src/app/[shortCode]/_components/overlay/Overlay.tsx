@@ -1,5 +1,6 @@
 import Info from './Info';
 import LogoButton from './LogoButton';
+import TweakpaneWrapper from './TweakpaneWrapper';
 
 const Overlay = ({
   modalVisible,
@@ -20,6 +21,7 @@ const Overlay = ({
       }}
     >
       <LogoButton />
+      <TweakpaneWrapper />
       <Info
         modalVisible={modalVisible}
         onChangeModalVisible={onChangeModalVisible}

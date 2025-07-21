@@ -5,6 +5,7 @@ import { DropInViewer } from '@mkkellogg/gaussian-splats-3d';
 import { useEffect, useRef } from 'react';
 import { useViewer } from '../_context/ViewerContext';
 import { SceneProgressParams } from '@/types/scene';
+import { useTweakpane } from '../_context/TweakpaneContext';
 
 interface SplatSceneViewProps {
   work: Work;
@@ -15,8 +16,9 @@ const SplatSceneView = ({ work, onProgress }: SplatSceneViewProps) => {
   // Removed onLoad from props
   const viewerRef = useRef<DropInViewer | null>(null);
   const {
-    state: { panelParams },
-  } = useViewer();
+    state: { params: panelParams },
+    dispatch,
+  } = useTweakpane();
   const pos = panelParams?.position;
   const scale = panelParams?.scale;
 

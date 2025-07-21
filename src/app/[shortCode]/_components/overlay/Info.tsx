@@ -4,6 +4,7 @@ import { Avatar, Text } from '@mantine/core';
 import SafeArea from '@/components/SafeArea';
 import { useViewer } from '../../_context/ViewerContext';
 import MenuButton from './MenuButton';
+import { useTweakpane } from '../../_context/TweakpaneContext';
 
 const Info = ({
   modalVisible,
@@ -13,9 +14,15 @@ const Info = ({
   onChangeModalVisible: (visible: boolean) => void;
 }) => {
   const {
-    state: { slot, panelParams },
+    state: { slot },
   } = useViewer();
-  const fontStyle = { color: panelParams!.foreground };
+  const {
+    state: { params: panelParams },
+  } = useTweakpane();
+
+  if (!panelParams) return;
+
+  const fontStyle = { color: panelParams.foreground };
 
   return (
     <div className={styles.footerBlock}>

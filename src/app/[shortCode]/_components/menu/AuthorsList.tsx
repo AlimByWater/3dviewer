@@ -3,13 +3,13 @@
 import './AuthorsList.css';
 import { useState, useEffect } from 'react';
 import { Author } from '@/types/types';
-import { fetchAuthors } from '@/core/api';
+import * as api from '@/core/api';
 
 const AuthorsList = ({ onSelect }: { onSelect: (author: Author) => void }) => {
   const [authors, setAuthors] = useState<Author[] | null>(null);
 
   useEffect(() => {
-    fetchAuthors().then((authors) => {
+    api.fetchAuthors().then((authors) => {
       setAuthors(authors);
     });
   }, []);

@@ -8,6 +8,8 @@ export type PanelParams = {
   position: { x: number; y: number; z: number };
 
   // camera
+  // sync scene camera with params
+  syncCamera: boolean;
   /** From 1 to 100 */
   distance: number;
   /** From -2π to 2π */
@@ -19,4 +21,19 @@ export type PanelParams = {
   enableHdri: boolean;
   hdri: string;
   useHdriAsBackground: 'true' | 'false' | 'only';
+
+  // dot buttons
+  extra: ExtraPanelParams;
+};
+
+export type ExtraPanelParams = {
+  dotButtons: DotButtonPanelParams[];
+};
+
+export type DotButtonPanelParams = {
+  id: number;
+  svgIcon: string;
+  link: string;
+  position: { x: number; y: number; z: number };
+  scale: number;
 };

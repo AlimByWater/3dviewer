@@ -8,6 +8,7 @@ import { getPixelRatio, isLowPerformanceDevice } from '@/utils/pixelRatio';
 import { Slot } from '@/types/types';
 import {
   PropsWithChildren,
+  ReactNode,
   Suspense,
   useCallback,
   useEffect,
@@ -17,10 +18,10 @@ import {
 } from 'react';
 
 import dynamic from 'next/dynamic';
-import { useViewer } from '../_context/ViewerContext';
 import { getFileExtensionFromUrl } from '@/utils/getFileExtension';
 import { SceneProgressParams } from '@/types/scene';
 import ProgressIndicator from './overlay/ProgressIndicator';
+import { useTweakpane } from '../_context/TweakpaneContext';
 
 const WorkInAquariumView = dynamic(() => import('./WorkInAquariumView'));
 const GltfSceneView = dynamic(() => import('./GltfSceneView'));
@@ -31,17 +32,17 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH;
 const WorkCanvas = ({
   slot,
   lowQuality,
-  onProgress,
+  dotButtons,
   children,
 }: PropsWithChildren<{
   slot: Slot;
   lowQuality: boolean;
-  onProgress: (progress: SceneProgressParams) => void;
+  dotButtons?: ReactNode[];
 }>) => {
   const {
-    state: { panelParams },
+    state: { params: panelParams },
     dispatch,
-  } = useViewer();
+  } = useTweakpane();
   const [sceneProgress, setSceneProgress] = useState<SceneProgressParams>({
     active: null,
     progress: null,
@@ -51,36 +52,46 @@ const WorkCanvas = ({
     cameraRef.current = element;
     if (element) {
       // Элемент появился в DOM
-      updateParams();
+      updateCamera();
     }
   };
   // Означает управляет ли юзер камерой в данный момент
   const isCameraControl = useRef(false);
 
-  const updateParams = useCallback(() => {
+  const prevSyncCameraEnabled = useRef<boolean | null>(null);
+
+  const updateCamera = useCallback(() => {
     if (isCameraControl.current === true) return;
 
     const camera = cameraRef.current;
     if (camera && panelParams) {
-      if (camera.distance !== panelParams.distance) {
-        camera.distance = panelParams.distance;
-      }
-      if (camera.azimuthAngle !== panelParams.azimuthAngle) {
-        camera.azimuthAngle = panelParams.azimuthAngle;
-      }
-      if (camera.polarAngle !== panelParams.polarAngle) {
-        camera.polarAngle = panelParams.polarAngle;
+      const prevSyncCamera = prevSyncCameraEnabled.current;
+      if (!prevSyncCamera && panelParams?.syncCamera) {
+        // Если переключили syncCamera на true с false, обновляем параметры
+        dispatch({
+          type: 'params_updated',
+          params: {
+            ...panelParams,
+            distance: camera.distance,
+            azimuthAngle: camera.azimuthAngle,
+            polarAngle: camera.polarAngle,
+          },
+        });
+      } else {
+        if (camera.distance !== panelParams.distance) {
+          camera.distance = panelParams.distance;
+        }
+        if (camera.azimuthAngle !== panelParams.azimuthAngle) {
+          camera.azimuthAngle = panelParams.azimuthAngle;
+        }
+        if (camera.polarAngle !== panelParams.polarAngle) {
+          camera.polarAngle = panelParams.polarAngle;
+        }
       }
     }
-  }, [panelParams]);
 
-  useEffect(() => {
-    onProgress(sceneProgress);
-  }, [sceneProgress]);
-
-  useEffect(() => {
-    updateParams();
-  }, [updateParams]);
+    prevSyncCameraEnabled.current = panelParams && panelParams.syncCamera;
+  }, [dispatch, panelParams]);
 
   // Determine which component to render based on file extension in work.link
   const renderWorkComponent = () => {
@@ -126,19 +137,16 @@ const WorkCanvas = ({
     return false; // No HDRI if not enabled
   }, [panelParams?.enableHdri, panelParams?.useHdriAsBackground]);
 
+  const backgroundColor = panelParams?.background ?? slot.work.backgroundColor;
+
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      {sceneProgress.active && (
-        <ProgressIndicator
-          color={slot.work.foregroundColor}
-          progress={sceneProgress.progress}
-        />
-      )}
-
       <Canvas
+        key={slot.id}
         dpr={getPixelRatio(lowQuality)}
         style={{
-          backgroundColor: panelParams!.background,
+          backgroundColor: backgroundColor,
+          zIndex: 0,
         }}
         shadows
         camera={{ position: [-10, 0, 5], fov: 70, near: 0.01, far: 10000 }}
@@ -146,13 +154,14 @@ const WorkCanvas = ({
       >
         {/* Ключ нужен для того, чтобы параметры сцены сбрасывались */}
         <Suspense key={slot.id} fallback={null}>
-          <color attach="background" args={[panelParams!.background]} />
+          <color attach="background" args={[backgroundColor]} />
           {/** Стакан аквариума или основная работа */}
           {slot.in_aquarium ? (
             <WorkInAquariumView>{renderWorkComponent()}</WorkInAquariumView> // Aquarium view might need format check too if it can contain splats
           ) : (
             renderWorkComponent() // Render based on format
           )}
+          {sceneProgress.active === false && dotButtons}
           {/** Пользовательская среда */}
           <Environment resolution={isLowPerformanceDevice() ? 256 : 1024}>
             <group rotation={[-Math.PI / 3, 0, 0]}>
@@ -205,7 +214,7 @@ const WorkCanvas = ({
           {/* HDRI карта */}
           {panelParams?.enableHdri && (
             <Environment
-              files={`${basePath}/hdri/${panelParams!.hdri}.jpg`}
+              files={`${basePath}/hdri/${panelParams.hdri}.jpg`}
               background={hdriBackgroundProp}
             />
           )}
@@ -222,32 +231,39 @@ const WorkCanvas = ({
               truckSpeed={1}
               dollySpeed={1}
               minDistance={0.1}
-              onStart={() => (isCameraControl.current = true)}
-              onEnd={() => (isCameraControl.current = false)}
+              onStart={() => {
+                isCameraControl.current = true;
+              }}
+              onEnd={() => {
+                isCameraControl.current = false;
+              }}
               onChange={(p) => {
-                if (isCameraControl.current) {
-                  if (p?.type == 'update') {
-                    const camera = cameraRef.current;
-                    if (camera && panelParams) {
-                      dispatch({
-                        type: 'panel_params_changed',
-                        panelParams: {
-                          ...panelParams,
-                          distance: camera.distance,
-                          azimuthAngle: camera.azimuthAngle,
-                          polarAngle: camera.polarAngle,
-                        },
-                      });
-                    }
+                if (p?.type == 'update') {
+                  const camera = cameraRef.current;
+                  if (camera && panelParams && panelParams.syncCamera) {
+                    dispatch({
+                      type: 'params_updated',
+                      params: {
+                        ...panelParams,
+                        distance: camera.distance,
+                        azimuthAngle: camera.azimuthAngle,
+                        polarAngle: camera.polarAngle,
+                      },
+                    });
                   }
                 }
               }}
             />
           )}
-
           {children}
         </Suspense>
       </Canvas>
+      {sceneProgress.active && (
+        <ProgressIndicator
+          color={slot.work.foregroundColor}
+          progress={sceneProgress.progress}
+        />
+      )}
     </div>
   );
 };

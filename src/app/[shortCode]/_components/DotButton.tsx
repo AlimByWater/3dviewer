@@ -3,10 +3,13 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useState, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import './DotButton.css';
+import { Vector3 } from '@/types/types';
+import { useRouter } from 'next/navigation';
 
 interface DotButtonProps {
-  position?: [number, number, number];
-  targetUrl: string;
+  position?: Vector3;
+  targetUrl?: string;
+  svgIcon?: string;
   scale?: number;
   modelRef?: React.RefObject<THREE.Object3D>;
 }
@@ -14,6 +17,7 @@ interface DotButtonProps {
 export const DotButton = ({
   position,
   targetUrl,
+  svgIcon,
   scale = 1,
   modelRef,
 }: DotButtonProps) => {
@@ -21,9 +25,9 @@ export const DotButton = ({
   const [visible, setVisible] = useState(true);
   const [opacity, setOpacity] = useState(1);
   const [occlusionOpacity, setOcclusionOpacity] = useState(1); // Новое состояние для окклюзии
-  const [computedPosition, setComputedPosition] = useState<
-    [number, number, number]
-  >(position || [5, -3, 0]);
+  const [computedPosition, setComputedPosition] = useState<Vector3>(
+    position || [5, -3, 0],
+  );
   const [debugRay, setDebugRay] = useState<{
     start: THREE.Vector3;
     end: THREE.Vector3;
@@ -31,7 +35,7 @@ export const DotButton = ({
   const groupRef = useRef<THREE.Group>(null);
   const raycaster = useRef(new THREE.Raycaster());
   const checkInterval = useRef(0); // Для оптимизации проверок
-  const { camera, scene } = useThree();
+  const { camera } = useThree();
 
   // Флаг для включения/выключения отладки (можно вынести в props)
   const DEBUG_RAYCASTING = false;
@@ -143,8 +147,19 @@ export const DotButton = ({
     }
   });
 
+  const router = useRouter();
+
   const handleClick = () => {
-    window.open(targetUrl, '_blank');
+    if (targetUrl) {
+      if (targetUrl[0] === '/') {
+        router.push(`?shortCode=${targetUrl.substring(1)}`);
+      } else {
+        const url = targetUrl.match(/^https?:\/\//i)
+          ? targetUrl
+          : `https://${targetUrl}`;
+        window.open(url, '_blank');
+      }
+    }
   };
 
   // Скрываем компонент если он полностью прозрачен или явно скрыт
@@ -249,25 +264,17 @@ export const DotButton = ({
               justifyContent: 'center',
             }}
           >
-            {/* SVG как img для лучшей совместимости */}
-            <img
-              src={`${process.env.NEXT_PUBLIC_BASE_PATH}/DOT.svg`}
-              alt="DOT"
-              style={{
-                width: '70%',
-                height: '70%',
-                // filter: 'invert(1)', // Инвертируем цвет SVG
-                display: 'block',
-              }}
-              onError={(e) => {
-                console.error(
-                  'Failed to load SVG from:',
-                  (e.target as HTMLImageElement).src,
-                );
-                // Если не загрузился, скрываем изображение
-                (e.target as HTMLImageElement).style.display = 'none';
-              }}
-            />
+            {svgIcon ? (
+              <div
+                className="user-svg-icon"
+                style={{
+                  width: '70%',
+                  height: '70%',
+                  display: 'block',
+                }}
+                dangerouslySetInnerHTML={{ __html: svgIcon }}
+              />
+            ) : undefined}
           </div>
 
           {/* Свечение */}

@@ -4,7 +4,7 @@ import styles from './SlotsGrid.module.css';
 import AuthorHeader from './AuthorHeader';
 import { Card, Image, Text, useMantineTheme } from '@mantine/core';
 import Color from 'color';
-import { fetchSlots } from '@/core/api';
+import * as api from '@/core/api';
 
 const SlotsGrid = ({
   author,
@@ -19,7 +19,7 @@ const SlotsGrid = ({
   const theme = useMantineTheme();
 
   useEffect(() => {
-    fetchSlots(author.telegramUserId).then((slots) => {
+    api.fetchSlots(author.telegramUserId).then((slots) => {
       setSlots(slots);
     });
   }, [author.telegramUserId]);

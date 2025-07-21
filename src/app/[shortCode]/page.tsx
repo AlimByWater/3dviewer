@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Overlay from './_components/overlay/Overlay';
 import WorkCanvas from './_components/WorkCanvas';
 import { Page } from '@/components/Page';
@@ -8,14 +8,26 @@ import { Slot } from '@/types/types';
 import TriangleLoader from '@/components/TriangleLoader';
 import { useViewer } from './_context/ViewerContext';
 import DripNumberScene from './_components/Error404Scene';
-import { fetchSlotByShortCode } from '@/core/api';
+import * as api from '@/core/api';
 import { DotButton } from './_components/DotButton';
+import { useTweakpane } from './_context/TweakpaneContext';
 
-const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
+interface SlotDetailsPageParams {
+  shortCode: string;
+}
+
+const SlotDetailsPage = ({ params }: { params: SlotDetailsPageParams }) => {
   const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const { state, dispatch } = useViewer();
-  const [sceneLoaded, setSceneLoaded] = useState(false);
+  const {
+    state: { slot },
+    dispatch,
+  } = useViewer();
+  const {
+    state: { params: panelParams },
+  } = useTweakpane();
+
+  const dotButtonParams = panelParams?.extra.dotButtons;
 
   const setSlot = useCallback(
     (slot: Slot | null) => {
@@ -27,7 +39,8 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await fetchSlotByShortCode(params.shortCode);
+        console.log(`Fetching slot from shortCode: ${params.shortCode}`);
+        const data = await api.fetchSlotByShortCode(params.shortCode);
         setSlot(data);
         setError(null);
       } catch (err) {
@@ -43,47 +56,11 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
     loadData();
   }, [params.shortCode, setSlot]);
 
-  const renderDotButton = useCallback(() => {
-    if (modalVisible || !sceneLoaded) return;
-
-    const shortCode = state.slot?.link.short_code;
-
-    if (shortCode == 'dotASHTRAY') {
-      return (
-        <DotButton
-          position={[5, -3, 0]}
-          targetUrl="https://www.nobody.solutions/"
-          scale={2}
-        />
-      );
-    }
-
-    if (shortCode == 'pension-wealthinesss') {
-      return (
-        <DotButton
-          position={[-0.65, -1.30, 0.15]}
-          targetUrl="https://jobs.gleb.solutions"
-          scale={0.25}
-        />
-      );
-    }
-
-    if (shortCode == 'leftys-lubrication') {
-      return (
-        <DotButton
-          position={[-4, 0.1, 0]}
-          targetUrl="https://jobs.gleb.solutions"
-          scale={1}
-        />
-      );
-    }
-  }, [sceneLoaded, modalVisible, state.slot?.link.short_code]);
-
   if (error) {
     return <DripNumberScene />;
   }
 
-  if (!state.slot) {
+  if (!slot) {
     return (
       <div className="root__loading">
         <TriangleLoader />
@@ -94,12 +71,25 @@ const SlotDetailsPage = ({ params }: { params: { shortCode: string } }) => {
   return (
     <Page back={false}>
       <WorkCanvas
-        slot={state.slot}
+        slot={slot}
         lowQuality={modalVisible || false}
-        onProgress={(progress) => setSceneLoaded(progress.active === false)}
-      >
-        {renderDotButton()}
-      </WorkCanvas>
+        dotButtons={
+          dotButtonParams
+            ? dotButtonParams.map((params) => {
+                const pos = params.position;
+                return (
+                  <DotButton
+                    key={params.id}
+                    position={[pos.x, pos.y, pos.z]}
+                    targetUrl={params.link}
+                    svgIcon={params.svgIcon}
+                    scale={params.scale}
+                  />
+                );
+              })
+            : undefined
+        }
+      ></WorkCanvas>
       <Overlay
         modalVisible={modalVisible}
         onChangeModalVisible={setModalVisible}

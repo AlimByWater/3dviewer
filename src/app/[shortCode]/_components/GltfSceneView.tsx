@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useViewer } from '../_context/ViewerContext';
 import { SceneProgressParams } from '@/types/scene';
 import * as THREE from 'three';
+import { useTweakpane } from '../_context/TweakpaneContext';
 
 interface GltfSceneViewProps {
   work: Work;
@@ -35,8 +36,8 @@ const GltfSceneView = ({ work, onProgress }: GltfSceneViewProps) => {
   );
   const { actions } = useAnimations(animations, scene);
   const {
-    state: { panelParams },
-  } = useViewer();
+    state: { params: panelParams },
+  } = useTweakpane();
   const pos = panelParams?.position;
   const scale = panelParams?.scale;
 
