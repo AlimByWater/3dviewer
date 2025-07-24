@@ -163,6 +163,7 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
             // Pass only PanelParams (paramsRef.current)
             console.log(
               `[${viewerState.slot.work.id}] panel parameters saving`,
+              paramsRef.current,
             );
             await api.saveWorkParams(
               viewerState.slot.work.id,

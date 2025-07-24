@@ -30,6 +30,7 @@ export const convertSlotToPanelParams = (slot: Slot): PanelParams => {
     distance: object.distance,
     azimuthAngle: object.azimuthAngle,
     polarAngle: object.polarAngle,
+    fov: object.fov,
     enableHdri: object.enableHdri,
     hdri: object.hdri,
     useHdriAsBackground: object.useHdriAsBackground,
@@ -104,6 +105,12 @@ export const configTweakpane = ({
     min: 0,
     max: 2 * Math.PI,
   });
+  const fov = cameraFolder.addBinding(params, 'fov', {
+    label: 'FOV',
+    min: 10,
+    max: 120,
+    step: 1,
+  });
   const syncCamera = cameraFolder.addBinding(params, 'syncCamera', {
     label: 'sync params',
   });
@@ -156,6 +163,7 @@ export const configTweakpane = ({
   distance.on('change', (e) => updateParam('distance', e.value));
   azimuthAngle.on('change', (e) => updateParam('azimuthAngle', e.value));
   polarAngle.on('change', (e) => updateParam('polarAngle', e.value));
+  fov.on('change', (e) => updateParam('fov', e.value));
   enableHdri.on('change', (e) => updateParam('enableHdri', e.value));
   hdri.on('change', (e) => updateParam('hdri', e.value));
   useHdriAsBackground.on('change', (e) =>

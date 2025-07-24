@@ -16,6 +16,8 @@ export type PanelParams = {
   azimuthAngle: number;
   /** From 0 to 2π */
   polarAngle: number;
+  /** Camera field of view in degrees (10-120) */
+  fov: number;
 
   // hdri
   enableHdri: boolean;
