@@ -54,6 +54,7 @@ export interface WorkObject {
   polarAngle: number;
   enableHdri: false;
   hdri: string;
+  fov: number;
   useHdriAsBackground: 'true' | 'false' | 'only';
   extra: SlotExtraParams | null;
 }
@@ -90,6 +91,7 @@ export const worksMock: Work[] = [
       polarAngle: 0,
       enableHdri: false,
       hdri: 'env-1',
+      fov: 70,
       useHdriAsBackground: 'false',
       extra: null,
     },
@@ -112,6 +114,7 @@ export const worksMock: Work[] = [
       polarAngle: 0,
       enableHdri: false,
       hdri: 'env-2',
+      fov: 70,
       useHdriAsBackground: 'false',
       extra: null,
     },

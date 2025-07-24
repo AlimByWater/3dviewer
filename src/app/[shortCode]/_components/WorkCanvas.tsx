@@ -87,11 +87,21 @@ const WorkCanvas = ({
         if (camera.polarAngle !== panelParams.polarAngle) {
           camera.polarAngle = panelParams.polarAngle;
         }
+        // Update FOV in real-time
+        if (camera.camera && camera.camera.fov !== panelParams.fov) {
+          camera.camera.fov = panelParams.fov;
+          camera.camera.updateProjectionMatrix();
+        }
       }
     }
 
     prevSyncCameraEnabled.current = panelParams && panelParams.syncCamera;
   }, [dispatch, panelParams]);
+
+  // Update camera when panelParams change
+  useEffect(() => {
+    updateCamera();
+  }, [updateCamera]);
 
   // Determine which component to render based on file extension in work.link
   const renderWorkComponent = () => {
@@ -149,7 +159,7 @@ const WorkCanvas = ({
           zIndex: 0,
         }}
         shadows
-        camera={{ position: [-10, 0, 5], fov: 70, near: 0.01, far: 10000 }}
+        camera={{ position: [-10, 0, 5], fov: panelParams?.fov ?? 70, near: 0.01, far: 10000 }}
         gl={{ stencil: true }}
       >
         {/* Ключ нужен для того, чтобы параметры сцены сбрасывались */}
