@@ -118,10 +118,11 @@ export const configTweakpane = ({
   const hdri = hdriFolder.addBinding(params, 'hdri', {
     label: 'HDRI',
     options: {
-      city: 'env-1',
-      orbit: 'env-2',
-      polygon: 'env-3',
-      studio: 'env-4',
+      city: 'env-1.jpg',
+      orbit: 'env-2.jpg',
+      polygon: 'env-3.jpg',
+      studio: 'env-4.jpg',
+      nightsky: 'env-5.jpg',
     },
   });
   const useHdriAsBackground = hdriFolder.addBinding(

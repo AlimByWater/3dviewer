@@ -214,7 +214,7 @@ const WorkCanvas = ({
           {/* HDRI карта */}
           {panelParams?.enableHdri && (
             <Environment
-              files={`${basePath}/hdri/${panelParams.hdri}.jpg`}
+              files={`${basePath}/hdri/${panelParams.hdri}`}
               background={hdriBackgroundProp}
             />
           )}
