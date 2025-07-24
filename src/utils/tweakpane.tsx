@@ -30,7 +30,7 @@ export const convertSlotToPanelParams = (slot: Slot): PanelParams => {
     distance: object.distance,
     azimuthAngle: object.azimuthAngle,
     polarAngle: object.polarAngle,
-    fov: object.fov ?? 70,
+    fov: object.fov,
     enableHdri: object.enableHdri,
     hdri: object.hdri,
     useHdriAsBackground: object.useHdriAsBackground,

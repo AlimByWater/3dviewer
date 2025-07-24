@@ -22,6 +22,7 @@ import { getFileExtensionFromUrl } from '@/utils/getFileExtension';
 import { SceneProgressParams } from '@/types/scene';
 import ProgressIndicator from './overlay/ProgressIndicator';
 import { useTweakpane } from '../_context/TweakpaneContext';
+import { PerspectiveCamera } from 'three';
 
 const WorkInAquariumView = dynamic(() => import('./WorkInAquariumView'));
 const GltfSceneView = dynamic(() => import('./GltfSceneView'));
@@ -88,9 +89,13 @@ const WorkCanvas = ({
           camera.polarAngle = panelParams.polarAngle;
         }
         // Update FOV in real-time
-        if (camera.camera && camera.camera.fov !== panelParams.fov) {
-          camera.camera.fov = panelParams.fov;
-          camera.camera.updateProjectionMatrix();
+        const origCamera = camera.camera;
+        if (
+          origCamera instanceof PerspectiveCamera &&
+          origCamera.fov !== panelParams.fov
+        ) {
+          origCamera.fov = panelParams.fov;
+          origCamera.updateProjectionMatrix();
         }
       }
     }
@@ -159,7 +164,12 @@ const WorkCanvas = ({
           zIndex: 0,
         }}
         shadows
-        camera={{ position: [-10, 0, 5], fov: panelParams?.fov ?? 70, near: 0.01, far: 10000 }}
+        camera={{
+          position: [-10, 0, 5],
+          fov: panelParams?.fov ?? 70,
+          near: 0.01,
+          far: 10000,
+        }}
         gl={{ stencil: true }}
       >
         {/* Ключ нужен для того, чтобы параметры сцены сбрасывались */}
