@@ -11,6 +11,7 @@ export interface Slot {
   link: SlotLink;
   previewUrl: string;
   work: Work;
+  audio: Audio | null;
 }
 
 export interface SlotExtraParams {
@@ -57,6 +58,10 @@ export interface WorkObject {
   fov: number;
   useHdriAsBackground: 'true' | 'false' | 'only';
   extra: SlotExtraParams | null;
+}
+
+export interface Audio {
+  link: string | null;
 }
 
 export const authorsMock: Author[] = [
@@ -136,6 +141,7 @@ export const slotsMock: Slot[] = [
     previewUrl:
       'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/ss-instinctive-preview.webm',
     work: worksMock[0],
+    audio: null,
   },
   {
     id: '1',
@@ -147,6 +153,7 @@ export const slotsMock: Slot[] = [
     previewUrl:
       'https://cdf026bd-e2a5-4a7a-adcd-a11f0029859b.selstorage.ru/ss-sleep-table-preview.webm',
     work: worksMock[1],
+    audio: null,
   },
   {
     id: '2',
@@ -162,5 +169,6 @@ export const slotsMock: Slot[] = [
       id: 'dot-ashtray',
       name: 'DOT Ashtray',
     },
+    audio: null,
   },
 ];

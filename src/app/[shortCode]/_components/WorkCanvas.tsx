@@ -23,6 +23,7 @@ import { SceneProgressParams } from '@/types/scene';
 import ProgressIndicator from './overlay/ProgressIndicator';
 import { useTweakpane } from '../_context/TweakpaneContext';
 import { PerspectiveCamera } from 'three';
+import AudioTrack from './overlay/AudioTrack';
 
 const WorkInAquariumView = dynamic(() => import('./WorkInAquariumView'));
 const GltfSceneView = dynamic(() => import('./GltfSceneView'));
@@ -284,6 +285,7 @@ const WorkCanvas = ({
           progress={sceneProgress.progress}
         />
       )}
+      {sceneProgress.active == false && <AudioTrack />}
     </div>
   );
 };
