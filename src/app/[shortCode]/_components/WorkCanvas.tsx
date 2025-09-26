@@ -24,6 +24,7 @@ import ProgressIndicator from './overlay/ProgressIndicator';
 import { useTweakpane } from '../_context/TweakpaneContext';
 import { PerspectiveCamera } from 'three';
 import AudioTrack from './overlay/AudioTrack';
+import { isLink } from '@/utils/isLink';
 
 const WorkInAquariumView = dynamic(() => import('./WorkInAquariumView'));
 const GltfSceneView = dynamic(() => import('./GltfSceneView'));
@@ -235,7 +236,11 @@ const WorkCanvas = ({
           {/* HDRI карта */}
           {panelParams?.enableHdri && (
             <Environment
-              files={`${basePath}/hdri/${panelParams.hdri}`}
+              files={
+                isLink(panelParams.hdri)
+                  ? panelParams.hdri
+                  : `${basePath}/hdri/${panelParams.hdri}`
+              }
               background={hdriBackgroundProp}
             />
           )}
