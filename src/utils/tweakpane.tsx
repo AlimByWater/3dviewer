@@ -5,6 +5,7 @@ import { createSvgPreview, readSvgFileAsText, revokeSvgPreview } from './svg';
 import { Slot } from '@/types/types';
 import Color from 'color';
 import { ContainerApi } from '@tweakpane/core';
+import { isLink } from './isLink';
 
 // Функция преобразования слота в параметры панели
 export const convertSlotToPanelParams = (slot: Slot): PanelParams => {
@@ -130,6 +131,7 @@ export const configTweakpane = ({
       polygon: 'env-3.jpg',
       studio: 'env-4.jpg',
       nightsky: 'env-5.jpg',
+      ...(isLink(initialParams.hdri) ? { custom: initialParams.hdri } : {}),
     },
   });
   const useHdriAsBackground = hdriFolder.addBinding(

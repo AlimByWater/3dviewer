@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import './DotButton.css';
 import { Vector3 } from '@/types/types';
 import { useRouter } from 'next/navigation';
+import { isLink } from '@/utils/isLink';
 
 interface DotButtonProps {
   position?: Vector3;
@@ -154,9 +155,7 @@ export const DotButton = ({
       if (targetUrl[0] === '/') {
         router.push(`?shortCode=${targetUrl.substring(1)}`);
       } else {
-        const url = targetUrl.match(/^https?:\/\//i)
-          ? targetUrl
-          : `https://${targetUrl}`;
+        const url = isLink(targetUrl) ? targetUrl : `https://${targetUrl}`;
         window.open(url, '_blank');
       }
     }
