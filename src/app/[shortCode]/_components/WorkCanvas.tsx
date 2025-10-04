@@ -290,7 +290,11 @@ const WorkCanvas = ({
           progress={sceneProgress.progress}
         />
       )}
-      {sceneProgress.active == false && <AudioTrack />}
+      <AudioTrack
+        key={'audio-track'}
+        play={sceneProgress.active === false}
+        effectEnabled={lowQuality}
+      />
     </div>
   );
 };
