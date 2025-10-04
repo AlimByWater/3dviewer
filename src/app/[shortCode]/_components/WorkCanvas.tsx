@@ -157,7 +157,7 @@ const WorkCanvas = ({
   const backgroundColor = panelParams?.background ?? slot.work.backgroundColor;
 
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+    <>
       <Canvas
         key={slot.id}
         dpr={getPixelRatio(lowQuality)}
@@ -291,7 +291,7 @@ const WorkCanvas = ({
         />
       )}
       {sceneProgress.active == false && <AudioTrack />}
-    </div>
+    </>
   );
 };
 

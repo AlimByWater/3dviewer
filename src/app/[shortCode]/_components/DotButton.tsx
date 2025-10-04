@@ -15,7 +15,7 @@ interface DotButtonProps {
   modelRef?: React.RefObject<THREE.Object3D>;
 }
 
-export const DotButton = ({
+const DotButton = ({
   position,
   targetUrl,
   svgIcon,
@@ -295,3 +295,5 @@ export const DotButton = ({
     </group>
   );
 };
+
+export default DotButton;

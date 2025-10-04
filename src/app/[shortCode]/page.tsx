@@ -1,16 +1,18 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import Overlay from './_components/overlay/Overlay';
-import WorkCanvas from './_components/WorkCanvas';
 import { Page } from '@/components/Page';
 import { Slot } from '@/types/types';
 import TriangleLoader from '@/components/TriangleLoader';
 import { useViewer } from './_context/ViewerContext';
-import DripNumberScene from './_components/Error404Scene';
 import * as api from '@/core/api';
-import { DotButton } from './_components/DotButton';
 import { useTweakpane } from './_context/TweakpaneContext';
+import dynamic from 'next/dynamic';
+
+const Overlay = dynamic(() => import('./_components/overlay/Overlay'));
+const WorkCanvas = dynamic(() => import('./_components/WorkCanvas'));
+const DotButton = dynamic(() => import('./_components/DotButton'));
+const DripNumberScene = dynamic(() => import('./_components/Error404Scene'));
 
 interface SlotDetailsPageParams {
   shortCode: string;
@@ -68,28 +70,39 @@ const SlotDetailsPage = ({ params }: { params: SlotDetailsPageParams }) => {
     );
   }
 
+  const backgroundColor = panelParams?.background ?? slot.work.backgroundColor;
+
   return (
     <Page back={false}>
-      <WorkCanvas
-        slot={slot}
-        lowQuality={modalVisible || false}
-        dotButtons={
-          dotButtonParams
-            ? dotButtonParams.map((params) => {
-                const pos = params.position;
-                return (
-                  <DotButton
-                    key={params.id}
-                    position={[pos.x, pos.y, pos.z]}
-                    targetUrl={params.link}
-                    svgIcon={params.svgIcon}
-                    scale={params.scale}
-                  />
-                );
-              })
-            : undefined
-        }
-      ></WorkCanvas>
+      <div
+        style={{
+          position: 'relative',
+          width: '100vw',
+          height: '100vh',
+          backgroundColor,
+        }}
+      >
+        <WorkCanvas
+          slot={slot}
+          lowQuality={modalVisible || false}
+          dotButtons={
+            dotButtonParams
+              ? dotButtonParams.map((params) => {
+                  const pos = params.position;
+                  return (
+                    <DotButton
+                      key={params.id}
+                      position={[pos.x, pos.y, pos.z]}
+                      targetUrl={params.link}
+                      svgIcon={params.svgIcon}
+                      scale={params.scale}
+                    />
+                  );
+                })
+              : undefined
+          }
+        ></WorkCanvas>
+      </div>
       <Overlay
         modalVisible={modalVisible}
         onChangeModalVisible={setModalVisible}
