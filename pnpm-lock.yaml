@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      '@0b5vr/tweakpane-plugin-rotation':
+        specifier: ^0.2.0
+        version: 0.2.0(tweakpane@4.0.5)
       '@mantine/core':
         specifier: ^8.0.1
         version: 8.0.1(@mantine/hooks@8.2.1(react@18.3.1))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -119,6 +122,11 @@ importers:
         version: 5.6.3
 
 packages:
+
+  '@0b5vr/tweakpane-plugin-rotation@0.2.0':
+    resolution: {integrity: sha512-LK+84kNTusEepVwiKH6ib/Pd+5RxI3UC4rHxn5c14GO58QS49Hh0ft3hFXt/NDzYEST17Q9qg96BcpclhCzYYQ==}
+    peerDependencies:
+      tweakpane: ^4.0.0
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -2518,6 +2526,10 @@ packages:
         optional: true
 
 snapshots:
+
+  '@0b5vr/tweakpane-plugin-rotation@0.2.0(tweakpane@4.0.5)':
+    dependencies:
+      tweakpane: 4.0.5
 
   '@alloc/quick-lru@5.2.0': {}
 

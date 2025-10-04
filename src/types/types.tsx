@@ -1,3 +1,7 @@
+export type XY = { x: number; y: number };
+export type XYZ = { x: number; y: number; z: number };
+export type EulerAngle = XYZ;
+export type QuaternionAngle = { x: number; y: number; z: number; w: number };
 export type Vector3 = [number, number, number];
 
 export interface SlotLink {
@@ -50,6 +54,7 @@ export interface Author {
 export interface WorkObject {
   position: Vector3;
   scale: Vector3;
+  rotation?: Vector3;
   distance: number;
   azimuthAngle: number;
   polarAngle: number;
@@ -91,6 +96,7 @@ export const worksMock: Work[] = [
     object: {
       scale: [5, 5, 5],
       position: [0, -4, 0],
+      rotation: [0, 0, 0],
       distance: 10,
       azimuthAngle: 0,
       polarAngle: 0,
@@ -114,6 +120,7 @@ export const worksMock: Work[] = [
     object: {
       scale: [2, 2, 2],
       position: [0, -4, 0],
+      rotation: [0, 0, 0],
       distance: 10,
       azimuthAngle: 0,
       polarAngle: 0,

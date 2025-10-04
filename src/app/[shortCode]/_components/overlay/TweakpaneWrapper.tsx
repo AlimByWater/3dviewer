@@ -14,6 +14,7 @@ const TweakpaneWrapper = () => {
       if (wrapper && !wrapper.hasChildNodes()) {
         wrapper.appendChild(pane.element);
       }
+      pane.hidden = false;
     }
   }, [pane]);
 

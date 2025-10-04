@@ -1,7 +1,6 @@
 import { Work } from '@/types/types';
 import { useAnimations, useGLTF } from '@react-three/drei';
-import { useEffect, useRef } from 'react';
-import { useViewer } from '../_context/ViewerContext';
+import { useEffect } from 'react';
 import { SceneProgressParams } from '@/types/scene';
 import * as THREE from 'three';
 import { useTweakpane } from '../_context/TweakpaneContext';
@@ -40,6 +39,7 @@ const GltfSceneView = ({ work, onProgress }: GltfSceneViewProps) => {
   } = useTweakpane();
   const pos = panelParams?.position;
   const scale = panelParams?.scale;
+  const rotation = panelParams?.rotation;
 
   useEffect(() => {
     // Проигрываем все анимации на сцене
@@ -54,6 +54,9 @@ const GltfSceneView = ({ work, onProgress }: GltfSceneViewProps) => {
         object={scene}
         position={pos && [pos.x, pos.y, pos.z]}
         scale={scale && [scale.x, scale.y, scale.z]}
+        rotation={
+          rotation && new THREE.Euler(rotation.x, rotation.y, rotation.z)
+        }
       />
     </>
   );
