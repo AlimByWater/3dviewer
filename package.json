@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@0b5vr/tweakpane-plugin-rotation": "^0.2.0",
     "@mantine/core": "^8.0.1",
     "@mantine/hooks": "^8.2.1",
     "@mattkrick/sanitize-svg": "^0.4.1",

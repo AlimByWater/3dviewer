@@ -27,6 +27,9 @@ export const convertSlotToPanelParams = (slot: Slot): PanelParams => {
       y: object.position[1],
       z: object.position[2],
     },
+    rotation: object.rotation
+      ? { x: object.rotation[0], y: object.rotation[1], z: object.rotation[2] }
+      : { x: 0, y: 0, z: 0 },
     syncCamera: false,
     distance: object.distance,
     azimuthAngle: object.azimuthAngle,
@@ -58,11 +61,12 @@ export const configTweakpane = ({
 }: {
   pane: Pane;
   initialParams: PanelParams;
-  onParamsUpdate: (key: keyof PanelParams, value: any) => void;
+  onParamsUpdate: (updated: Partial<PanelParams>) => void;
   showSaveButton: boolean;
   onSaveClick: (button: ButtonApi) => void;
 }): PanelParams => {
-  const params = initialParams;
+  const params = { ...initialParams };
+  let prevParams = structuredClone(params);
 
   // Очистка предыдущих биндингов
   pane.children.forEach((child) => child.dispose());
@@ -80,40 +84,45 @@ export const configTweakpane = ({
   const fgColor = pane.addBinding(params, 'foreground', { label: 'Text' });
   const scale = pane.addBinding(params, 'scale', {
     label: 'Scale',
-    min: 0,
-    max: 10,
   });
   const position = pane.addBinding(params, 'position', {
     label: 'Position',
+  });
+  const rotation = pane.addBinding(params, 'rotation', {
+    label: 'Rotation',
+    view: 'rotation',
+    rotationMode: 'euler',
+    picker: 'inline',
+    order: 'XYZ', // Extrinsic rotation order. optional, 'XYZ' by default
+    unit: 'rad', // or 'rad' or 'turn'. optional, 'rad' by default
   });
 
   const cameraFolder = pane.addFolder({
     expanded: false,
     title: 'Start Camera Position',
   });
+  const syncCamera = cameraFolder.addBinding(params, 'syncCamera', {
+    label: 'syncWithScene',
+  });
   const distance = cameraFolder.addBinding(params, 'distance', {
     label: 'Z',
     min: 0.1,
-    max: 100,
+    pointerScale: 0.05,
   });
   const azimuthAngle = cameraFolder.addBinding(params, 'azimuthAngle', {
     label: 'Y',
-    min: -2 * Math.PI,
-    max: 2 * Math.PI,
+    pointerScale: 0.02,
   });
   const polarAngle = cameraFolder.addBinding(params, 'polarAngle', {
     label: 'X',
     min: 0,
-    max: 2 * Math.PI,
+    max: Math.PI,
   });
   const fov = cameraFolder.addBinding(params, 'fov', {
     label: 'FOV',
     min: 10,
     max: 120,
     step: 1,
-  });
-  const syncCamera = cameraFolder.addBinding(params, 'syncCamera', {
-    label: 'sync params',
   });
 
   const hdriFolder = pane.addFolder({
@@ -151,16 +160,30 @@ export const configTweakpane = ({
   );
 
   // Обработчики изменений
-  const updateParam = (key: keyof PanelParams, value: any) => {
-    onParamsUpdate(key, value);
+  const updateParam = (
+    key: keyof PanelParams,
+    value: any,
+    ifChanged = false,
+  ) => {
+    if (ifChanged) {
+      const currValue = prevParams[key];
+      if (JSON.stringify(value) === JSON.stringify(currValue)) {
+        return;
+      }
+    }
+
+    onParamsUpdate({ [key]: value });
+
+    prevParams = structuredClone(params);
   };
 
   showPanel.on('change', (e) => updateParam('showPanel', e.value));
   showWorkInList.on('change', (e) => updateParam('showWorkInList', e.value));
-  bgColor.on('change', (e) => updateParam('background', e.value));
-  fgColor.on('change', (e) => updateParam('foreground', e.value));
+  bgColor.on('change', (e) => updateParam('background', e.value, true));
+  fgColor.on('change', (e) => updateParam('foreground', e.value, true));
   scale.on('change', (e) => updateParam('scale', e.value));
   position.on('change', (e) => updateParam('position', e.value));
+  rotation.on('change', (e) => updateParam('rotation', e.value, true));
   syncCamera.on('change', (e) => updateParam('syncCamera', e.value));
   distance.on('change', (e) => updateParam('distance', e.value));
   azimuthAngle.on('change', (e) => updateParam('azimuthAngle', e.value));

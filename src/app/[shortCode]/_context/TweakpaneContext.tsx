@@ -1,6 +1,5 @@
 import { Pane as Tweakpane } from 'tweakpane';
-import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
-import * as TweakpaneFileImportPlugin from 'tweakpane-plugin-file-import';
+
 import {
   createContext,
   ReactNode,
@@ -8,6 +7,7 @@ import {
   useEffect,
   useReducer,
   useRef,
+  useState,
 } from 'react';
 import { PanelParams } from '@/types/panel';
 import * as api from '@/core/api';
@@ -15,6 +15,8 @@ import { useViewer } from './ViewerContext';
 import { useLaunchParams } from '@telegram-apps/sdk-react';
 import { Slot } from '@/types/types';
 import { configTweakpane, convertSlotToPanelParams } from '@/utils/tweakpane';
+import useDebounce from '@/hooks/useDebounce';
+import getTweakpanePlugins from '@/utils/getTweakpanePlugins';
 
 type TweakpaneAction =
   | { type: 'init_pane'; pane: Tweakpane }
@@ -72,6 +74,10 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
   const lp = useLaunchParams();
   const paramsRef = useRef<PanelParams | null>(null);
   const prevSlot = useRef<Slot | null>(null);
+  const debouncedRefresh = useDebounce((pane: any) => {
+    pane.refresh();
+  }, 20);
+  const [tweakpanePlugins, setTweakpanePlugins] = useState<any[]>();
 
   const isLocalBuild = process.env.NEXT_PUBLIC_BASE_PATH === '/local';
 
@@ -89,10 +95,10 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
     if (paramsRef.current) {
       Object.assign(paramsRef.current, state.params);
       if (state.pane) {
-        state.pane.refresh();
+        debouncedRefresh(state.pane);
       }
     }
-  }, [state.params, state.pane]);
+  }, [state.params, state.pane, debouncedRefresh]);
 
   useEffect(() => {
     if (prevSlot.current?.id != viewerState.slot?.id) {
@@ -122,8 +128,13 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [shouldShowPane, state.pane, viewerState.slot?.id]);
 
+  // Set plugins
   useEffect(() => {
-    if (shouldShowPane && !state.pane && state.params) {
+    getTweakpanePlugins().then(setTweakpanePlugins);
+  }, []);
+
+  useEffect(() => {
+    if (tweakpanePlugins && shouldShowPane && !state.pane && state.params) {
       // Создание панели
       console.log('Creating pane for slot:', `[${viewerState.slot?.id}]`);
 
@@ -131,18 +142,21 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
         title: 'Model parameters',
         expanded: false,
       });
-      pane.registerPlugin(EssentialsPlugin);
-      pane.registerPlugin(TweakpaneFileImportPlugin);
+      pane.hidden = true;
+
+      for (const plugin of tweakpanePlugins) {
+        pane.registerPlugin(plugin);
+      }
 
       paramsRef.current = configTweakpane({
         pane: pane,
         initialParams: state.params,
-        onParamsUpdate: (key, value) => {
+        onParamsUpdate: (updated) => {
           if (!paramsRef.current) return;
 
           const newParams = {
             ...paramsRef.current,
-            [key]: value,
+            ...updated,
           };
 
           dispatch({ type: 'params_updated', params: newParams });
@@ -189,6 +203,7 @@ export const TweakpaneProvider = ({ children }: { children: ReactNode }) => {
     shouldShowPane,
     state.pane,
     state.params,
+    tweakpanePlugins,
     userIsSlotAuthor,
     viewerState.slot,
   ]);
