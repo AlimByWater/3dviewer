@@ -12,14 +12,14 @@ import dynamic from 'next/dynamic';
 const Overlay = dynamic(() => import('./_components/overlay/Overlay'));
 const WorkCanvas = dynamic(() => import('./_components/WorkCanvas'));
 const DotButton = dynamic(() => import('./_components/DotButton'));
-const DripNumberScene = dynamic(() => import('./_components/Error404Scene'));
+const ErrorGlassScene = dynamic(() => import('./_components/ErrorGlassScene'));
 
 interface SlotDetailsPageParams {
   shortCode: string;
 }
 
 const SlotDetailsPage = ({ params }: { params: SlotDetailsPageParams }) => {
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<api.ApiException | string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const {
     state: { slot },
@@ -46,10 +46,10 @@ const SlotDetailsPage = ({ params }: { params: SlotDetailsPageParams }) => {
         setSlot(data);
         setError(null);
       } catch (err) {
-        if (err instanceof Error && err) {
-          setError(err.message);
+        if (err instanceof api.ApiException && err) {
+          setError(err);
         } else {
-          setError('An unexpected error occurred');
+          setError(`An unexpected error occurred: ${err}`);
         }
         setSlot(null);
       }
@@ -58,8 +58,8 @@ const SlotDetailsPage = ({ params }: { params: SlotDetailsPageParams }) => {
     loadData();
   }, [params.shortCode, setSlot]);
 
-  if (error) {
-    return <DripNumberScene />;
+  if (error && error instanceof api.ApiException) {
+    return <ErrorGlassScene text={error.statusCode.toString()} />;
   }
 
   if (!slot) {

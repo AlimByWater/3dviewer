@@ -1,22 +1,37 @@
 import { PanelParams } from '@/types/panel'; // Revert import
 import { Author, Slot } from '@/types/types';
 
+export class ApiException extends Error {
+  public statusCode: number;
+  public responseBody?: any;
+
+  constructor(message: string, statusCode: number, responseBody?: any) {
+    super(message);
+    this.name = 'ApiException';
+    this.statusCode = statusCode;
+    this.responseBody = responseBody;
+
+    // корректная работа с prototype в TypeScript
+    Object.setPrototypeOf(this, ApiException.prototype);
+  }
+}
+
 export const fetchSlotByShortCode = async (
   shortCode: string,
 ): Promise<Slot> => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/slots/by-link/${shortCode}`,
   );
-
   if (!res.ok) {
-    let errorMessage = `Failed to fetch slot - ${shortCode}`;
+    const errorMessage = `Failed to fetch slot - ${shortCode}`;
+    let body: string | undefined;
     try {
       const errorData = await res.json();
-      errorMessage = errorData.message || errorMessage;
+      body = errorData.message;
     } catch {
       // Не удалось распарсить JSON ответ
     }
-    throw new Error(errorMessage);
+    throw new ApiException(errorMessage, res.status, body);
   }
   return res.json();
 };
