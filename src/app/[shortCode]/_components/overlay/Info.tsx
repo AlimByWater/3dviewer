@@ -23,16 +23,19 @@ const Info = ({
   if (!panelParams) return;
 
   const fontStyle = { color: panelParams.foreground };
+  const firstAuthor = slot?.work.authors && slot.work.authors[0];
 
   return (
     <div className={styles.footerBlock}>
       <SafeArea>
         <div className={styles.footerContent} style={fontStyle}>
-          <Avatar
-            src={slot!.work.authors[0].logo}
-            size="md"
-            className={styles.authorLogo}
-          />
+          {firstAuthor?.logo && (
+            <Avatar
+              src={firstAuthor.logo}
+              size="md"
+              className={styles.authorLogo}
+            />
+          )}
 
           <div className={styles.workInfo}>
             <Text fz="sm" fw={600}>
