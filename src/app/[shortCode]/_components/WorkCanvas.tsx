@@ -258,9 +258,6 @@ const WorkCanvas = ({
               <Environment
                 files={hdriUrl}
                 background={hdriBackgroundProp}
-                onError={(error) => {
-                  console.error('Environment HDRI loading failed:', error);
-                }}
               />
             </Suspense>
           )}
