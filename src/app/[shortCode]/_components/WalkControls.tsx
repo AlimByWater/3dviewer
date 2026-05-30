@@ -8,7 +8,7 @@ import { Euler, Vector3 } from 'three';
 
 const MOVE_SPEED = 0.05;
 const LOOK_SENSITIVITY = 0.003;
-const TOUCH_LOOK_SENSITIVITY = 0.005;
+const TOUCH_LOOK_SENSITIVITY = 0.015;
 
 interface JoystickState {
   active: boolean;
@@ -31,6 +31,12 @@ export function WalkCameraController() {
   const lastMouse = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
+    // Initialize yaw/pitch from current camera orientation
+    // to prevent flip when switching from orbit to walk mode
+    yaw.current = camera.rotation.y;
+    // Clamp pitch to avoid flipping (normalization via atan2 can give -PI to PI)
+    pitch.current = Math.max(-Math.PI / 2 + 0.01, Math.min(Math.PI / 2 - 0.01, camera.rotation.x));
+
     const onKey = (e: KeyboardEvent) => {
       keys.current[e.code] = e.type === 'keydown';
     };
@@ -107,8 +113,8 @@ export function WalkCameraController() {
 
 // ── Liquid Glass Joystick ──────────────────────────────────────────────────
 
-const JOYSTICK_RADIUS = 52;
-const KNOB_RADIUS = 22;
+const JOYSTICK_RADIUS = 36;
+const KNOB_RADIUS = 15;
 
 function Joystick({
   side,
