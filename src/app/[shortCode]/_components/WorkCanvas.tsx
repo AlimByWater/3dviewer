@@ -18,7 +18,7 @@ import {
 } from 'react';
 
 import dynamic from 'next/dynamic';
-import { getFileExtensionFromUrl } from '@/utils/getFileExtension';
+import { getFileExtensionFromUrl, getSafeHdriUrl } from '@/utils/getFileExtension';
 import { SceneProgressParams } from '@/types/scene';
 import ProgressIndicator from './overlay/ProgressIndicator';
 import { useTweakpane } from '../_context/TweakpaneContext';
@@ -125,7 +125,7 @@ const WorkCanvas = ({
       // Assuming WorkView/useGLTF handles its own loading indication or loads fast enough
       // If WorkView needs explicit load handling, it would require similar onLoad logic
       return <GltfSceneView work={slot.work} onProgress={setSceneProgress} />;
-    } else if (extension === 'splat' || extension === 'ksplat') {
+    } else if (extension === 'ply' || extension === 'splat' || extension === 'ksplat') {
       // SplatSceneView now uses context for loading state, remove onLoad prop
       return <SplatSceneView work={slot.work} onProgress={setSceneProgress} />;
     }
@@ -155,6 +155,25 @@ const WorkCanvas = ({
   }, [panelParams?.enableHdri, panelParams?.useHdriAsBackground]);
 
   const backgroundColor = panelParams?.background ?? slot.work.backgroundColor;
+
+  // Validate and prepare HDRI URL with error handling
+  const hdriUrl = useMemo(() => {
+    if (!panelParams?.enableHdri || !panelParams.hdri) {
+      return null;
+    }
+
+    const url = isLink(panelParams.hdri)
+      ? panelParams.hdri
+      : `${basePath}/hdri/${panelParams.hdri}`;
+
+    // For external URLs, validate HDRI format
+    if (isLink(panelParams.hdri)) {
+      return getSafeHdriUrl(url);
+    }
+
+    // For local files, trust the path structure
+    return url;
+  }, [panelParams?.enableHdri, panelParams?.hdri, basePath]);
 
   return (
     <>
@@ -234,15 +253,16 @@ const WorkCanvas = ({
             </group>
           </Environment>
           {/* HDRI карта */}
-          {panelParams?.enableHdri && (
-            <Environment
-              files={
-                isLink(panelParams.hdri)
-                  ? panelParams.hdri
-                  : `${basePath}/hdri/${panelParams.hdri}`
-              }
-              background={hdriBackgroundProp}
-            />
+          {hdriUrl && (
+            <Suspense fallback={null}>
+              <Environment
+                files={hdriUrl}
+                background={hdriBackgroundProp}
+                onError={(error) => {
+                  console.error('Environment HDRI loading failed:', error);
+                }}
+              />
+            </Suspense>
           )}
           {slot.in_aquarium ? (
             <CameraControls
