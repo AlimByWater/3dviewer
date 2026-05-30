@@ -31,6 +31,7 @@ export const convertSlotToPanelParams = (slot: Slot): PanelParams => {
       ? { x: object.rotation[0], y: object.rotation[1], z: object.rotation[2] }
       : { x: 0, y: 0, z: 0 },
     syncCamera: false,
+    walkMode: object.extra?.walkMode ?? false,
     distance: object.distance,
     azimuthAngle: object.azimuthAngle,
     polarAngle: object.polarAngle,
@@ -103,6 +104,9 @@ export const configTweakpane = ({
   });
   const syncCamera = cameraFolder.addBinding(params, 'syncCamera', {
     label: 'syncWithScene',
+  });
+  const walkMode = cameraFolder.addBinding(params, 'walkMode', {
+    label: 'Walk mode',
   });
   const distance = cameraFolder.addBinding(params, 'distance', {
     label: 'Z',
@@ -185,6 +189,7 @@ export const configTweakpane = ({
   position.on('change', (e) => updateParam('position', e.value));
   rotation.on('change', (e) => updateParam('rotation', e.value, true));
   syncCamera.on('change', (e) => updateParam('syncCamera', e.value));
+  walkMode.on('change', (e) => updateParam('walkMode', e.value));
   distance.on('change', (e) => updateParam('distance', e.value));
   azimuthAngle.on('change', (e) => updateParam('azimuthAngle', e.value));
   polarAngle.on('change', (e) => updateParam('polarAngle', e.value));

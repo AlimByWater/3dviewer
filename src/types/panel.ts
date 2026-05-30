@@ -13,6 +13,7 @@ export type PanelParams = {
   // camera
   // sync scene camera with params
   syncCamera: boolean;
+  walkMode: boolean;
   distance: number;
   /** From -2π to 2π */
   azimuthAngle: number;

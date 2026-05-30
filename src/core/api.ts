@@ -39,6 +39,11 @@ export const fetchSlotByShortCode = async (
 // Revert function signature and body to use PanelParams
 export const saveWorkParams = async (workId: string, params: PanelParams) => {
   console.log('Saving work params to API:', { workId, params });
+  // walkMode is stored inside extra (backend extra is json.RawMessage)
+  const body = {
+    ...params,
+    extra: { ...params.extra, walkMode: params.walkMode },
+  };
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/works/${workId}/panel`,
     {
@@ -47,7 +52,7 @@ export const saveWorkParams = async (workId: string, params: PanelParams) => {
       headers: {
         'Content-Type': 'application/json', // Keep if backend expects JSON
       },
-      body: JSON.stringify(params), // Send only PanelParams
+      body: JSON.stringify(body),
     },
   );
   if (!res.ok) {

@@ -25,6 +25,7 @@ import { useTweakpane } from '../_context/TweakpaneContext';
 import { PerspectiveCamera } from 'three';
 import AudioTrack from './overlay/AudioTrack';
 import { isLink } from '@/utils/isLink';
+import { WalkCameraController, WalkJoystick } from './WalkControls';
 
 const WorkInAquariumView = dynamic(() => import('./WorkInAquariumView'));
 const GltfSceneView = dynamic(() => import('./GltfSceneView'));
@@ -268,6 +269,8 @@ const WorkCanvas = ({
               azimuthAngle={Math.PI / 2}
               polarAngle={Math.PI / 2}
             />
+          ) : panelParams?.walkMode ? (
+            <WalkCameraController />
           ) : (
             <CameraControls
               ref={handleRef}
@@ -307,6 +310,7 @@ const WorkCanvas = ({
           progress={sceneProgress.progress}
         />
       )}
+      {panelParams?.walkMode && <WalkJoystick />}
       <AudioTrack
         key={'audio-track'}
         play={sceneProgress.active === false}

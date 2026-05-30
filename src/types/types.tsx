@@ -20,6 +20,7 @@ export interface Slot {
 
 export interface SlotExtraParams {
   dotButtons: DotButtonParams[] | null;
+  walkMode?: boolean;
 }
 
 export interface DotButtonParams {
