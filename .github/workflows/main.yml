@@ -5,14 +5,19 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted # Используем self-hosted runner
+    # Runner on the DripTech prod server 136.148.218.8; 3dviewer runs in its compose stack
+    # (/srv/driptech/compose, service 3dviewer, nginx /driptech -> 127.0.0.1:3338).
+    runs-on: driptech-new
 
     steps:
-      # Шаг 1: Проверка кода из репозитория
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Шаг 2: Сборка Docker образа
       - name: Build Docker image
+        run: docker build --build-arg ENV_FILE=.env.production -t 3dviewer:latest .
+
+      - name: Deploy container
         run: |
-          make update
+          cd /srv/driptech/compose
+          docker compose up -d --no-deps --force-recreate 3dviewer
+          docker image prune -f
